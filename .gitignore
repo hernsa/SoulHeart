@@ -1,5 +1,6 @@
 .godot/
-tools/
+tools/*.exe
 *.tmp
 .worktrees/
 .superpowers/
+*.import
