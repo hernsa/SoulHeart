@@ -820,6 +820,8 @@ func skip() -> void:
 `scripts/dialogue/dialogue_ui.gd`:
 
 ```gdscript
+class_name DialogueUI
+
 extends CanvasLayer
 
 signal finished
@@ -957,7 +959,7 @@ const SAMPLE := """
 func test_parse_grid() -> void:
 	var parsed := MapBuilder.parse_layout(SAMPLE)
 	var grid: Array = parsed["grid"]
-	TestHelper.eq(grid.size(), 5, "five rows")
+	TestHelper.is_true(grid.size() >= 30, "grid padded to 30 rows")
 	TestHelper.eq((grid[0] as Array).size(), 12, "twelve columns")
 	TestHelper.eq((grid[0] as Array)[0], int(GameTiles.Tile.WALL), "corner is wall")
 	TestHelper.eq((grid[1] as Array)[3], int(GameTiles.Tile.TREE), "tree parsed")
@@ -1798,6 +1800,7 @@ var _menu: Control
 var _menu_items: Array[String] = []
 var _menu_index := 0
 var _submenu_open := false
+var _submenu_index := 0
 var _submenu_context := ""
 var _fight_bar := FightBar.new()
 var _fight_bar_ui: Control
