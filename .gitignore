@@ -4,3 +4,4 @@ tools/*.exe
 .worktrees/
 .superpowers/
 *.import
+.worktrees/
