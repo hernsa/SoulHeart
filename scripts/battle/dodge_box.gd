@@ -5,11 +5,15 @@ signal player_hit
 
 const HEART_SPEED := 160.0
 const BOX_RECT := Rect2(200, 60, 240, 220)
+const INVULN_TIME := 1.0
+const STAGGER_TIME := 0.2
+const KNOCKBACK := 6.0
 
 var heart: Sprite2D
 var bullets: Array = []
 var invuln := 0.0
 var active := false
+var _stagger := 0.0
 
 func _ready() -> void:
 	size = Vector2(640, 480)
@@ -48,18 +52,29 @@ func _process(delta: float) -> void:
 	if not active:
 		return
 	invuln = maxf(0.0, invuln - delta)
-	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	heart.position = CombatMath.clamp_to_box(heart.position + input * HEART_SPEED * delta, BOX_RECT)
+	_stagger = maxf(0.0, _stagger - delta)
+	heart.visible = (invuln <= 0.0) or (int(invuln * 10.0) % 2 == 0)
 	for b in bullets:
 		b.position += b.vel * delta
 		b.life -= delta
+	if _stagger > 0.0:
+		_remove_dead()
+		return
+	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	heart.position = CombatMath.clamp_to_box(heart.position + input * HEART_SPEED * delta, BOX_RECT)
 	var hit := false
+	var hit_bullet: Bullet = null
 	for b in bullets:
 		if CombatMath.circle_hit(heart.position, 4.0, b.position, b.size):
 			hit = true
+			hit_bullet = b
 			break
 	if hit and invuln <= 0.0:
-		invuln = 0.5
+		invuln = INVULN_TIME
+		_stagger = STAGGER_TIME
+		if hit_bullet:
+			var away := (heart.position - hit_bullet.position).normalized()
+			heart.position = CombatMath.clamp_to_box(heart.position + away * KNOCKBACK, BOX_RECT)
 		player_hit.emit()
 	_remove_dead()
 
