@@ -4,10 +4,3 @@
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
-
-[node name="TitleLabel" type="Label" parent="."]
-offset_left = 260.0
-offset_top = 220.0
-offset_right = 380.0
-offset_bottom = 260.0
-text = "SoulHeart"
