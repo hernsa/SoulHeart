@@ -3,6 +3,7 @@ extends Node2D
 var _started := false
 
 func _ready() -> void:
+	GameState.load_game()
 	var bg := ColorRect.new()
 	bg.color = Color(0, 0, 0, 1)
 	bg.size = Vector2(640, 480)

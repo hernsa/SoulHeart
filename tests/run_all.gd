@@ -4,6 +4,10 @@ func _initialize() -> void:
 	var failures := 0
 	for path in _find_tests():
 		var script: GDScript = load(path)
+		if script == null:
+			failures += 1
+			print("FAIL: %s (failed to load)" % path)
+			continue
 		var inst: RefCounted = script.new()
 		TestHelper.failures = 0
 		for m in script.get_script_method_list():

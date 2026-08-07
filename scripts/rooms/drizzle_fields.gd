@@ -61,6 +61,8 @@ func _spawn_player(start: Vector2, grid: Array) -> void:
 	cam.position_smoothing_enabled = true
 	cam.position_smoothing_speed = 8.0
 	var room := MapBuilder.room_pixel_size(grid)
+	cam.limit_left = 0
+	cam.limit_top = 0
 	cam.limit_right = int(room.x)
 	cam.limit_bottom = int(room.y)
 	player.add_child(cam)

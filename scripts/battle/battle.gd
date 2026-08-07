@@ -20,6 +20,9 @@ var _enemy_sprite: Sprite2D
 var _name_label: Label
 var _hp_label: Label
 var _hp_bar: ColorRect
+var _player_name_label: Label
+var _player_hp_label: Label
+var _player_hp_bar: ColorRect
 var _ending := false
 
 func _ready() -> void:
@@ -27,6 +30,7 @@ func _ready() -> void:
 	_enemy = EnemyLibrary.get_enemy(str(GameState.flags.get("pending_enemy", "willowisp")))
 	_enemy_sprite.texture = Sprites.wisp_texture()
 	_refresh_enemy_ui()
+	_refresh_player_ui()
 	await _say([{"speaker": "", "text": _enemy.intro_line}])
 	if _ending:
 		return
@@ -53,6 +57,20 @@ func _build_ui() -> void:
 	_hp_bar.size = Vector2(120, 8)
 	_hp_bar.color = Color.YELLOW
 	add_child(_hp_bar)
+	_player_name_label = Label.new()
+	_player_name_label.text = "DREAMCATCHER"
+	_player_name_label.add_theme_font_size_override("font_size", 20)
+	_player_name_label.position = Vector2(30, 300)
+	add_child(_player_name_label)
+	_player_hp_bar = ColorRect.new()
+	_player_hp_bar.position = Vector2(30, 322)
+	_player_hp_bar.size = Vector2(120, 8)
+	_player_hp_bar.color = Color.RED
+	add_child(_player_hp_bar)
+	_player_hp_label = Label.new()
+	_player_hp_label.add_theme_font_size_override("font_size", 14)
+	_player_hp_label.position = Vector2(30, 336)
+	add_child(_player_hp_label)
 	_build_menu()
 	_build_fight_bar()
 	_dodge_box = DodgeBox.new()
@@ -209,6 +227,7 @@ func _resolve_submenu() -> void:
 			else:
 				var item: Dictionary = GameState.use_item(_submenu_index)
 				await _say([{"speaker": "", "text": "You used %s. It hums warmly." % item.get("name", "it")}])
+				_refresh_player_ui()
 		"MERCY":
 			if choice == "Spare":
 				if _mood >= _enemy.spare_after_acts:
@@ -257,6 +276,7 @@ func _enemy_turn() -> void:
 			await get_tree().process_frame
 			frames += 1
 	_dodge_box.set_active(false)
+	_refresh_player_ui()
 	if int(GameState.player_stats["hp"]) <= 0:
 		_state.transition(BattleState.Phase.LOSE)
 		await _say([{"speaker": "", "text": "You cannot give up just yet."}])
@@ -279,8 +299,15 @@ func _refresh_enemy_ui() -> void:
 	_hp_label.text = "%d/%d" % [_enemy.hp, _enemy.max_hp]
 	_hp_bar.size.x = 120.0 * float(_enemy.hp) / float(_enemy.max_hp)
 
+func _refresh_player_ui() -> void:
+	var hp := int(GameState.player_stats["hp"])
+	var max_hp := int(GameState.player_stats["max_hp"])
+	_player_hp_label.text = "HP %d / %d" % [hp, max_hp]
+	_player_hp_bar.size.x = maxi(0, int(120.0 * float(hp) / float(max_hp)))
+
 func _on_player_hit() -> void:
 	GameState.change_hp(-1)
+	_refresh_player_ui()
 
 func _say(lines: Array[Dictionary]) -> void:
 	_text.open(lines)
