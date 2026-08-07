@@ -25,3 +25,12 @@ func test_win_path_from_fight() -> void:
 	s.transition(BattleState.Phase.PLAYER_TURN)
 	s.transition(BattleState.Phase.FIGHT)
 	TestHelper.is_true(s.transition(BattleState.Phase.WIN), "win from fight")
+
+func test_spared_reachable_from_player_and_enemy_turns() -> void:
+	var s := BattleState.new()
+	s.transition(BattleState.Phase.PLAYER_TURN)
+	TestHelper.is_true(s.transition(BattleState.Phase.SPARED), "spared from player turn")
+	s = BattleState.new()
+	s.transition(BattleState.Phase.PLAYER_TURN)
+	s.transition(BattleState.Phase.ENEMY_TURN)
+	TestHelper.is_true(s.transition(BattleState.Phase.SPARED), "spared from enemy turn")
