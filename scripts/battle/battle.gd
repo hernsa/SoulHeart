@@ -1,6 +1,7 @@
 extends Node2D
 
 const MENU_GRID := [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]
+const FLEE_CHANCE := 0.5
 
 var _enemy: EnemyStats
 var _state := BattleState.new()
@@ -240,9 +241,12 @@ func _resolve_submenu() -> void:
 				else:
 					await _say([{"speaker": "", "text": "%s wavers, but stays on guard." % _enemy.display_name}])
 			else:
-				await _say([{"speaker": "", "text": "You flee, heart pounding."}])
-				_end_battle()
-				return
+				if flee_roll(randf()):
+					Audio.play_sfx("flee")
+					await _say([{"speaker": "", "text": "You flee, heart pounding."}])
+					_end_battle()
+					return
+				await _say([{"speaker": "", "text": "But it failed."}])
 	_refresh_enemy_ui()
 	_enemy_turn()
 
@@ -337,3 +341,6 @@ func _show_stay_determined() -> void:
 	label.size = Vector2(640, 40)
 	label.position = Vector2(0, 220)
 	layer.add_child(label)
+
+static func flee_roll(roll: float) -> bool:
+	return roll < FLEE_CHANCE
