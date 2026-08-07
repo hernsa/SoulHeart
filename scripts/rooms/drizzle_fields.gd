@@ -37,7 +37,7 @@ const LAYOUT := """
 
 func _ready() -> void:
 	var parsed := MapBuilder.parse_layout(LAYOUT)
-	var start := _spawn_point(parsed["player_start"])
+	var start := _spawn_point(parsed["player_start"]) + Vector2(8, 8)
 	var tml := MapBuilder.build_tilemap(parsed["grid"])
 	add_child(tml)
 	_spawn_player(start, parsed["grid"])
