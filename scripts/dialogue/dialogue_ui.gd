@@ -55,7 +55,7 @@ func _process(delta: float) -> void:
 	var vis := _tw.visible_chars()
 	if vis > _prev_chars and _prev_chars < _tw.text.length():
 		var ch := _tw.text.substr(_prev_chars, 1)
-		if not ch.is_space():
+		if not (ch == " " or ch == "\t" or ch == "\n"):
 			Audio.play_sfx("blip", randf_range(0.9, 1.1))
 	_prev_chars = vis
 	_label.text = str(line.get("text", "")).substr(0, vis)
