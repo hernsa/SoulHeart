@@ -16,4 +16,6 @@ func _on_body_entered(body: Node) -> void:
 		GameState.set_flag("current_room", target_room)
 		GameState.set_flag("save_point", [int(target_spawn.x), int(target_spawn.y)])
 		Audio.play_sfx("door_open")
+		Fade.fade_to_black(0.3)
+		await get_tree().create_timer(0.3).timeout
 		get_tree().change_scene_to_file(target_room)

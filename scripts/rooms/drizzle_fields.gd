@@ -48,6 +48,7 @@ func _ready() -> void:
 	GameState.set_flag("current_room", ROOM_PATH)
 	Audio.play_music("drizzle")
 	Audio.play_sfx("door_close")
+	Fade.fade_from_black(0.3)
 
 func _spawn_point(fallback: Vector2) -> Vector2:
 	if GameState.flags.has("current_room") and str(GameState.flags["current_room"]) == ROOM_PATH and GameState.flags.has("save_point"):

@@ -25,3 +25,4 @@ textures/canvas_textures/default_texture_filter=0
 
 GameState="*res://scripts/autoload/game_state.gd"
 Audio="*res://scripts/autoload/audio.gd"
+Fade="*res://scripts/autoload/fade.gd"

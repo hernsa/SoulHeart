@@ -28,4 +28,6 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if not _started and Input.is_action_just_pressed("confirm"):
 		_started = true
+		Fade.fade_to_black(0.3)
+		await get_tree().create_timer(0.3).timeout
 		get_tree().change_scene_to_file("res://scenes/rooms/DrizzleFields.tscn")
