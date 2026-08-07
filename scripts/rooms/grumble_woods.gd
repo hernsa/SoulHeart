@@ -26,6 +26,8 @@ func _ready() -> void:
 	_spawn_sign(Vector2(18 * 16, 4 * 16))
 	_spawn_door(parsed["doors"])
 	GameState.set_flag("current_room", ROOM_PATH)
+	Audio.play_music("grumble")
+	Audio.play_sfx("door_close")
 
 func _spawn_point(fallback: Vector2) -> Vector2:
 	if GameState.flags.has("current_room") and str(GameState.flags["current_room"]) == ROOM_PATH and GameState.flags.has("save_point"):

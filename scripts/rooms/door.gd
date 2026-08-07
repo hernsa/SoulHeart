@@ -15,4 +15,5 @@ func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("player"):
 		GameState.set_flag("current_room", target_room)
 		GameState.set_flag("save_point", [int(target_spawn.x), int(target_spawn.y)])
+		Audio.play_sfx("door_open")
 		get_tree().change_scene_to_file(target_room)

@@ -26,6 +26,7 @@ var _player_hp_bar: ColorRect
 var _ending := false
 
 func _ready() -> void:
+	Audio.play_music("battle")
 	_build_ui()
 	_enemy = EnemyLibrary.get_enemy(str(GameState.flags.get("pending_enemy", "willowisp")))
 	_enemy_sprite.texture = Sprites.wisp_texture()
@@ -306,6 +307,7 @@ func _refresh_player_ui() -> void:
 	_player_hp_bar.size.x = maxi(0, int(120.0 * float(hp) / float(max_hp)))
 
 func _on_player_hit() -> void:
+	Audio.play_sfx("hurt")
 	GameState.change_hp(-1)
 	_refresh_player_ui()
 

@@ -16,6 +16,7 @@ func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("player"):
 		GameState.set_flag("save_point", [int(global_position.x), int(global_position.y)])
 		if GameState.save_game():
+			Audio.play_sfx("save")
 			_show_banner("Game saved.")
 
 func _show_banner(text: String) -> void:

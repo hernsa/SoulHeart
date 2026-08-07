@@ -10,6 +10,7 @@ var _tw := Typewriter.new()
 var _label: Label
 var _speaker_label: Label
 var _active := false
+var _prev_chars := 0
 
 func _ready() -> void:
 	layer = 10
@@ -51,7 +52,13 @@ func _process(delta: float) -> void:
 		return
 	var line := _lines[_index]
 	_tw.advance(delta)
-	_label.text = str(line.get("text", "")).substr(0, _tw.visible_chars())
+	var vis := _tw.visible_chars()
+	if vis > _prev_chars and _prev_chars < _tw.text.length():
+		var ch := _tw.text.substr(_prev_chars, 1)
+		if not ch.is_space():
+			Audio.play_sfx("blip", randf_range(0.9, 1.1))
+	_prev_chars = vis
+	_label.text = str(line.get("text", "")).substr(0, vis)
 	if Input.is_action_just_pressed("confirm"):
 		if _tw.is_done():
 			_index += 1
@@ -69,4 +76,5 @@ func _show_current() -> void:
 	var line := _lines[_index]
 	_speaker_label.text = str(line.get("speaker", ""))
 	_tw.start(str(line.get("text", "")))
+	_prev_chars = 0
 	_label.text = ""

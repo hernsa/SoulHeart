@@ -4,6 +4,7 @@ var _started := false
 
 func _ready() -> void:
 	GameState.load_game()
+	Audio.play_music("title")
 	var bg := ColorRect.new()
 	bg.color = Color(0, 0, 0, 1)
 	bg.size = Vector2(640, 480)
