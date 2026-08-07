@@ -281,6 +281,11 @@ func _enemy_turn() -> void:
 	if int(GameState.player_stats["hp"]) <= 0:
 		_state.transition(BattleState.Phase.LOSE)
 		await _say([{"speaker": "", "text": "You cannot give up just yet."}])
+		Audio.play_music("death")
+		Fade.fade_to_black(0.8)
+		await get_tree().create_timer(0.9).timeout
+		_show_stay_determined()
+		await get_tree().create_timer(2.2).timeout
 		GameState.heal_full()
 		_end_battle()
 	else:
@@ -319,3 +324,16 @@ func _end_battle() -> void:
 	_ending = true
 	var room: String = str(GameState.flags.get("from_room", "res://scenes/rooms/DrizzleFields.tscn"))
 	get_tree().change_scene_to_file(room)
+
+func _show_stay_determined() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 60
+	add_child(layer)
+	var label := Label.new()
+	label.text = "Stay determined!"
+	label.add_theme_font_size_override("font_size", 32)
+	label.add_theme_color_override("font_color", Color(1, 1, 1))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.size = Vector2(640, 40)
+	label.position = Vector2(0, 220)
+	layer.add_child(label)
