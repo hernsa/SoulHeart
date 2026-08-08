@@ -26,3 +26,9 @@ textures/canvas_textures/default_texture_filter=0
 GameState="*res://scripts/autoload/game_state.gd"
 Audio="*res://scripts/autoload/audio.gd"
 Fade="*res://scripts/autoload/fade.gd"
+
+[gui]
+theme/custom_font="res://assets/fonts/DMT-Mono.ttf"
+theme/default_font_antialiasing=0
+theme/default_font_subpixel_positioning=0
+theme/default_font_hinting=1

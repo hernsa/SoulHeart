@@ -1,1 +1,2 @@
 SoulHeart is a private, non-commercial fan project. Music by Toby Fox (UNDERTALE, copyright Toby Fox / Materia Music Publishing), from the original game files.
+Font: Determination Mono (DMT-Mono) by JapanYoshi / ThetaApps - 8-Bit Operator-style pixel font, used for fan-project authenticity.
