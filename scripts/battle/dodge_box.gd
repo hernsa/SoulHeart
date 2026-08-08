@@ -83,7 +83,7 @@ func _process(delta: float) -> void:
 		return
 	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	heart.position = CombatMath.clamp_to_box_inset(heart.position + input * HEART_SPEED * delta, BOX_RECT, 4.0, 4.0, -16.0, -16.0)
-	var heart_vel := heart.position - last_heart_pos
+	var heart_vel := (heart.position - last_heart_pos) / delta
 	last_heart_pos = heart.position
 	var hit_bullet: Bullet = null
 	for b in bullets:
