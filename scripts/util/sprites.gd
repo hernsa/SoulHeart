@@ -129,3 +129,89 @@ static func door_texture() -> ImageTexture:
 	img.set_pixel(8, 24, Color(0.9, 0.85, 0.4))
 	img.set_pixel(8, 23, Color(0.9, 0.85, 0.4))
 	return ImageTexture.create_from_image(img)
+
+static func bullet_texture_for(t: int) -> Texture2D:
+	match t:
+		Bullet.Type.BONE:
+			return bone_texture()
+		Bullet.Type.SPEAR:
+			return spear_texture()
+		Bullet.Type.RING:
+			return ring_texture()
+		Bullet.Type.LASER:
+			return laser_texture()
+		Bullet.Type.ARROW:
+			return arrow_texture()
+	return bullet_texture()
+
+static func bone_texture() -> Texture2D:
+	var img := Image.create(14, 10, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	for y in 10:
+		for x in 14:
+			var fill := false
+			if y >= 2 and y <= 7:
+				fill = true
+			elif (x >= 2 and x <= 11) and (y == 1 or y == 8):
+				fill = true
+			elif (x >= 4 and x <= 9) and (y == 0 or y == 9):
+				fill = true
+			if fill:
+				img.set_pixel(x, y, Color.WHITE)
+			else:
+				img.set_pixel(x, y, Color(0, 0, 0, 0))
+	return ImageTexture.create_from_image(img)
+
+static func spear_texture() -> Texture2D:
+	var img := Image.create(6, 22, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	for y in 22:
+		var w := 1
+		if y == 0:
+			w = 5
+		elif y < 4:
+			w = 3
+		elif y < 8:
+			w = 2
+		elif y < 20:
+			w = 2
+		for x in range(3 - w / 2, 3 + w / 2 + 1):
+			if x >= 0 and x < 6:
+				img.set_pixel(x, y, Color.WHITE)
+	return ImageTexture.create_from_image(img)
+
+static func ring_texture() -> Texture2D:
+	var img := Image.create(14, 14, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var c := Vector2(6.5, 6.5)
+	for y in 14:
+		for x in 14:
+			var d := Vector2(x, y).distance_to(c)
+			if d >= 5.5 and d <= 6.5:
+				img.set_pixel(x, y, Color.WHITE)
+	return ImageTexture.create_from_image(img)
+
+static func laser_texture() -> Texture2D:
+	var img := Image.create(24, 90, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	for y in 90:
+		for x in 24:
+			if x >= 10 and x <= 13:
+				img.set_pixel(x, y, Color.WHITE)
+	return ImageTexture.create_from_image(img)
+
+static func arrow_texture() -> Texture2D:
+	var img := Image.create(14, 6, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	for y in 6:
+		for x in 14:
+			var fill := false
+			if x >= 2 and x <= 11:
+				fill = (y >= 2 and y <= 3)
+			elif x <= 2:
+				fill = (y >= 1 and y <= 4)
+			elif x >= 11:
+				fill = (y == 0 or y == 5) or (y >= 2 and y <= 3)
+			if fill:
+				img.set_pixel(x, y, Color.WHITE)
+	return ImageTexture.create_from_image(img)

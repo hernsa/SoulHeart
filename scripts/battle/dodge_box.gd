@@ -46,6 +46,9 @@ func spawn_patterns(data: Array[Dictionary]) -> void:
 		add_child(b)
 		bullets.append(b)
 
+func heart_position() -> Vector2:
+	return heart.position
+
 func has_bullets() -> bool:
 	return bullets.size() > 0
 
@@ -56,7 +59,22 @@ func _process(delta: float) -> void:
 	_stagger = maxf(0.0, _stagger - delta)
 	heart.visible = (invuln <= 0.0) or (int(invuln * 10.0) % 2 == 0)
 	for b in bullets:
-		b.position += b.vel * delta
+		b.phase += delta
+		match b.behavior:
+			"sine":
+				b.position += b.vel * delta
+				b.position.y += sin(b.phase * 6.0) * 40.0 * delta
+			"homing":
+				var to: Vector2 = (heart.position - b.position).normalized() * b.vel.length()
+				b.vel = b.vel.move_toward(to, 60.0 * delta)
+				b.position += b.vel * delta
+			"gravity":
+				b.vel.y += 120.0 * delta
+				b.position += b.vel * delta
+			"orbit":
+				b.position = b.orbit_center + Vector2.from_angle(b.phase * 2.0) * 80.0
+			_:
+				b.position += b.vel * delta
 		b.life -= delta
 	if _stagger > 0.0:
 		_remove_dead()
