@@ -48,7 +48,7 @@ func _ready() -> void:
 	GameState.set_flag("current_room", ROOM_PATH)
 	Audio.play_music("drizzle")
 	Audio.play_sfx("door_close")
-	Fade.fade_from_black(0.3)
+	Fade.fade_from_black(0.67)
 
 func _spawn_point(fallback: Vector2) -> Vector2:
 	if GameState.flags.has("current_room") and str(GameState.flags["current_room"]) == ROOM_PATH and GameState.flags.has("save_point"):
@@ -61,14 +61,9 @@ func _spawn_player(start: Vector2, grid: Array) -> void:
 	player.position = start
 	add_child(player)
 	var cam := Camera2D.new()
-	cam.position_smoothing_enabled = true
-	cam.position_smoothing_speed = 8.0
 	var room := MapBuilder.room_pixel_size(grid)
-	cam.limit_left = 0
-	cam.limit_top = 0
-	cam.limit_right = int(room.x)
-	cam.limit_bottom = int(room.y)
-	player.add_child(cam)
+	cam.position = (room / 2.0).round()
+	add_child(cam)
 	cam.make_current()
 
 func _spawn_npc(pos: Vector2, dlg: String) -> void:

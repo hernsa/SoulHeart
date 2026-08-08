@@ -5,9 +5,19 @@ const ACCEL := 1200.0
 
 var facing := Vector2.DOWN
 var _last_dir := ""
+var _anim_time: float = 0.0
+var _frame: int = 0
+var _moving: bool = false
+var _sprite: Sprite2D
+var _shadow: Sprite2D
 
 func _ready() -> void:
-	$Sprite2D.texture = Sprites.player_texture()
+	_sprite = $Sprite2D
+	_sprite.texture = Sprites.player_texture_frame(0)
+	_shadow = Sprite2D.new()
+	_shadow.texture = Sprites.player_shadow_texture()
+	_shadow.position = Vector2(0, 9)
+	add_child(_shadow)
 
 static func resolve_direction4(just_pressed: PackedStringArray, held: PackedStringArray, last: String) -> Array:
 	var new_last := last
@@ -39,6 +49,15 @@ func _physics_process(delta: float) -> void:
 	var res: Array = resolve_direction4(just, held, _last_dir)
 	_last_dir = str(res[1])
 	set_movement_input(res[0])
+	if res[0] != Vector2.ZERO:
+		_moving = true
+		_anim_time += get_physics_process_delta_time()
+		_frame = int(_anim_time / 0.15) % 2
+		_sprite.texture = Sprites.player_texture_frame(_frame)
+		_sprite.flip_h = res[0].x < 0
+	else:
+		_moving = false
+		_sprite.texture = Sprites.player_texture_frame(0)
 	move_and_slide()
 
 func set_movement_input(dir: Vector2) -> void:

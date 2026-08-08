@@ -31,3 +31,8 @@ func _show_bang() -> void:
 	if player:
 		label.global_position = player.global_position + Vector2(6, -30)
 	get_tree().current_scene.add_child(label)
+	label.pivot_offset = Vector2(7, 7)
+	label.scale = Vector2(0.5, 0.5)
+	var pop := create_tween()
+	pop.tween_property(label, "scale", Vector2(1.2, 1.2), 0.08)
+	pop.tween_property(label, "scale", Vector2(1.0, 1.0), 0.1)
