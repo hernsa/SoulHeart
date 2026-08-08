@@ -335,6 +335,7 @@ func _resolve_fight() -> void:
 	else:
 		var dmg := CombatMath.calculate_damage(int(GameState.player_stats["atk"]), _enemy.defense, intent)
 		_enemy.hp -= dmg
+		Audio.play_sfx("slice")
 		_enemy_sprite.modulate = Color(3.0, 3.0, 3.0)
 		var flash := create_tween()
 		flash.tween_property(_enemy_sprite, "modulate", Color(1, 1, 1), 0.1)
@@ -346,6 +347,7 @@ func _resolve_fight() -> void:
 		GameState.add_kill()
 		GameState.player_stats["gold"] = int(GameState.player_stats["gold"]) + 2
 		await _say([{"speaker": "", "text": "%s fades into soft light. You feel colder." % _enemy.display_name}])
+		Audio.play_sfx("vaporize")
 		var fade := create_tween()
 		fade.tween_property(_enemy_sprite, "modulate:a", 0.0, 0.5)
 		await fade.finished
@@ -375,6 +377,15 @@ func _enemy_turn() -> void:
 		if bool(pattern.get("telegraph", false)):
 			await _dodge_box.show_telegraph(0.6)
 		_dodge_box.spawn_patterns(BulletPatterns.make(pattern, _dodge_box.heart_position()))
+		match str(pattern.get("type", "burst")):
+			"bone_wall":
+				Audio.play_sfx("bone_clack")
+			"spear_volley", "ring", "spiral":
+				Audio.play_sfx("whoosh")
+			"laser_sweep":
+				Audio.play_sfx("laser")
+			_:
+				Audio.play_sfx("whoosh")
 		var frames := 0
 		while _dodge_box.has_bullets() and frames < 60 * 15:
 			await get_tree().process_frame

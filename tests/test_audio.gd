@@ -25,3 +25,11 @@ func test_unknown_id_is_safe() -> void:
 	a.play_music("does_not_exist")
 	a.stop_music(0.1)
 	TestHelper.eq(TestHelper.failures, before, "unknown ids never crash or assert")
+
+func test_attack_sfx_registered() -> void:
+	var S := load(AUDIO_SCRIPT)
+	for id in ["whoosh", "bone_clack", "laser", "warn", "slice", "vaporize", "levelup"]:
+		var stream: AudioStream = S.SFX.get(id)
+		TestHelper.is_true(stream != null, "attack sfx registered: " + id)
+		if stream:
+			TestHelper.is_true(stream.get_length() > 0.0, "attack sfx has duration: " + id)

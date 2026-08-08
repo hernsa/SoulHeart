@@ -25,6 +25,20 @@ func _initialize() -> void:
 	], "triangle")
 	gen("sting", 0.3, 0.8, 0.4, [{"freq": 120.0, "dur": 0.3, "vol": 1.0}], "saw", 60.0)
 	gen("flee", 0.18, 0.6, 0.3, [{"freq": 440.0, "dur": 0.09, "vol": 1.0}, {"freq": 880.0, "dur": 0.09, "vol": 1.0}], "square")
+	gen("whoosh", 0.15, 0.005, 0.5, [{"freq": 0.0, "dur": 0.15, "vol": 0.5}], "noise")
+	gen("bone_clack", 0.2, 0.005, 0.2, [{"freq": 220.0, "dur": 0.07, "vol": 1.0}, {"freq": 180.0, "dur": 0.07, "vol": 1.0}], "square")
+	gen("laser", 0.3, 0.02, 0.6, [{"freq": 880.0, "dur": 0.3, "vol": 0.5}], "sine", -770.0)
+	gen("warn", 0.6, 0.005, 0.5, [
+		{"freq": 440.0, "dur": 0.1, "vol": 1.0}, {"freq": 660.0, "dur": 0.1, "vol": 1.0},
+		{"freq": 440.0, "dur": 0.1, "vol": 1.0}, {"freq": 660.0, "dur": 0.1, "vol": 1.0},
+		{"freq": 440.0, "dur": 0.1, "vol": 1.0}, {"freq": 660.0, "dur": 0.1, "vol": 1.0},
+	], "square")
+	gen("slice", 0.08, 0.005, 0.5, [{"freq": 1200.0, "dur": 0.08, "vol": 0.5}], "square", -900.0)
+	gen("vaporize", 0.25, 0.02, 0.5, [{"freq": 300.0, "dur": 0.25, "vol": 0.5}], "saw", 600.0)
+	gen("levelup", 0.48, 0.005, 0.3, [
+		{"freq": 523.0, "dur": 0.12, "vol": 1.0}, {"freq": 659.0, "dur": 0.12, "vol": 1.0},
+		{"freq": 784.0, "dur": 0.12, "vol": 1.0}, {"freq": 1047.0, "dur": 0.12, "vol": 1.0},
+	], "square")
 	quit(0)
 
 func gen(id: String, total: float, attack: float, decay: float, notes: Array, wave: String, glide := 0.0) -> void:
@@ -42,6 +56,8 @@ func gen(id: String, total: float, attack: float, decay: float, notes: Array, wa
 				"square": v = 1.0 if phase < 0.5 else -1.0
 				"saw": v = phase * 2.0 - 1.0
 				"triangle": v = 4.0 * absf(phase - 0.5) - 1.0
+				"noise": v = randf() * 2.0 - 1.0
+				"sine": v = sin(TAU * phase)
 			var env := minf(1.0, t / attack)
 			if t > note["dur"] * (1.0 - decay):
 				env *= 1.0 - (t - note["dur"] * (1.0 - decay)) / (note["dur"] * decay)

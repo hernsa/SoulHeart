@@ -20,6 +20,13 @@ const SFX := {
 	"save": preload("res://assets/audio/sfx/save.wav"),
 	"sting": preload("res://assets/audio/sfx/sting.wav"),
 	"flee": preload("res://assets/audio/sfx/flee.wav"),
+	"whoosh": preload("res://assets/audio/sfx/whoosh.wav"),
+	"bone_clack": preload("res://assets/audio/sfx/bone_clack.wav"),
+	"laser": preload("res://assets/audio/sfx/laser.wav"),
+	"warn": preload("res://assets/audio/sfx/warn.wav"),
+	"slice": preload("res://assets/audio/sfx/slice.wav"),
+	"vaporize": preload("res://assets/audio/sfx/vaporize.wav"),
+	"levelup": preload("res://assets/audio/sfx/levelup.wav"),
 }
 
 const SFX_POOL_SIZE := 8
