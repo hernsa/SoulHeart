@@ -4,9 +4,9 @@ func _size(tex: Texture2D) -> Vector2i:
 	return tex.get_image().get_size()
 
 func test_sprite_sizes() -> void:
-	TestHelper.eq(_size(Sprites.heart_texture()), Vector2i(7, 6), "heart 7x6")
+	TestHelper.eq(_size(Sprites.heart_texture()), Vector2i(14, 12), "heart 14x12")
 	TestHelper.eq(_size(Sprites.player_texture()), Vector2i(8, 12), "player 8x12")
-	TestHelper.eq(_size(Sprites.bullet_texture()), Vector2i(6, 6), "bullet 6x6")
+	TestHelper.eq(_size(Sprites.bullet_texture()), Vector2i(8, 8), "bullet 8x8")
 	TestHelper.eq(_size(Sprites.star_texture()), Vector2i(5, 5), "star 5x5")
 	TestHelper.eq(_size(Sprites.wisp_texture()), Vector2i(16, 16), "wisp 16x16")
 	TestHelper.eq(_size(Sprites.toad_texture()), Vector2i(16, 16), "toad 16x16")

@@ -21,9 +21,13 @@ var _enemy_sprite: Sprite2D
 var _name_label: Label
 var _hp_label: Label
 var _hp_bar: ColorRect
+var _hp_bar_bg: ColorRect
 var _player_name_label: Label
 var _player_hp_label: Label
 var _player_hp_bar: ColorRect
+var _player_hp_fill: ColorRect
+var _menu_box: Panel
+var _menu_cursor: Sprite2D
 var _ending := false
 
 func _ready() -> void:
@@ -44,34 +48,44 @@ func _build_ui() -> void:
 	bg.size = Vector2(640, 480)
 	add_child(bg)
 	_enemy_sprite = Sprite2D.new()
-	_enemy_sprite.position = Vector2(480, 220)
+	_enemy_sprite.position = Vector2(216, 136)
 	add_child(_enemy_sprite)
 	_name_label = Label.new()
-	_name_label.add_theme_font_size_override("font_size", 20)
+	_name_label.add_theme_font_size_override("font_size", 16)
 	_name_label.position = Vector2(30, 30)
 	add_child(_name_label)
 	_hp_label = Label.new()
-	_hp_label.add_theme_font_size_override("font_size", 14)
+	_hp_label.add_theme_font_size_override("font_size", 16)
 	_hp_label.position = Vector2(30, 60)
 	add_child(_hp_label)
+	_hp_bar_bg = ColorRect.new()
+	_hp_bar_bg.position = Vector2(207, 161)
+	_hp_bar_bg.size = Vector2(18, 6)
+	_hp_bar_bg.color = Color.BLACK
+	add_child(_hp_bar_bg)
 	_hp_bar = ColorRect.new()
-	_hp_bar.position = Vector2(30, 82)
-	_hp_bar.size = Vector2(120, 8)
-	_hp_bar.color = Color.YELLOW
+	_hp_bar.position = Vector2(208, 162)
+	_hp_bar.size = Vector2(16, 4)
+	_hp_bar.color = Color(0.75, 1.0, 0.25)
 	add_child(_hp_bar)
 	_player_name_label = Label.new()
 	_player_name_label.text = "DREAMCATCHER"
-	_player_name_label.add_theme_font_size_override("font_size", 20)
-	_player_name_label.position = Vector2(30, 300)
+	_player_name_label.add_theme_font_size_override("font_size", 16)
+	_player_name_label.position = Vector2(30, 400)
 	add_child(_player_name_label)
 	_player_hp_bar = ColorRect.new()
-	_player_hp_bar.position = Vector2(30, 322)
-	_player_hp_bar.size = Vector2(120, 8)
+	_player_hp_bar.position = Vector2(275, 400)
+	_player_hp_bar.size = Vector2(24, 20)
 	_player_hp_bar.color = Color.RED
 	add_child(_player_hp_bar)
+	_player_hp_fill = ColorRect.new()
+	_player_hp_fill.position = Vector2(275, 400)
+	_player_hp_fill.size = Vector2(24, 20)
+	_player_hp_fill.color = Color.YELLOW
+	add_child(_player_hp_fill)
 	_player_hp_label = Label.new()
-	_player_hp_label.add_theme_font_size_override("font_size", 14)
-	_player_hp_label.position = Vector2(30, 336)
+	_player_hp_label.add_theme_font_size_override("font_size", 16)
+	_player_hp_label.position = Vector2(302, 400)
 	add_child(_player_hp_label)
 	_build_menu()
 	_build_fight_bar()
@@ -85,6 +99,15 @@ func _build_ui() -> void:
 func _build_menu() -> void:
 	_menu = Control.new()
 	_menu_items = ["FIGHT", "ACT", "ITEM", "MERCY"]
+	_menu_box = Panel.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0, 0, 0, 1)
+	sb.set_border_width_all(1)
+	sb.border_color = Color.WHITE
+	_menu_box.add_theme_stylebox_override("panel", sb)
+	_menu_box.position = Vector2(400, 385)
+	_menu_box.size = Vector2(202, 80)
+	_menu.add_child(_menu_box)
 	_render_menu_labels()
 	add_child(_menu)
 	_menu.visible = false
@@ -96,10 +119,13 @@ func _render_menu_labels() -> void:
 	for i in _menu_items.size():
 		var l := Label.new()
 		l.text = _menu_items[i]
-		l.add_theme_font_size_override("font_size", 18)
-		l.position = Vector2(240 + MENU_GRID[i].x * 110, 400 + MENU_GRID[i].y * 30)
+		l.add_theme_font_size_override("font_size", 16)
+		l.position = Vector2(432 + MENU_GRID[i].x * 90, 413 + MENU_GRID[i].y * 30)
 		l.name = "item_%d" % i
 		_menu.add_child(l)
+	_menu_cursor = Sprite2D.new()
+	_menu_cursor.texture = Sprites.heart_texture()
+	_menu.add_child(_menu_cursor)
 
 func _update_menu_colors() -> void:
 	var idx := _submenu_index if _submenu_open else _menu_index
@@ -108,6 +134,11 @@ func _update_menu_colors() -> void:
 		if l == null:
 			continue
 		l.add_theme_color_override("font_color", Color.WHITE if i == idx else Color(1, 1, 1, 0.5))
+	if _menu_cursor == null:
+		return
+	var cl := _menu.get_node("item_%d" % idx) as Label
+	if cl:
+		_menu_cursor.position = cl.position + Vector2(-14, 0)
 
 func _build_fight_bar() -> void:
 	_fight_bar_ui = Control.new()
@@ -117,8 +148,8 @@ func _build_fight_bar() -> void:
 	sb.set_border_width_all(1)
 	sb.border_color = Color.WHITE
 	panel.add_theme_stylebox_override("panel", sb)
-	panel.position = Vector2(220, 210)
-	panel.size = Vector2(200, 28)
+	panel.position = Vector2(45, 415)
+	panel.size = Vector2(260, 28)
 	_fight_bar_ui.add_child(panel)
 	_fight_marker = ColorRect.new()
 	_fight_marker.color = Color.WHITE
@@ -138,7 +169,7 @@ func _process(delta: float) -> void:
 				_handle_menu_input()
 		BattleState.Phase.FIGHT:
 			_fight_bar.tick(delta)
-			_fight_marker.position = Vector2(222 + _fight_bar.marker * 196.0, 210)
+			_fight_marker.position = Vector2(45 + _fight_bar.marker * 256.0, 415)
 			if Input.is_action_just_pressed("confirm"):
 				_resolve_fight()
 
@@ -307,13 +338,14 @@ func _refresh_enemy_ui() -> void:
 	_name_label.text = _enemy.display_name
 	_name_label.add_theme_color_override("font_color", Color.YELLOW if _mood >= _enemy.spare_after_acts else Color.WHITE)
 	_hp_label.text = "%d/%d" % [_enemy.hp, _enemy.max_hp]
-	_hp_bar.size.x = 120.0 * float(_enemy.hp) / float(_enemy.max_hp)
+	_hp_bar.size.x = 16.0 * float(_enemy.hp) / float(_enemy.max_hp)
 
 func _refresh_player_ui() -> void:
 	var hp := int(GameState.player_stats["hp"])
 	var max_hp := int(GameState.player_stats["max_hp"])
-	_player_hp_label.text = "HP %d / %d" % [hp, max_hp]
-	_player_hp_bar.size.x = maxi(0, int(120.0 * float(hp) / float(max_hp)))
+	_player_hp_label.text = "%02d / %02d" % [hp, max_hp]
+	_player_hp_fill.size.x = 24.0 * float(hp) / float(max_hp)
+	_player_hp_bar.size.x = 24.0
 
 func _on_player_hit() -> void:
 	Audio.play_sfx("hurt")

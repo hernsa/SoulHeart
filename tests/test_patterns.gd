@@ -5,7 +5,7 @@ func test_burst() -> void:
 	TestHelper.eq(shots.size(), 5, "five bullets")
 	for shot in shots:
 		TestHelper.eq(shot["vel"], Vector2.DOWN * 100.0, "velocity straight down")
-		TestHelper.eq(shot["pos"], Vector2(320, 90), "same origin")
+		TestHelper.eq(shot["pos"], Vector2(317, 317), "same origin")
 		TestHelper.eq(shot["life"], 4.0, "lifetime")
 
 func test_fan_symmetric_around_direction() -> void:

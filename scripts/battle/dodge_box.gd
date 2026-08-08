@@ -4,7 +4,8 @@ extends Control
 signal player_hit
 
 const HEART_SPEED := 160.0
-const BOX_RECT := Rect2(200, 60, 240, 220)
+const BOX_RECT := Rect2(32, 250, 570, 135)
+const HEART_START := Vector2(317, 317)
 const INVULN_TIME := 1.0
 const STAGGER_TIME := 0.2
 const KNOCKBACK := 6.0
@@ -28,7 +29,7 @@ func _ready() -> void:
 	add_child(panel)
 	heart = Sprite2D.new()
 	heart.texture = Sprites.heart_texture()
-	heart.position = BOX_RECT.get_center()
+	heart.position = HEART_START
 	add_child(heart)
 	visible = false
 
@@ -61,7 +62,7 @@ func _process(delta: float) -> void:
 		_remove_dead()
 		return
 	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	heart.position = CombatMath.clamp_to_box(heart.position + input * HEART_SPEED * delta, BOX_RECT)
+	heart.position = CombatMath.clamp_to_box_inset(heart.position + input * HEART_SPEED * delta, BOX_RECT, 4.0, 4.0, -16.0, -16.0)
 	var hit := false
 	var hit_bullet: Bullet = null
 	for b in bullets:

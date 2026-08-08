@@ -1,13 +1,27 @@
 class_name Sprites
 
 static func heart_texture() -> Texture2D:
-	var img := Image.create(7, 6, false, Image.FORMAT_RGBA8)
+	var img := Image.create(14, 12, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
-	var rows := ["..XXX..", ".XXXXX.", "XXXXXXX", "XXXXXXX", ".XXXXX.", "..XXX.."]
+	var rows := [
+		"....XXXXXX....",
+		"....XXXXXX....",
+		"..XXXXXXXXXX..",
+		"..XXXXXXXXXX..",
+		"XXXXXXXXXXXXXX",
+		"XXXXXXXXXXXXXX",
+		"XXXXXXXXXXXXXX",
+		"XXXXXXXXXXXXXX",
+		"..XXXXXXXXXX..",
+		"..XXXXXXXXXX..",
+		"....XXXXXX....",
+		"....XXXXXX...."
+	]
 	for y in rows.size():
-		for x in 7:
+		for x in 14:
 			if rows[y][x] == "X":
-				img.set_pixel(x, y, Color(0.85, 0.15, 0.15))
+				var is_edge := y == 0 or y == rows.size() - 1 or x == 0 or x == 13
+				img.set_pixel(x, y, Color(0.45, 0.05, 0.05) if is_edge else Color(0.85, 0.15, 0.15))
 	return ImageTexture.create_from_image(img)
 
 static func player_texture() -> Texture2D:
@@ -26,8 +40,12 @@ static func player_texture() -> Texture2D:
 	return ImageTexture.create_from_image(img)
 
 static func bullet_texture() -> Texture2D:
-	var img := Image.create(6, 6, false, Image.FORMAT_RGBA8)
+	var img := Image.create(8, 8, false, Image.FORMAT_RGBA8)
 	img.fill(Color.WHITE)
+	for x in 8:
+		for y in 8:
+			if x == 0 or x == 7 or y == 0 or y == 7:
+				img.set_pixel(x, y, Color(0.1, 0.1, 0.1))
 	return ImageTexture.create_from_image(img)
 
 static func star_texture() -> Texture2D:

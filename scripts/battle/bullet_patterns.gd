@@ -11,13 +11,13 @@ static func make(pattern: Dictionary) -> Array[Dictionary]:
 		_:
 			return burst(count, speed, dir)
 
-static func burst(count: int, speed: float, direction: Vector2, origin := Vector2(320, 90)) -> Array[Dictionary]:
+static func burst(count: int, speed: float, direction: Vector2, origin := Vector2(317, 317)) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for i in count:
 		out.append({"pos": origin, "vel": direction * speed, "life": 4.0, "size": 3.0})
 	return out
 
-static func fan(count: int, spread_deg: float, speed: float, direction: Vector2, origin := Vector2(320, 90)) -> Array[Dictionary]:
+static func fan(count: int, spread_deg: float, speed: float, direction: Vector2, origin := Vector2(317, 317)) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if count <= 1:
 		return burst(1, speed, direction, origin)

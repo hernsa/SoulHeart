@@ -10,6 +10,10 @@ static func clamp_to_box(pos: Vector2, box: Rect2) -> Vector2:
 		clampf(pos.y, box.position.y, box.position.y + box.size.y - 1.0)
 	)
 
+static func clamp_to_box_inset(pos: Vector2, box: Rect2, left: float, top: float, right: float, bottom: float) -> Vector2:
+	var inner: Rect2 = Rect2(box.position + Vector2(left, top), box.size - Vector2(left - right, top - bottom))
+	return clamp_to_box(pos, inner)
+
 static func circle_hit(center_a: Vector2, radius_a: float, center_b: Vector2, radius_b: float) -> bool:
 	var r := radius_a + radius_b
 	return center_a.distance_squared_to(center_b) <= r * r
