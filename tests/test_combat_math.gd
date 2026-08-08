@@ -30,3 +30,15 @@ func test_clamp_to_box_inset_inside_unchanged() -> void:
 	var box: Rect2 = Rect2(32, 250, 570, 135)
 	var p: Vector2 = CombatMath.clamp_to_box_inset(Vector2(300, 300), box, 4.0, 4.0, -16.0, -16.0)
 	TestHelper.eq(p, Vector2(300, 300), "inside stays put")
+
+func test_drain_toward_moves_toward_target() -> void:
+	var v: float = CombatMath.drain_toward(8.0, 3.0, 0.05)
+	TestHelper.eq(v, 6.0, "drains 40/s")
+
+func test_drain_toward_never_overshoots() -> void:
+	var v: float = CombatMath.drain_toward(3.2, 3.0, 0.05)
+	TestHelper.eq(v, 3.0, "clamps at target")
+
+func test_drain_toward_holds_when_equal() -> void:
+	var v: float = CombatMath.drain_toward(3.0, 3.0, 0.05)
+	TestHelper.eq(v, 3.0, "no movement at target")

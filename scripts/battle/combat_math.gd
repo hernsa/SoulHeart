@@ -17,3 +17,9 @@ static func clamp_to_box_inset(pos: Vector2, box: Rect2, left: float, top: float
 static func circle_hit(center_a: Vector2, radius_a: float, center_b: Vector2, radius_b: float) -> bool:
 	var r := radius_a + radius_b
 	return center_a.distance_squared_to(center_b) <= r * r
+
+static func drain_toward(current: float, target: float, delta: float, rate: float = 40.0) -> float:
+	var step := rate * delta
+	if current > target:
+		return maxf(target, current - step)
+	return minf(target, current + step)

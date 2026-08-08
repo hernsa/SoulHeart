@@ -34,6 +34,8 @@ var _player_hp_bar: ColorRect
 var _player_hp_fill: ColorRect
 var _menu_box: Panel
 var _menu_cursor: Sprite2D
+var _enemy_hp_display := 0.0
+var _enemy_in := false
 var _ending := false
 
 func _ready() -> void:
@@ -41,6 +43,13 @@ func _ready() -> void:
 	_build_ui()
 	_enemy = EnemyLibrary.get_enemy(str(GameState.flags.get("pending_enemy", "willowisp")))
 	_enemy_sprite.texture = Sprites.wisp_texture()
+	_enemy_sprite.position = Vector2(216, -40)
+	_enemy_hp_display = float(_enemy.max_hp)
+	_hp_bar.size.x = 16.0
+	var entrance := create_tween()
+	entrance.tween_property(_enemy_sprite, "position", Vector2(216, 136), 0.4)
+	await entrance.finished
+	_enemy_in = true
 	_refresh_enemy_ui()
 	_refresh_player_ui()
 	await _say([{"speaker": "", "text": _enemy.intro_line}])
@@ -180,6 +189,10 @@ func _build_fight_bar() -> void:
 func _process(delta: float) -> void:
 	if _ending:
 		return
+	if _enemy_in:
+		_enemy_sprite.position.y = 136.0 + sin(Time.get_ticks_msec() * 0.003) * 2.0
+		_enemy_hp_display = CombatMath.drain_toward(_enemy_hp_display, float(_enemy.hp), delta, 40.0)
+		_hp_bar.size.x = 16.0 * (_enemy_hp_display / float(_enemy.max_hp))
 	match _state.phase:
 		BattleState.Phase.PLAYER_TURN:
 			if _submenu_open:
@@ -316,10 +329,15 @@ func _resolve_fight() -> void:
 	_fight_bar_ui.visible = false
 	var intent := _fight_bar.press()
 	if intent < 0.1:
+		_spawn_damage_digit(0, true)
 		await _say([{"speaker": "", "text": "MISS."}])
 	else:
 		var dmg := CombatMath.calculate_damage(int(GameState.player_stats["atk"]), _enemy.defense, intent)
 		_enemy.hp -= dmg
+		_enemy_sprite.modulate = Color(3.0, 3.0, 3.0)
+		var flash := create_tween()
+		flash.tween_property(_enemy_sprite, "modulate", Color(1, 1, 1), 0.1)
+		_spawn_damage_digit(dmg, false)
 		_refresh_enemy_ui()
 		await _say([{"speaker": "", "text": "You strike. %s takes %d damage." % [_enemy.display_name, dmg]}])
 	if _enemy.is_dead():
@@ -327,9 +345,25 @@ func _resolve_fight() -> void:
 		GameState.add_kill()
 		GameState.player_stats["gold"] = int(GameState.player_stats["gold"]) + 2
 		await _say([{"speaker": "", "text": "%s fades into soft light. You feel colder." % _enemy.display_name}])
+		var fade := create_tween()
+		fade.tween_property(_enemy_sprite, "modulate:a", 0.0, 0.5)
+		await fade.finished
 		_end_battle()
 	else:
 		_enemy_turn()
+
+func _spawn_damage_digit(amount: int, miss: bool) -> void:
+	var digit := Label.new()
+	digit.text = "MISS" if miss else "-%d" % amount
+	digit.add_theme_font_size_override("font_size", 16)
+	digit.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6) if miss else Color(1.0, 0.2, 0.2))
+	digit.position = _enemy_sprite.position + Vector2(-10, -16)
+	add_child(digit)
+	var t := create_tween()
+	t.set_parallel(true)
+	t.tween_property(digit, "position:y", digit.position.y - 12.0, 0.6)
+	t.tween_property(digit, "modulate:a", 0.0, 0.6)
+	t.chain().tween_callback(digit.queue_free)
 
 func _enemy_turn() -> void:
 	var line: String = _enemy.attack_lines[randi() % _enemy.attack_lines.size()]
@@ -368,7 +402,6 @@ func _refresh_enemy_ui() -> void:
 	_name_label.text = _enemy.display_name
 	_name_label.add_theme_color_override("font_color", Color.YELLOW if _mood >= _enemy.spare_after_acts else Color.WHITE)
 	_hp_label.text = "%d/%d" % [_enemy.hp, _enemy.max_hp]
-	_hp_bar.size.x = 16.0 * float(_enemy.hp) / float(_enemy.max_hp)
 
 func _refresh_player_ui() -> void:
 	var hp := int(GameState.player_stats["hp"])
@@ -381,6 +414,10 @@ func _on_player_hit() -> void:
 	Audio.play_sfx("hurt")
 	GameState.change_hp(-1)
 	_refresh_player_ui()
+	var shake := create_tween()
+	shake.tween_property(_dodge_box, "position", Vector2(2, 0), 0.05)
+	shake.tween_property(_dodge_box, "position", Vector2(-2, 0), 0.05)
+	shake.tween_property(_dodge_box, "position", Vector2.ZERO, 0.1)
 
 func _say(lines: Array[Dictionary]) -> void:
 	_text.open(lines, true)
