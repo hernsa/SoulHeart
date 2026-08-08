@@ -2,6 +2,11 @@ extends Node2D
 
 const MENU_GRID := [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]
 const FLEE_CHANCE := 0.5
+const SUBMENU_BOXES := {
+	"ACT": Rect2(250, 385, 152, 44),
+	"ITEM": Rect2(250, 385, 292, 80),
+	"MERCY": Rect2(250, 385, 152, 80),
+}
 
 var _enemy: EnemyStats
 var _state := BattleState.new()
@@ -12,6 +17,7 @@ var _menu_index := 0
 var _submenu_open := false
 var _submenu_index := 0
 var _submenu_context := ""
+var _submenu_items: Array[String] = []
 var _fight_bar := FightBar.new()
 var _fight_bar_ui: Control
 var _fight_marker: ColorRect
@@ -113,14 +119,27 @@ func _build_menu() -> void:
 	_menu.visible = false
 	_update_menu_colors()
 
+func _submenu_pos(i: int) -> Vector2:
+	match _submenu_context:
+		"ACT":
+			return Vector2(276 + (i % 2) * 70, 413 + int(i / 2) * 30)
+		"ITEM":
+			return Vector2(276 + (i % 4) * 70, 413 + int(i / 4) * 30)
+		_:
+			return Vector2(276, 413 + i * 30)
+
 func _render_menu_labels() -> void:
 	for child in _menu.get_children():
 		child.queue_free()
-	for i in _menu_items.size():
+	var items: Array[String] = _submenu_items if _submenu_open else _menu_items
+	for i in items.size():
 		var l := Label.new()
-		l.text = _menu_items[i]
+		l.text = items[i]
 		l.add_theme_font_size_override("font_size", 16)
-		l.position = Vector2(432 + MENU_GRID[i].x * 90, 413 + MENU_GRID[i].y * 30)
+		if _submenu_open:
+			l.position = _submenu_pos(i)
+		else:
+			l.position = Vector2(432 + MENU_GRID[i].x * 90, 413 + MENU_GRID[i].y * 30)
 		l.name = "item_%d" % i
 		_menu.add_child(l)
 	_menu_cursor = Sprite2D.new()
@@ -129,16 +148,16 @@ func _render_menu_labels() -> void:
 
 func _update_menu_colors() -> void:
 	var idx := _submenu_index if _submenu_open else _menu_index
-	for i in _menu_items.size():
+	var count: int = _submenu_items.size() if _submenu_open else _menu_items.size()
+	for i in count:
 		var l := _menu.get_node("item_%d" % i) as Label
 		if l == null:
 			continue
 		l.add_theme_color_override("font_color", Color.WHITE if i == idx else Color(1, 1, 1, 0.5))
 	if _menu_cursor == null:
 		return
-	var cl := _menu.get_node("item_%d" % idx) as Label
-	if cl:
-		_menu_cursor.position = cl.position + Vector2(-14, 0)
+	var target: Vector2 = _submenu_pos(idx) if _submenu_open else Vector2(432 + MENU_GRID[idx].x * 90, 413 + MENU_GRID[idx].y * 30)
+	_menu_cursor.position = target + Vector2(-14, 0)
 
 func _build_fight_bar() -> void:
 	_fight_bar_ui = Control.new()
@@ -184,8 +203,10 @@ func _handle_menu_input() -> void:
 	elif Input.is_action_just_pressed("move_right"):
 		_menu_index = _move_in_grid(prev, Vector2i(1, 0))
 	if _menu_index != prev:
+		Audio.play_sfx("select")
 		_update_menu_colors()
 	if Input.is_action_just_pressed("confirm"):
+		Audio.play_sfx("confirm")
 		_choose()
 
 func _move_in_grid(current: int, delta_grid: Vector2i) -> int:
@@ -225,30 +246,38 @@ func _open_submenu(items: Array[String], context: String) -> void:
 	_submenu_context = context
 	_submenu_open = true
 	_submenu_index = 0
-	_menu_items = items
+	_submenu_items = items
+	var box: Rect2 = SUBMENU_BOXES[context]
+	_menu_box.position = box.position
+	_menu_box.size = box.size
 	_render_menu_labels()
 	_menu.visible = true
 	_update_menu_colors()
+	Audio.play_sfx("select")
 
 func _handle_submenu_input() -> void:
 	if Input.is_action_just_pressed("move_up") or Input.is_action_just_pressed("move_left"):
-		_submenu_index = clampi(_submenu_index - 1, 0, _menu_items.size() - 1)
+		_submenu_index = clampi(_submenu_index - 1, 0, _submenu_items.size() - 1)
+		Audio.play_sfx("select")
 		_update_menu_colors()
 	elif Input.is_action_just_pressed("move_down") or Input.is_action_just_pressed("move_right"):
-		_submenu_index = clampi(_submenu_index + 1, 0, _menu_items.size() - 1)
+		_submenu_index = clampi(_submenu_index + 1, 0, _submenu_items.size() - 1)
+		Audio.play_sfx("select")
 		_update_menu_colors()
 	elif Input.is_action_just_pressed("confirm"):
+		Audio.play_sfx("confirm")
 		_submenu_open = false
 		_menu.visible = false
 		_resolve_submenu()
 	elif Input.is_action_just_pressed("cancel"):
+		Audio.play_sfx("cancel")
 		_submenu_open = false
 		_menu.visible = false
 		_enter_player_turn()
 
 func _resolve_submenu() -> void:
 	_state.transition(BattleState.Phase.ENEMY_TURN)
-	var choice: String = _menu_items[_submenu_index]
+	var choice: String = _submenu_items[_submenu_index]
 	match _submenu_context:
 		"ACT":
 			var act: Dictionary = _enemy.act_by_label(choice)
@@ -259,6 +288,7 @@ func _resolve_submenu() -> void:
 				await _say([{"speaker": "", "text": "Your pockets are empty."}])
 			else:
 				var item: Dictionary = GameState.use_item(_submenu_index)
+				Audio.play_sfx("heal")
 				await _say([{"speaker": "", "text": "You used %s. It hums warmly." % item.get("name", "it")}])
 				_refresh_player_ui()
 		"MERCY":
