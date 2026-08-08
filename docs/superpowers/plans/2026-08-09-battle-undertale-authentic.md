@@ -664,11 +664,11 @@ func show_telegraph(duration: float) -> void:
 	await get_tree().create_timer(duration).timeout
 	frame.queue_free()
 ```
-Replace the hit check at ~line 69 to track velocity and use rules:
+Replace the hit check at ~line 69 to track velocity and use rules. Velocity must be in px/s — `heart_vel` divided by `delta` — otherwise at 60fps the heart's per-frame displacement (~2.67 px) is below the 8.0 threshold and BLUE never triggers while ORANGE triggers even at full speed (review finding, T5 fix):
 ```gdscript
 var last_heart_pos := heart.position
 # ... in the collision loop:
-var heart_vel := heart.position - last_heart_pos
+var heart_vel := (heart.position - last_heart_pos) / delta
 last_heart_pos = heart.position
 for b in bullets:
 	if b.dead():
