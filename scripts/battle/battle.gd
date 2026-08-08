@@ -108,6 +108,7 @@ func _build_ui() -> void:
 	add_child(_dodge_box)
 	_dodge_box.set_active(false)
 	_dodge_box.player_hit.connect(_on_player_hit)
+	_dodge_box.heal_requested.connect(_on_heal_collected)
 	_text = load("res://scripts/dialogue/dialogue_ui.gd").new()
 	add_child(_text)
 
@@ -371,8 +372,8 @@ func _enemy_turn() -> void:
 	_dodge_box.set_active(true)
 	for i in _enemy.patterns.size():
 		var pattern: Dictionary = _enemy.patterns[i]
-		if bool(pattern.get("telegraph", false)) and _dodge_box.has_method("show_telegraph"):
-			await _dodge_box.call("show_telegraph", 0.6)
+		if bool(pattern.get("telegraph", false)):
+			await _dodge_box.show_telegraph(0.6)
 		_dodge_box.spawn_patterns(BulletPatterns.make(pattern, _dodge_box.heart_position()))
 		var frames := 0
 		while _dodge_box.has_bullets() and frames < 60 * 15:
@@ -423,6 +424,11 @@ func _on_player_hit() -> void:
 	shake.tween_property(_dodge_box, "position", Vector2(2, 0), 0.05)
 	shake.tween_property(_dodge_box, "position", Vector2(-2, 0), 0.05)
 	shake.tween_property(_dodge_box, "position", Vector2.ZERO, 0.1)
+
+func _on_heal_collected(amount: int) -> void:
+	GameState.change_hp(amount)
+	Audio.play_sfx("heal")
+	_refresh_player_ui()
 
 func _say(lines: Array[Dictionary]) -> void:
 	_text.open(lines, true)

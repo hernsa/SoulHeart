@@ -132,3 +132,36 @@ func test_inactive_box_ignores_process() -> void:
 	TestHelper.eq(box.heart.position, Vector2(317, 317), "heart unmoved while inactive")
 	TestHelper.is_true(box.has_bullets(), "bullets untouched while inactive")
 	box.free()
+
+func test_blue_bullet_rule() -> void:
+	var box := DodgeBox.new()
+	box._ready()
+	var b := Bullet.new()
+	b.setup({"pos": box.heart_position(), "vel": Vector2.ZERO, "type": Bullet.Type.PELLET,
+			"rule": Bullet.Rule.BLUE})
+	TestHelper.is_true(not box._bullet_damages(b, Vector2.ZERO), "blue + still = safe")
+	TestHelper.is_true(box._bullet_damages(b, Vector2(10, 0)), "blue + moving = damage")
+	b.free()
+	box.free()
+
+func test_orange_bullet_rule() -> void:
+	var box := DodgeBox.new()
+	box._ready()
+	var b := Bullet.new()
+	b.setup({"pos": box.heart_position(), "vel": Vector2.ZERO, "type": Bullet.Type.PELLET,
+			"rule": Bullet.Rule.ORANGE})
+	TestHelper.is_true(not box._bullet_damages(b, Vector2(10, 0)), "orange + moving = safe")
+	TestHelper.is_true(box._bullet_damages(b, Vector2.ZERO), "orange + still = damage")
+	b.free()
+	box.free()
+
+func test_gray_and_green_never_damage() -> void:
+	var box := DodgeBox.new()
+	box._ready()
+	for rule in [Bullet.Rule.GRAY, Bullet.Rule.GREEN]:
+		var b := Bullet.new()
+		b.setup({"pos": box.heart_position(), "vel": Vector2.ZERO, "type": Bullet.Type.PELLET,
+				"rule": rule})
+		TestHelper.is_true(not box._bullet_damages(b, Vector2(50, 0)), "no damage for rule")
+		b.free()
+	box.free()

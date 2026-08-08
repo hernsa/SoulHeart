@@ -2,6 +2,7 @@ class_name DodgeBox
 extends Control
 
 signal player_hit
+signal heal_requested(amount: int)
 
 const HEART_SPEED := 160.0
 const BOX_RECT := Rect2(32, 250, 570, 135)
@@ -15,6 +16,7 @@ var bullets: Array = []
 var invuln := 0.0
 var active := false
 var _stagger := 0.0
+var last_heart_pos := HEART_START
 
 func _ready() -> void:
 	size = Vector2(640, 480)
@@ -81,21 +83,58 @@ func _process(delta: float) -> void:
 		return
 	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	heart.position = CombatMath.clamp_to_box_inset(heart.position + input * HEART_SPEED * delta, BOX_RECT, 4.0, 4.0, -16.0, -16.0)
-	var hit := false
+	var heart_vel := heart.position - last_heart_pos
+	last_heart_pos = heart.position
 	var hit_bullet: Bullet = null
 	for b in bullets:
-		if CombatMath.circle_hit(heart.position, 4.0, b.position, b.size):
-			hit = true
+		if b.dead():
+			continue
+		var hit := CombatMath.circle_hit(heart.position, 4.0, b.position, b.size)
+		if hit and _bullet_damages(b, heart_vel):
 			hit_bullet = b
 			break
-	if hit and invuln <= 0.0:
-		invuln = INVULN_TIME
-		_stagger = STAGGER_TIME
-		if hit_bullet:
-			var away := (heart.position - hit_bullet.position).normalized()
-			heart.position = CombatMath.clamp_to_box(heart.position + away * KNOCKBACK, BOX_RECT)
-		player_hit.emit()
+		elif hit and b.rule == Bullet.Rule.GREEN:
+			heal_requested.emit(2)
+			b.life = 0.0
+	if hit_bullet != null and invuln <= 0.0:
+		_on_hit()
+		var away := (heart.position - hit_bullet.position).normalized()
+		heart.position = CombatMath.clamp_to_box(heart.position + away * KNOCKBACK, BOX_RECT)
 	_remove_dead()
+
+func _on_hit() -> void:
+	invuln = INVULN_TIME
+	_stagger = STAGGER_TIME
+	player_hit.emit()
+
+func _bullet_damages(b: Bullet, heart_vel: Vector2) -> bool:
+	match b.rule:
+		Bullet.Rule.GRAY:
+			return false
+		Bullet.Rule.GREEN:
+			return false
+		Bullet.Rule.BLUE:
+			return heart_vel.length() > 8.0
+		Bullet.Rule.ORANGE:
+			return heart_vel.length() <= 8.0
+	return true
+
+func show_telegraph(duration: float) -> void:
+	Audio.play_sfx("warn")
+	var frame := ColorRect.new()
+	frame.color = Color(1, 0, 0, 0.25)
+	frame.position = BOX_RECT.position + Vector2(40, 20)
+	frame.size = BOX_RECT.size - Vector2(80, 40)
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(frame)
+	var label := Label.new()
+	label.text = "!"
+	label.add_theme_font_size_override("font_size", 32)
+	label.add_theme_color_override("font_color", Color(1, 1, 1))
+	label.position = frame.position + frame.size / 2 - Vector2(10, 24)
+	frame.add_child(label)
+	await get_tree().create_timer(duration).timeout
+	frame.queue_free()
 
 func _remove_dead() -> void:
 	var keep: Array = []
