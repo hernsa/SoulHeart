@@ -321,7 +321,7 @@ func _on_player_hit() -> void:
 	_refresh_player_ui()
 
 func _say(lines: Array[Dictionary]) -> void:
-	_text.open(lines)
+	_text.open(lines, true)
 	await _text.finished
 
 func _end_battle() -> void:

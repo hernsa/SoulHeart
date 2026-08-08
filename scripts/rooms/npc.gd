@@ -1,18 +1,13 @@
 extends Area2D
 
-@export var dialogue_file := ""
+@export var dialogue_file: String = ""
 
-func _ready() -> void:
-	var shape := CollisionShape2D.new()
-	var circ := CircleShape2D.new()
-	circ.radius = 10.0
-	shape.shape = circ
-	add_child(shape)
-	body_entered.connect(_on_body_entered)
-
-func _on_body_entered(body: Node) -> void:
+func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
-		var lines := DialogueParser.parse_file(dialogue_file)
-		var ui = load("res://scripts/dialogue/dialogue_ui.gd").new()
+		var lines: Array = DialogueParser.parse_file(dialogue_file)
+		var ui: Node = load("res://scripts/dialogue/dialogue_ui.gd").new()
+		ui.layer = 10
 		get_tree().current_scene.add_child(ui)
 		ui.open(lines)
+		await ui.finished
+		ui.queue_free()
