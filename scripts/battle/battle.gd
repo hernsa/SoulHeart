@@ -369,12 +369,17 @@ func _enemy_turn() -> void:
 	var line: String = _enemy.attack_lines[randi() % _enemy.attack_lines.size()]
 	await _say([{"speaker": "", "text": line}])
 	_dodge_box.set_active(true)
-	for pattern in _enemy.patterns:
-		_dodge_box.spawn_patterns(BulletPatterns.make(pattern))
+	for i in _enemy.patterns.size():
+		var pattern: Dictionary = _enemy.patterns[i]
+		if bool(pattern.get("telegraph", false)) and _dodge_box.has_method("show_telegraph"):
+			await _dodge_box.call("show_telegraph", 0.6)
+		_dodge_box.spawn_patterns(BulletPatterns.make(pattern, _dodge_box.heart_position()))
 		var frames := 0
 		while _dodge_box.has_bullets() and frames < 60 * 15:
 			await get_tree().process_frame
 			frames += 1
+		if i < _enemy.patterns.size() - 1:
+			await get_tree().create_timer(0.8).timeout
 	_dodge_box.set_active(false)
 	_refresh_player_ui()
 	if int(GameState.player_stats["hp"]) <= 0:

@@ -46,7 +46,7 @@ func test_spawn_patterns_adds_bullets() -> void:
 	TestHelper.is_true(box.has_bullets(), "has bullets after spawn")
 	TestHelper.eq(box.bullets.size(), 1, "one bullet spawned")
 	TestHelper.eq(box.bullets[0].position, Vector2(240, 120), "bullet placed at given pos")
-	box.spawn_patterns(BulletPatterns.make({"type": "burst", "count": 3, "speed": 100.0}))
+	box.spawn_patterns(BulletPatterns.make({"type": "burst", "count": 3, "speed": 100.0}, Vector2(317, 317)))
 	TestHelper.eq(box.bullets.size(), 4, "pattern output spawns more bullets")
 	box.free()
 
