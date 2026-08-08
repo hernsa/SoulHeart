@@ -3,10 +3,10 @@ class_name MapBuilder
 static func parse_layout(ascii: String) -> Dictionary:
 	return LayoutParser.parse(ascii)
 
-static func build_tilemap(grid: Array) -> TileMapLayer:
+static func build_tilemap(grid: Array, palette: Dictionary = {}) -> TileMapLayer:
 	var tml := TileMapLayer.new()
 	tml.name = "TileMapLayer"
-	tml.tile_set = GameTiles.build_tileset()
+	tml.tile_set = GameTiles.build_tileset(palette)
 	for y in grid.size():
 		var row: Array = grid[y]
 		for x in row.size():

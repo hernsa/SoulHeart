@@ -21,7 +21,10 @@ const LAYOUT := """
 func _ready() -> void:
 	var parsed := MapBuilder.parse_layout(LAYOUT)
 	var start := _spawn_point(parsed["player_start"]) + Vector2(8, 8)
-	add_child(MapBuilder.build_tilemap(parsed["grid"]))
+	add_child(MapBuilder.build_tilemap(parsed["grid"], GameTiles.SNOW_PALETTE))
+	var tint := CanvasModulate.new()
+	tint.color = Color(0.85, 0.9, 1.0)
+	add_child(tint)
 	_spawn_player(start, parsed["grid"])
 	_spawn_sign(Vector2(18 * 16, 4 * 16))
 	_spawn_door(parsed["doors"])
