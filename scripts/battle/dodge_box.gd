@@ -28,7 +28,7 @@ func _ready() -> void:
 	panel.size = BOX_RECT.size
 	add_child(panel)
 	heart = Sprite2D.new()
-	heart.texture = Sprites.heart_texture()
+	heart.texture = Sprites.soul_texture("Red")
 	heart.position = HEART_START
 	add_child(heart)
 	visible = false

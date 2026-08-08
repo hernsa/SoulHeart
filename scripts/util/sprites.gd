@@ -1,28 +1,16 @@
 class_name Sprites
 
-static func heart_texture() -> Texture2D:
-	var img := Image.create(14, 12, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	var rows := [
-		"....XXXXXX....",
-		"....XXXXXX....",
-		"..XXXXXXXXXX..",
-		"..XXXXXXXXXX..",
-		"XXXXXXXXXXXXXX",
-		"XXXXXXXXXXXXXX",
-		"XXXXXXXXXXXXXX",
-		"XXXXXXXXXXXXXX",
-		"..XXXXXXXXXX..",
-		"..XXXXXXXXXX..",
-		"....XXXXXX....",
-		"....XXXXXX...."
-	]
-	for y in rows.size():
-		for x in 14:
-			if rows[y][x] == "X":
-				var is_edge := y == 0 or y == rows.size() - 1 or x == 0 or x == 13
-				img.set_pixel(x, y, Color(0.45, 0.05, 0.05) if is_edge else Color(0.85, 0.15, 0.15))
-	return ImageTexture.create_from_image(img)
+static var _soul_cache := {}
+
+static func soul_texture(color_name: String) -> Texture2D:
+	if _soul_cache.has(color_name):
+		return _soul_cache[color_name]
+	var path := "res://assets/sprites/" + color_name + "_SOUL_sprite.png"
+	var tex := load(path) as Texture2D
+	if tex == null:
+		tex = load("res://assets/sprites/Red_SOUL_sprite.png") as Texture2D
+	_soul_cache[color_name] = tex
+	return tex
 
 static func player_texture() -> Texture2D:
 	var img := Image.create(8, 12, false, Image.FORMAT_RGBA8)

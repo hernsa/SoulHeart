@@ -152,7 +152,7 @@ func _render_menu_labels() -> void:
 		l.name = "item_%d" % i
 		_menu.add_child(l)
 	_menu_cursor = Sprite2D.new()
-	_menu_cursor.texture = Sprites.heart_texture()
+	_menu_cursor.texture = Sprites.soul_texture("Red")
 	_menu.add_child(_menu_cursor)
 
 func _update_menu_colors() -> void:
