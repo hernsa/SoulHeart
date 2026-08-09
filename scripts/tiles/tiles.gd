@@ -61,7 +61,7 @@ static func _draw_tree(img: Image, c: Color) -> void:
 			img.set_pixel(TREE_BLOCK_X + x, y, Color(0, 0, 0, 0))
 	for y in 32:
 		for x in 32:
-			var px := Vector2(x - 16.0, y - 24.0)
+			var px := Vector2(x - 16.0, y - 20.0)
 			var d := px.length()
 			if y >= 20 and y <= 31 and x >= 13 and x <= 18:
 				img.set_pixel(TREE_BLOCK_X + x, y, trunk)

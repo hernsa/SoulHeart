@@ -43,6 +43,32 @@ func test_map_builder_solid_bodies() -> void:
 	TestHelper.eq(totals, 3, "exactly three solid bodies")
 	tml.free()
 
+func test_tree_prop_survives_neighbor_cells() -> void:
+	var grid := [
+		[GameTiles.Tile.GRASS, GameTiles.Tile.GRASS, GameTiles.Tile.GRASS, GameTiles.Tile.GRASS],
+		[GameTiles.Tile.GRASS, GameTiles.Tile.GRASS, GameTiles.Tile.TREE, GameTiles.Tile.GRASS],
+		[GameTiles.Tile.GRASS, GameTiles.Tile.GRASS, GameTiles.Tile.GRASS, GameTiles.Tile.GRASS],
+	]
+	var tml := MapBuilder.build_tilemap(grid)
+	TestHelper.eq(tml.get_cell_atlas_coords(Vector2i(2, 1)), Vector2i(6, 1), "tree base keeps (6,1)")
+	TestHelper.eq(tml.get_cell_atlas_coords(Vector2i(3, 1)), Vector2i(7, 1), "tree base-right keeps (7,1)")
+	TestHelper.eq(tml.get_cell_atlas_coords(Vector2i(2, 0)), Vector2i(6, 0), "tree top keeps (6,0)")
+	TestHelper.eq(tml.get_cell_atlas_coords(Vector2i(3, 0)), Vector2i(7, 0), "tree top-right keeps (7,0)")
+	tml.free()
+
+func test_tree_top_skipped_over_wall() -> void:
+	var grid := [
+		[GameTiles.Tile.WALL, GameTiles.Tile.WALL, GameTiles.Tile.WALL, GameTiles.Tile.WALL],
+		[GameTiles.Tile.GRASS, GameTiles.Tile.GRASS, GameTiles.Tile.TREE, GameTiles.Tile.GRASS],
+		[GameTiles.Tile.GRASS, GameTiles.Tile.GRASS, GameTiles.Tile.GRASS, GameTiles.Tile.GRASS],
+	]
+	var tml := MapBuilder.build_tilemap(grid)
+	TestHelper.eq(tml.get_cell_atlas_coords(Vector2i(2, 0)), Vector2i(3, 0), "wall above tree base stays visible")
+	TestHelper.eq(tml.get_cell_atlas_coords(Vector2i(3, 0)), Vector2i(3, 0), "wall above tree right stays visible")
+	TestHelper.eq(tml.get_cell_atlas_coords(Vector2i(2, 1)), Vector2i(6, 1), "tree base still placed")
+	TestHelper.eq(tml.get_cell_atlas_coords(Vector2i(3, 1)), Vector2i(7, 1), "tree base-right still placed")
+	tml.free()
+
 func test_tree_has_canopy_and_trunk() -> void:
 	var img := GameTiles._atlas_texture({}).get_image()
 	var brown := Color(0.42, 0.26, 0.12)
