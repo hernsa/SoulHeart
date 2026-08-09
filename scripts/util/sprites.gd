@@ -251,3 +251,18 @@ static func battle_enemy_texture(id: String, hurt: bool) -> Texture2D:
 		tex = _enemy_idle_texture(id)
 	_enemy_cache[key] = tex
 	return tex
+
+static var _frisk_cache: Dictionary = {}
+
+static func player_frisk_texture(frame: int) -> Texture2D:
+	if _frisk_cache.has(frame):
+		return _frisk_cache[frame]
+	var img: Image = Image.load_from_file("res://assets/sprites/overworld/frisk.png")
+	var cell: Rect2i = Rect2i((frame % 2) * 19, int(frame / 2) * 29, 19, 29)
+	var out: Image = Image.create(19, 29, false, Image.FORMAT_RGBA8)
+	for y in 29:
+		for x in 19:
+			out.set_pixel(x, y, img.get_pixel(cell.position.x + x, cell.position.y + y))
+	var tex: Texture2D = ImageTexture.create_from_image(out)
+	_frisk_cache[frame] = tex
+	return tex

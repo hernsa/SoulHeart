@@ -1,15 +1,32 @@
 extends RefCounted
 
 
-func test_player_frames_exist() -> void:
-	TestHelper.is_true(Sprites.player_texture_frame(0) != null, "frame 0 exists")
-	TestHelper.is_true(Sprites.player_texture_frame(1) != null, "frame 1 exists")
+func test_player_uses_frisk_rip() -> void:
+	for frame in 4:
+		var tex := Sprites.player_frisk_texture(frame)
+		TestHelper.is_true(tex != null, "frisk frame " + str(frame) + " loads")
+		if tex != null:
+			var img := tex.get_image()
+			TestHelper.eq(img.get_width(), 19, "frame width 19")
+			TestHelper.eq(img.get_height(), 29, "frame height 29")
 
 
-func test_player_frames_differ() -> void:
-	var a: Image = Sprites.player_texture_frame(0).get_image()
-	var b: Image = Sprites.player_texture_frame(1).get_image()
-	TestHelper.is_true(a.get_data() != b.get_data(), "walk frames differ")
+func test_frames_are_distinct() -> void:
+	var datas: Array = []
+	for frame in 4:
+		datas.append(Sprites.player_frisk_texture(frame).get_image().get_data())
+	var distinct: int = 0
+	var seen: Array = []
+	for i in datas.size():
+		var is_new: bool = true
+		for j in seen.size():
+			if datas[i] == seen[j]:
+				is_new = false
+				break
+		if is_new:
+			seen.append(datas[i])
+			distinct += 1
+	TestHelper.is_true(distinct >= 3, "at least 3 distinct directions: " + str(distinct))
 
 
 func test_aux_textures_exist() -> void:
