@@ -26,3 +26,14 @@ func test_soul_texture_is_ripped_heart() -> void:
 func test_soul_texture_fallback() -> void:
 	var tex := Sprites.soul_texture("Nonexistent")
 	TestHelper.is_true(tex != null, "fallback loads red soul")
+
+func test_battle_enemy_textures() -> void:
+	for id in ["froggit", "whimsun", "moldsmal", "loox", "vegetoid", "migosp"]:
+		var idle := Sprites.battle_enemy_texture(id, false)
+		TestHelper.is_true(idle != null, "enemy idle loads: " + id)
+		var hurt := Sprites.battle_enemy_texture(id, true)
+		TestHelper.is_true(hurt != null, "enemy hurt loads: " + id)
+		if id != "moldsmal":
+			TestHelper.is_true(hurt != idle, "hurt differs from idle: " + id)
+		else:
+			TestHelper.is_true(hurt == idle, "moldsmal has no hurt rip -> idle fallback")

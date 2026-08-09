@@ -215,3 +215,39 @@ static func arrow_texture() -> Texture2D:
 			if fill:
 				img.set_pixel(x, y, Color.WHITE)
 	return ImageTexture.create_from_image(img)
+
+static var _enemy_cache := {}
+static var _enemy_frames := {
+	"froggit": 38,
+	"whimsun": 65,
+	"moldsmal": 44,
+	"loox": 9,
+	"vegetoid": 5,
+	"migosp": 19,
+	"napstablook": 2,
+}
+
+static func _enemy_idle_texture(id: String) -> AnimatedTexture:
+	var anim := AnimatedTexture.new()
+	var count: int = _enemy_frames.get(id, 0)
+	anim.frames = count
+	var frame_duration := 1.0 / 15.0
+	for i in count:
+		var path := "res://assets/sprites/enemies/frames/" + id + "/" + id + "_%03d.png" % i
+		anim.set_frame_texture(i, load(path) as Texture2D)
+		anim.set_frame_duration(i, frame_duration)
+	return anim
+
+static func battle_enemy_texture(id: String, hurt: bool) -> Texture2D:
+	var key := id + ("_hurt" if hurt else "_idle")
+	if _enemy_cache.has(key):
+		return _enemy_cache[key]
+	var tex: Texture2D
+	if hurt:
+		tex = load("res://assets/sprites/enemies/" + id + "_hurt.png") as Texture2D
+		if tex == null:
+			tex = battle_enemy_texture(id, false)
+	else:
+		tex = _enemy_idle_texture(id)
+	_enemy_cache[key] = tex
+	return tex
