@@ -2,6 +2,8 @@ extends Node2D
 
 const ROOM_PATH := "res://scenes/rooms/DrizzleFields.tscn"
 
+const ENCOUNTER_ENEMIES: Array[String] = ["froggit", "whimsun", "vegetoid", "loox"]
+
 const LAYOUT := """
 ########################################
 #....P....TT..............TT......T....#
@@ -85,9 +87,10 @@ func _spawn_save_points(points: Array) -> void:
 		add_child(sp)
 
 func _spawn_encounters(points: Array) -> void:
-	for p in points:
+	for i in points.size():
 		var enc = load("res://scripts/rooms/encounter.gd").new()
-		enc.position = p
+		enc.enemy_id = ENCOUNTER_ENEMIES[i % ENCOUNTER_ENEMIES.size()]
+		enc.position = points[i]
 		add_child(enc)
 
 func _spawn_door(doors: Array) -> void:

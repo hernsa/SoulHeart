@@ -2,16 +2,18 @@ extends Node2D
 
 const ROOM_PATH := "res://scenes/rooms/GrumbleWoods.tscn"
 
+const ENCOUNTER_ENEMIES: Array[String] = ["migosp", "loox"]
+
 const LAYOUT := """
 ##############################
 #......T...........T.........#
-#..T...............T......D..#
+#..T..E............T......D..#
 #........T......T............#
 #..T................T....T...#
 #...........T....T...........#
 #.................T..........#
 #...........T...........T....#
-#..T.......T.................#
+#..T.......T......E..........#
 #...................T........#
 #........T........T..........#
 #..................T....T....#
@@ -27,6 +29,7 @@ func _ready() -> void:
 	add_child(tint)
 	_spawn_player(start, parsed["grid"])
 	_spawn_sign(Vector2(18 * 16, 4 * 16))
+	_spawn_encounters(parsed["encounters"])
 	_spawn_door(parsed["doors"])
 	GameState.set_flag("current_room", ROOM_PATH)
 	Audio.play_music("grumble")
@@ -58,6 +61,13 @@ func _spawn_sign(pos: Vector2) -> void:
 	spr.scale = Vector2(2, 2)
 	sign_npc.add_child(spr)
 	add_child(sign_npc)
+
+func _spawn_encounters(points: Array) -> void:
+	for i in points.size():
+		var enc = load("res://scripts/rooms/encounter.gd").new()
+		enc.enemy_id = ENCOUNTER_ENEMIES[i % ENCOUNTER_ENEMIES.size()]
+		enc.position = points[i]
+		add_child(enc)
 
 func _spawn_door(doors: Array) -> void:
 	if doors.is_empty():

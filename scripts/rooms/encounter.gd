@@ -10,6 +10,15 @@ func _ready() -> void:
 	shape.shape = circ
 	add_child(shape)
 	body_entered.connect(_on_body_entered)
+	var spr := Sprite2D.new()
+	spr.name = "EnemySprite"
+	spr.texture = Sprites.battle_enemy_texture(enemy_id, false)
+	spr.scale = Vector2(0.5, 0.5)
+	spr.position = Vector2(0, -26)
+	add_child(spr)
+	var bob := create_tween().set_loops()
+	bob.tween_property(spr, "position:y", -30.0, 0.6).set_trans(Tween.TRANS_SINE)
+	bob.tween_property(spr, "position:y", -26.0, 0.6).set_trans(Tween.TRANS_SINE)
 
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("player") and not used:
