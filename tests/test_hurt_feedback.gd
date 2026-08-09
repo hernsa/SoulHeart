@@ -10,10 +10,13 @@ func _make_box() -> DodgeBox:
 	box._ready()
 	return box
 
+func _hit_bullet(box: DodgeBox) -> Dictionary:
+	return {"pos": box.heart_position() + Vector2(3, 0), "vel": Vector2.ZERO, "life": 4.0}
+
 func test_invuln_time_is_one_second() -> void:
 	var box := _make_box()
 	box.set_active(true)
-	box.spawn_patterns([{"pos": Vector2(317, 317), "vel": Vector2.ZERO, "life": 4.0}])
+	box.spawn_patterns([_hit_bullet(box)])
 	box._process(0.016)
 	TestHelper.is_true(box.invuln > 0.9, "hit grants ~1s invuln")
 	box.free()
@@ -22,7 +25,7 @@ func test_heart_flickers_during_invuln() -> void:
 	_ensure_actions()
 	var box := _make_box()
 	box.set_active(true)
-	box.spawn_patterns([{"pos": Vector2(317, 317), "vel": Vector2.ZERO, "life": 4.0}])
+	box.spawn_patterns([_hit_bullet(box)])
 	box.heart.visible = true
 	box._process(0.016)
 	TestHelper.is_true(box.invuln > 0.0, "hit happened")
@@ -39,16 +42,16 @@ func test_knockback_moves_heart_away_from_bullet() -> void:
 	_ensure_actions()
 	var box := _make_box()
 	box.set_active(true)
-	box.spawn_patterns([{"pos": Vector2(315, 317), "vel": Vector2.ZERO, "life": 4.0}])
+	box.spawn_patterns([{"pos": box.heart_position() + Vector2(-4, 0), "vel": Vector2.ZERO, "life": 4.0}])
 	box._process(0.016)
-	TestHelper.is_true(box.heart.position.x > 315.0, "heart pushed away from bullet")
+	TestHelper.is_true(box.heart.position.x > 319.0, "heart pushed away from bullet")
 	box.free()
 
 func test_stagger_freezes_heart_input() -> void:
 	_ensure_actions()
 	var box := _make_box()
 	box.set_active(true)
-	box.spawn_patterns([{"pos": Vector2(317, 317), "vel": Vector2.ZERO, "life": 4.0}])
+	box.spawn_patterns([_hit_bullet(box)])
 	box._process(0.016)
 	var before_pos := box.heart.position
 	Input.action_press("move_right")
@@ -61,7 +64,7 @@ func test_no_double_hit_during_full_invuln() -> void:
 	_ensure_actions()
 	var box := _make_box()
 	box.set_active(true)
-	box.spawn_patterns([{"pos": Vector2(317, 317), "vel": Vector2.ZERO, "life": 4.0}])
+	box.spawn_patterns([_hit_bullet(box)])
 	var counter := {"hits": 0}
 	box.player_hit.connect(func() -> void: counter["hits"] += 1)
 	for i in 15:

@@ -5,8 +5,9 @@ signal player_hit
 signal heal_requested(amount: int)
 
 const HEART_SPEED := 160.0
-const BOX_RECT := Rect2(32, 250, 570, 135)
-const HEART_START := Vector2(317, 317)
+const BOX_RECT := Rect2(162, 220, 315, 170)
+const BOX_INNER := Rect2(167, 225, 305, 160)
+const HEART_START := Vector2(319, 305)
 const INVULN_TIME := 1.0
 const STAGGER_TIME := 0.2
 const KNOCKBACK := 6.0
@@ -20,20 +21,26 @@ var last_heart_pos := HEART_START
 
 func _ready() -> void:
 	size = Vector2(640, 480)
-	var panel := Panel.new()
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0, 0, 0, 1)
-	sb.set_border_width_all(1)
-	sb.border_color = Color.WHITE
-	panel.add_theme_stylebox_override("panel", sb)
-	panel.position = BOX_RECT.position
-	panel.size = BOX_RECT.size
-	add_child(panel)
+	_build_frame()
 	heart = Sprite2D.new()
 	heart.texture = Sprites.soul_texture("Red")
 	heart.position = HEART_START
 	add_child(heart)
 	visible = false
+
+func _build_frame() -> void:
+	var white := Color(1, 1, 1)
+	for rect in [
+			Rect2(BOX_RECT.position, Vector2(BOX_RECT.size.x, 5)),
+			Rect2(Vector2(BOX_RECT.position.x, BOX_RECT.end.y - 5), Vector2(BOX_RECT.size.x, 5)),
+			Rect2(BOX_RECT.position, Vector2(5, BOX_RECT.size.y)),
+			Rect2(Vector2(BOX_RECT.end.x - 5, BOX_RECT.position.y), Vector2(5, BOX_RECT.size.y))]:
+		var bar := ColorRect.new()
+		bar.color = white
+		bar.position = rect.position
+		bar.size = rect.size
+		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(bar)
 
 func set_active(a: bool) -> void:
 	active = a
@@ -82,7 +89,7 @@ func _process(delta: float) -> void:
 		_remove_dead()
 		return
 	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	heart.position = CombatMath.clamp_to_box_inset(heart.position + input * HEART_SPEED * delta, BOX_RECT, 4.0, 4.0, -16.0, -16.0)
+	heart.position = CombatMath.clamp_to_box(heart.position + input * HEART_SPEED * delta, BOX_INNER)
 	var heart_vel := (heart.position - last_heart_pos) / delta
 	last_heart_pos = heart.position
 	var hit_bullet: Bullet = null
@@ -99,7 +106,7 @@ func _process(delta: float) -> void:
 	if hit_bullet != null and invuln <= 0.0:
 		_on_hit()
 		var away := (heart.position - hit_bullet.position).normalized()
-		heart.position = CombatMath.clamp_to_box(heart.position + away * KNOCKBACK, BOX_RECT)
+		heart.position = CombatMath.clamp_to_box(heart.position + away * KNOCKBACK, BOX_INNER)
 	_remove_dead()
 
 func _on_hit() -> void:
