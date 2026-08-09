@@ -11,7 +11,14 @@ static func build_tilemap(grid: Array, palette: Dictionary = {}) -> TileMapLayer
 		var row: Array = grid[y]
 		for x in row.size():
 			var tile: int = row[x]
-			tml.set_cell(Vector2i(x, y), 0, Vector2i(tile, 0))
+			if tile == GameTiles.Tile.TREE:
+				tml.set_cell(Vector2i(x, y), 0, Vector2i(6, 1))
+				tml.set_cell(Vector2i(x + 1, y), 0, Vector2i(7, 1))
+				if y > 0:
+					tml.set_cell(Vector2i(x, y - 1), 0, Vector2i(6, 0))
+					tml.set_cell(Vector2i(x + 1, y - 1), 0, Vector2i(7, 0))
+			else:
+				tml.set_cell(Vector2i(x, y), 0, Vector2i(tile, 0))
 			if tile == GameTiles.Tile.TREE or tile == GameTiles.Tile.WALL:
 				_add_solid_body(tml, Vector2i(x, y))
 	return tml
