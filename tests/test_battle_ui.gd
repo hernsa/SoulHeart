@@ -33,3 +33,18 @@ func test_fight_buttons_load_rips() -> void:
 			TestHelper.eq(img.get_width(), 110, "button 110 wide: " + name)
 			TestHelper.eq(img.get_height(), 42, "button 42 tall: " + name)
 	battle.free()
+
+func test_menu_buttons_dim_unselected() -> void:
+	var battle := preload("res://scripts/battle/battle.gd").new()
+	battle._build_menu()
+	var fight: Sprite2D = battle.get_node("MenuButtons/FIGHT")
+	var act: Sprite2D = battle.get_node("MenuButtons/ACT")
+	var item: Sprite2D = battle.get_node("MenuButtons/ITEM")
+	TestHelper.eq(fight.modulate.a, 1.0, "FIGHT at full alpha when selected (index 0)")
+	TestHelper.eq(act.modulate.a, 0.5, "ACT dimmed when unselected")
+	TestHelper.eq(item.modulate.a, 0.5, "ITEM dimmed when unselected")
+	battle._menu_index = 1
+	battle._update_menu_colors()
+	TestHelper.eq(fight.modulate.a, 0.5, "FIGHT dimmed after moving selection away")
+	TestHelper.eq(act.modulate.a, 1.0, "ACT at full alpha after selection moves to index 1")
+	battle.free()

@@ -193,6 +193,12 @@ func _update_menu_colors() -> void:
 		if l == null:
 			continue
 		l.add_theme_color_override("font_color", Color.WHITE if i == idx else Color(1, 1, 1, 0.5))
+	var menu_names: Array[String] = ["FIGHT", "ACT", "ITEM", "MERCY"]
+	for i in menu_names.size():
+		var b := get_node_or_null("MenuButtons/" + menu_names[i]) as Sprite2D
+		if b == null:
+			continue
+		b.modulate = Color(1, 1, 1, 1.0 if i == _menu_index else 0.5)
 	if _menu_cursor == null:
 		return
 	var target: Vector2
