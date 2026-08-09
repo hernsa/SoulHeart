@@ -252,6 +252,30 @@ static func battle_enemy_texture(id: String, hurt: bool) -> Texture2D:
 	_enemy_cache[key] = tex
 	return tex
 
+static var _prop_cache: Dictionary = {}
+
+static func prop_texture(name: String) -> Texture2D:
+	if _prop_cache.has(name):
+		return _prop_cache[name]
+	var path := "res://assets/sprites/overworld/" + name
+	var tex := load(path) as Texture2D
+	_prop_cache[name] = tex
+	return tex
+
+static var _save_point_anim: AnimatedTexture
+
+static func save_point_texture() -> AnimatedTexture:
+	if _save_point_anim != null:
+		return _save_point_anim
+	var anim := AnimatedTexture.new()
+	anim.frames = 4
+	var frame_duration := 1.0 / 15.0
+	for i in 4:
+		anim.set_frame_texture(i, load("res://assets/sprites/overworld/frames/save_point/save_point_%03d.png" % i) as Texture2D)
+		anim.set_frame_duration(i, frame_duration)
+	_save_point_anim = anim
+	return anim
+
 static var _frisk_cache: Dictionary = {}
 
 static func player_frisk_texture(frame: int) -> Texture2D:

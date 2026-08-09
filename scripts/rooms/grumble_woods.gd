@@ -31,6 +31,7 @@ func _ready() -> void:
 	_spawn_sign(Vector2(18 * 16, 4 * 16))
 	_spawn_encounters(parsed["encounters"])
 	_spawn_door(parsed["doors"])
+	_spawn_props()
 	GameState.set_flag("current_room", ROOM_PATH)
 	Audio.play_music("grumble")
 	Audio.play_sfx("door_close")
@@ -50,17 +51,25 @@ func _spawn_player(start: Vector2, grid: Array) -> void:
 	var room := MapBuilder.room_pixel_size(grid)
 	cam.position = (room / 2.0).round()
 	add_child(cam)
-	cam.make_current()
+	if cam.is_inside_tree():
+		cam.make_current()
 
 func _spawn_sign(pos: Vector2) -> void:
 	var sign_npc = load("res://scripts/rooms/npc.gd").new()
 	sign_npc.dialogue_file = "res://dialogue/grumble_sign.dlg"
 	sign_npc.position = pos
-	var spr := Sprite2D.new()
-	spr.texture = Sprites.star_texture()
-	spr.scale = Vector2(2, 2)
-	sign_npc.add_child(spr)
+	sign_npc._spawn_sprite(Sprites.star_texture(), Vector2(2, 2))
 	add_child(sign_npc)
+
+func _spawn_props() -> void:
+	var spots: Array[Vector2] = [Vector2(48, 144), Vector2(240, 48), Vector2(352, 112), Vector2(416, 160)]
+	for i in spots.size():
+		var p := Sprite2D.new()
+		p.name = "Prop" + str(i)
+		p.texture = Sprites.prop_texture("golden_flowers.png" if i % 2 == 0 else "rock.png")
+		p.scale = Vector2(0.5, 0.5)
+		p.position = spots[i]
+		add_child(p)
 
 func _spawn_encounters(points: Array) -> void:
 	for i in points.size():
