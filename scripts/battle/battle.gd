@@ -48,7 +48,7 @@ func _ready() -> void:
 	Audio.play_music("battle")
 	_build_ui()
 	_enemy = EnemyLibrary.get_enemy(str(GameState.flags.get("pending_enemy", "froggit")))
-	_enemy_sprite.texture = Sprites.battle_enemy_texture(_enemy["sprite_id"], false)
+	_spawn_enemy_sprite()
 	_enemy_sprite.position = Vector2(216, -40)
 	_enemy_max_hp = int(_enemy["hp"])
 	_enemy_hp_display = float(_enemy_max_hp)
@@ -69,9 +69,6 @@ func _build_ui() -> void:
 	bg.color = Color(0, 0, 0, 1)
 	bg.size = Vector2(640, 480)
 	add_child(bg)
-	_enemy_sprite = Sprite2D.new()
-	_enemy_sprite.position = Vector2(216, 136)
-	add_child(_enemy_sprite)
 	_name_label = Label.new()
 	_name_label.add_theme_font_size_override("font_size", 16)
 	_name_label.position = Vector2(30, 30)
@@ -100,6 +97,44 @@ func _build_ui() -> void:
 	_dodge_box.heal_requested.connect(_on_heal_collected)
 	_text = load("res://scripts/dialogue/dialogue_ui.gd").new()
 	add_child(_text)
+
+func _spawn_enemy_sprite() -> void:
+	_enemy_sprite = Sprite2D.new()
+	_enemy_sprite.texture = Sprites.battle_enemy_texture(_enemy["sprite_id"], false)
+	_enemy_sprite.position = Vector2(216, 136)
+	_enemy_sprite.scale = Vector2(0.8, 0.8)
+	add_child(_enemy_sprite)
+	if _hp_bar_bg != null:
+		_hp_bar_bg.position = Vector2(207, 161)
+	if _hp_bar != null:
+		_hp_bar.position = Vector2(208, 162)
+
+func _on_enemy_hurt_frame() -> void:
+	var hurt_tex := Sprites.battle_enemy_texture(_enemy["sprite_id"], true)
+	if hurt_tex != _enemy_sprite.texture:
+		_enemy_sprite.texture = hurt_tex
+		var tree := Engine.get_main_loop() as SceneTree
+		if tree == null:
+			return
+		await tree.create_timer(0.3).timeout
+		_restore_enemy_frame()
+
+func _restore_enemy_frame() -> void:
+	_enemy_sprite.texture = Sprites.battle_enemy_texture(_enemy["sprite_id"], false)
+
+func _spawn_vaporize_poof(at: Vector2) -> void:
+	Audio.play_sfx("vaporize")
+	var poof := ColorRect.new()
+	poof.name = "VaporizePoof"
+	poof.color = Color(1, 1, 1)
+	poof.position = at
+	poof.size = Vector2(8, 8)
+	poof.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(poof)
+	var tween := create_tween()
+	tween.tween_property(poof, "size", Vector2(64, 64), 0.3)
+	tween.parallel().tween_property(poof, "color:a", 0.0, 0.3)
+	tween.tween_callback(poof.queue_free)
 
 func _build_hud() -> void:
 	_player_name_label = Label.new()
@@ -380,6 +415,7 @@ func _resolve_fight() -> void:
 		_enemy_sprite.modulate = Color(3.0, 3.0, 3.0)
 		var flash := create_tween()
 		flash.tween_property(_enemy_sprite, "modulate", Color(1, 1, 1), 0.1)
+		_on_enemy_hurt_frame()
 		_spawn_damage_digit(dmg, false)
 		_refresh_enemy_ui()
 		await _say([{"speaker": "", "text": "You strike. %s takes %d damage." % [_enemy["name"], dmg]}])
@@ -388,10 +424,9 @@ func _resolve_fight() -> void:
 		GameState.add_kill()
 		GameState.player_stats["gold"] = int(GameState.player_stats["gold"]) + 2
 		await _say([{"speaker": "", "text": "%s fades into soft light. You feel colder." % _enemy["name"]}])
-		Audio.play_sfx("vaporize")
-		var fade := create_tween()
-		fade.tween_property(_enemy_sprite, "modulate:a", 0.0, 0.5)
-		await fade.finished
+		_spawn_vaporize_poof(_enemy_sprite.position)
+		_enemy_sprite.visible = false
+		await get_tree().create_timer(0.3).timeout
 		_end_battle()
 	else:
 		_enemy_turn()
