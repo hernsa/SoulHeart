@@ -44,12 +44,25 @@ static func _fill_tile_detailed(img: Image, col: int, c: Color) -> void:
 	for y in 32:
 		for x in 16:
 			var color := c
-			if y % 16 < 2:
-				color = c.darkened(0.2)
-			elif y % 16 >= 14:
-				color = c.darkened(0.1)
-			elif rng.randf() < 0.08:
-				color = c.darkened(0.08)
+			if col == Tile.GRASS:
+				var roll := rng.randf()
+				if roll < 0.04:
+					color = c.lightened(0.1)
+				elif roll > 0.96:
+					color = c.darkened(0.12)
+				elif y == 0 and x < 3 and rng.randf() < 0.5:
+					color = Color(0.45, 0.65, 0.32)
+				elif y % 16 < 2:
+					color = c.darkened(0.2)
+				elif y % 16 >= 14:
+					color = c.darkened(0.1)
+			else:
+				if y % 16 < 2:
+					color = c.darkened(0.2)
+				elif y % 16 >= 14:
+					color = c.darkened(0.1)
+				elif rng.randf() < 0.08:
+					color = c.darkened(0.08)
 			img.set_pixel(col * 16 + x, y, color)
 
 const TREE_BLOCK_X := 96

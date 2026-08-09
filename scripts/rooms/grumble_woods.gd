@@ -4,6 +4,10 @@ const ROOM_PATH := "res://scenes/rooms/GrumbleWoods.tscn"
 
 const ENCOUNTER_ENEMIES: Array[String] = ["migosp", "loox"]
 
+const PAD_TOP := 8
+const PAD_SIDE := 5
+const PAD_PIXELS := Vector2(80, 128)
+
 const LAYOUT := """
 ##############################
 #......T...........T.........#
@@ -22,13 +26,14 @@ const LAYOUT := """
 
 func _ready() -> void:
 	var parsed := MapBuilder.parse_layout(LAYOUT)
+	parsed["grid"] = build_padded_grid(parsed["grid"])
 	var start := _spawn_point(parsed["player_start"]) + Vector2(8, 8)
 	add_child(MapBuilder.build_tilemap(parsed["grid"], GameTiles.SNOW_PALETTE))
 	var tint := CanvasModulate.new()
 	tint.color = Color(0.85, 0.9, 1.0)
 	add_child(tint)
 	_spawn_player(start, parsed["grid"])
-	_spawn_sign(Vector2(18 * 16, 4 * 16))
+	_spawn_sign(Vector2(18 * 16, 4 * 16) + PAD_PIXELS)
 	_spawn_encounters(parsed["encounters"])
 	_spawn_door(parsed["doors"])
 	_spawn_props()
@@ -36,6 +41,29 @@ func _ready() -> void:
 	Audio.play_music("grumble")
 	Audio.play_sfx("door_close")
 	Fade.fade_from_black(0.67)
+
+static func build_padded_grid(grid: Array) -> Array:
+	var padded: Array = []
+	for row in grid:
+		var new_row: Array = []
+		for i in PAD_SIDE:
+			new_row.append(GameTiles.Tile.WALL)
+		for cell in row:
+			new_row.append(cell)
+		for i in PAD_SIDE:
+			new_row.append(GameTiles.Tile.WALL)
+		padded.append(new_row)
+	for i in PAD_TOP:
+		padded.push_front(_blank_row(padded[0].size(), GameTiles.Tile.TREE))
+	for i in PAD_TOP:
+		padded.push_back(_blank_row(padded[0].size(), GameTiles.Tile.TREE))
+	return padded
+
+static func _blank_row(width: int, fill: int) -> Array:
+	var row: Array = []
+	for i in width:
+		row.append(fill)
+	return row
 
 func _spawn_point(fallback: Vector2) -> Vector2:
 	if GameState.flags.has("current_room") and str(GameState.flags["current_room"]) == ROOM_PATH and GameState.flags.has("save_point"):
@@ -68,7 +96,7 @@ func _spawn_props() -> void:
 		p.name = "Prop" + str(i)
 		p.texture = Sprites.prop_texture("golden_flowers.png" if i % 2 == 0 else "rock.png")
 		p.scale = Vector2(0.5, 0.5)
-		p.position = spots[i]
+		p.position = spots[i] + PAD_PIXELS
 		add_child(p)
 
 func _spawn_encounters(points: Array) -> void:

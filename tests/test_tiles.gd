@@ -83,3 +83,30 @@ func test_tree_has_canopy_and_trunk() -> void:
 				has_green = true
 	TestHelper.is_true(has_brown, "tree has trunk pixels")
 	TestHelper.is_true(has_green, "tree has canopy pixels")
+
+func test_grass_has_light_speckles() -> void:
+	var img := GameTiles._atlas_texture({}).get_image()
+	var base := Color(0.3, 0.5, 0.28)
+	var lighter := false
+	for y in 16:
+		for x in 16:
+			var c := img.get_pixel(x, y)
+			if c.r > base.r + 0.05 and c.g > base.g + 0.05:
+				lighter = true
+	TestHelper.is_true(lighter, "grass has lighter speckles")
+
+func test_grumble_woods_grid_padded_to_viewport() -> void:
+	var room: GDScript = load("res://scripts/rooms/grumble_woods.gd")
+	TestHelper.is_true(room != null, "grumble woods script loads")
+	var parsed: Dictionary = LayoutParser.parse(room.LAYOUT)
+	var padded: Array = room.build_padded_grid(parsed["grid"])
+	TestHelper.eq(padded.size(), 46, "padded grid rows (30 parsed + 16 pad)")
+	TestHelper.eq(int(padded[0].size()), 40, "padded grid cols fill viewport width")
+	TestHelper.eq(MapBuilder.room_pixel_size(padded), Vector2(640, 736), "room pixels cover 640x480 viewport")
+	for d in parsed["doors"]:
+		var pos: Vector2 = d["pos"]
+		var tile: int = int(padded[int(pos.y) / 16 + 8][int(pos.x) / 16 + 5])
+		TestHelper.is_true(tile != int(GameTiles.Tile.WALL) and tile != int(GameTiles.Tile.TREE), "door cell walkable after padding")
+	for e in parsed["encounters"]:
+		var tile: int = int(padded[int(e.y) / 16 + 8][int(e.x) / 16 + 5])
+		TestHelper.is_true(tile != int(GameTiles.Tile.WALL) and tile != int(GameTiles.Tile.TREE), "encounter cell walkable after padding")
