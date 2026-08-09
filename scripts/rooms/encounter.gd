@@ -1,6 +1,6 @@
 extends Area2D
 
-@export var enemy_id := "willowisp"
+@export var enemy_id := "froggit"
 var used := false
 
 func _ready() -> void:

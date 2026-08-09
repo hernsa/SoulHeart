@@ -13,7 +13,8 @@ var max_hp := 20
 var hp := 20
 var lv := 1
 
-var _enemy: EnemyStats
+var _enemy: Dictionary
+var _enemy_max_hp := 0
 var _state := BattleState.new()
 var _mood := 0
 var _menu: Control
@@ -46,10 +47,11 @@ var _ending := false
 func _ready() -> void:
 	Audio.play_music("battle")
 	_build_ui()
-	_enemy = EnemyLibrary.get_enemy(str(GameState.flags.get("pending_enemy", "willowisp")))
-	_enemy_sprite.texture = Sprites.wisp_texture()
+	_enemy = EnemyLibrary.get_enemy(str(GameState.flags.get("pending_enemy", "froggit")))
+	_enemy_sprite.texture = Sprites.battle_enemy_texture(_enemy["sprite_id"], false)
 	_enemy_sprite.position = Vector2(216, -40)
-	_enemy_hp_display = float(_enemy.max_hp)
+	_enemy_max_hp = int(_enemy["hp"])
+	_enemy_hp_display = float(_enemy_max_hp)
 	_hp_bar.size.x = 16.0
 	var entrance := create_tween()
 	entrance.tween_property(_enemy_sprite, "position", Vector2(216, 136), 0.4)
@@ -57,7 +59,7 @@ func _ready() -> void:
 	_enemy_in = true
 	_refresh_enemy_ui()
 	_refresh_player_ui()
-	await _say([{"speaker": "", "text": _enemy.intro_line}])
+	await _say([{"speaker": "", "text": _enemy["intro_line"]}])
 	if _ending:
 		return
 	_enter_player_turn()
@@ -231,8 +233,8 @@ func _process(delta: float) -> void:
 		return
 	if _enemy_in:
 		_enemy_sprite.position.y = 136.0 + sin(Time.get_ticks_msec() * 0.003) * 2.0
-		_enemy_hp_display = CombatMath.drain_toward(_enemy_hp_display, float(_enemy.hp), delta, 40.0)
-		_hp_bar.size.x = 16.0 * (_enemy_hp_display / float(_enemy.max_hp))
+		_enemy_hp_display = CombatMath.drain_toward(_enemy_hp_display, float(_enemy["hp"]), delta, 40.0)
+		_hp_bar.size.x = 16.0 * (_enemy_hp_display / float(_enemy_max_hp))
 	match _state.phase:
 		BattleState.Phase.PLAYER_TURN:
 			if _submenu_open:
@@ -281,7 +283,7 @@ func _choose() -> void:
 			_fight_bar = FightBar.new()
 			_fight_bar_ui.visible = true
 		"ACT":
-			_open_submenu(_enemy.act_labels(), "ACT")
+			_open_submenu(EnemyLibrary.act_labels(_enemy["acts"]), "ACT")
 		"ITEM":
 			_open_submenu(_item_labels(), "ITEM")
 		"MERCY":
@@ -333,7 +335,7 @@ func _resolve_submenu() -> void:
 	var choice: String = _submenu_items[_submenu_index]
 	match _submenu_context:
 		"ACT":
-			var act: Dictionary = _enemy.act_by_label(choice)
+			var act: Dictionary = EnemyLibrary.act_by_label(_enemy["acts"], choice)
 			_mood += int(act.get("mood", 0))
 			await _say([{"speaker": "", "text": str(act.get("text", "You try something."))}])
 		"ITEM":
@@ -346,14 +348,14 @@ func _resolve_submenu() -> void:
 				_refresh_player_ui()
 		"MERCY":
 			if choice == "Spare":
-				if _mood >= _enemy.spare_after_acts:
+				if _mood >= int(_enemy["spare_after"]):
 					_state.transition(BattleState.Phase.SPARED)
 					GameState.add_spare()
-					await _say([{"speaker": "", "text": "You spare %s. It settles, grateful." % _enemy.display_name}])
+					await _say([{"speaker": "", "text": "You spare %s. It settles, grateful." % _enemy["name"]}])
 					_end_battle()
 					return
 				else:
-					await _say([{"speaker": "", "text": "%s wavers, but stays on guard." % _enemy.display_name}])
+					await _say([{"speaker": "", "text": "%s wavers, but stays on guard." % _enemy["name"]}])
 			else:
 				if flee_roll(randf()):
 					Audio.play_sfx("flee")
@@ -372,20 +374,20 @@ func _resolve_fight() -> void:
 		_spawn_damage_digit(0, true)
 		await _say([{"speaker": "", "text": "MISS."}])
 	else:
-		var dmg := CombatMath.calculate_damage(int(GameState.player_stats["atk"]), _enemy.defense, intent)
-		_enemy.hp -= dmg
+		var dmg := CombatMath.calculate_damage(int(GameState.player_stats["atk"]), int(_enemy["def"]), intent)
+		_enemy["hp"] = int(_enemy["hp"]) - dmg
 		Audio.play_sfx("slice")
 		_enemy_sprite.modulate = Color(3.0, 3.0, 3.0)
 		var flash := create_tween()
 		flash.tween_property(_enemy_sprite, "modulate", Color(1, 1, 1), 0.1)
 		_spawn_damage_digit(dmg, false)
 		_refresh_enemy_ui()
-		await _say([{"speaker": "", "text": "You strike. %s takes %d damage." % [_enemy.display_name, dmg]}])
-	if _enemy.is_dead():
+		await _say([{"speaker": "", "text": "You strike. %s takes %d damage." % [_enemy["name"], dmg]}])
+	if int(_enemy["hp"]) <= 0:
 		_state.transition(BattleState.Phase.WIN)
 		GameState.add_kill()
 		GameState.player_stats["gold"] = int(GameState.player_stats["gold"]) + 2
-		await _say([{"speaker": "", "text": "%s fades into soft light. You feel colder." % _enemy.display_name}])
+		await _say([{"speaker": "", "text": "%s fades into soft light. You feel colder." % _enemy["name"]}])
 		Audio.play_sfx("vaporize")
 		var fade := create_tween()
 		fade.tween_property(_enemy_sprite, "modulate:a", 0.0, 0.5)
@@ -408,11 +410,12 @@ func _spawn_damage_digit(amount: int, miss: bool) -> void:
 	t.chain().tween_callback(digit.queue_free)
 
 func _enemy_turn() -> void:
-	var line: String = _enemy.attack_lines[randi() % _enemy.attack_lines.size()]
+	var attack_lines: Array = _enemy["attack_lines"]
+	var line: String = str(attack_lines[randi() % attack_lines.size()])
 	await _say([{"speaker": "", "text": line}])
 	_dodge_box.set_active(true)
-	for i in _enemy.patterns.size():
-		var pattern: Dictionary = _enemy.patterns[i]
+	for i in _enemy["patterns"].size():
+		var pattern: Dictionary = _enemy["patterns"][i]
 		if bool(pattern.get("telegraph", false)):
 			await _dodge_box.show_telegraph(0.6)
 		_dodge_box.spawn_patterns(BulletPatterns.make(pattern, _dodge_box.heart_position()))
@@ -429,7 +432,7 @@ func _enemy_turn() -> void:
 		while _dodge_box.has_bullets() and frames < 60 * 15:
 			await get_tree().process_frame
 			frames += 1
-		if i < _enemy.patterns.size() - 1:
+		if i < _enemy["patterns"].size() - 1:
 			await get_tree().create_timer(0.8).timeout
 	_dodge_box.set_active(false)
 	_refresh_player_ui()
@@ -455,9 +458,9 @@ func _enter_player_turn() -> void:
 	_update_menu_colors()
 
 func _refresh_enemy_ui() -> void:
-	_name_label.text = _enemy.display_name
-	_name_label.add_theme_color_override("font_color", Color.YELLOW if _mood >= _enemy.spare_after_acts else Color.WHITE)
-	_hp_label.text = "%d/%d" % [_enemy.hp, _enemy.max_hp]
+	_name_label.text = str(_enemy["name"])
+	_name_label.add_theme_color_override("font_color", Color.YELLOW if _mood >= int(_enemy["spare_after"]) else Color.WHITE)
+	_hp_label.text = "%d/%d" % [int(_enemy["hp"]), _enemy_max_hp]
 
 func _refresh_player_ui() -> void:
 	max_hp = int(GameState.player_stats["max_hp"])
