@@ -1,32 +1,48 @@
 extends Node2D
+class_name GrumbleWoods
 
 const ROOM_PATH := "res://scenes/rooms/GrumbleWoods.tscn"
 
 const ENCOUNTER_ENEMIES: Array[String] = ["migosp", "loox"]
 
-const PAD_TOP := 8
-const PAD_SIDE := 5
-const PAD_PIXELS := Vector2(80, 128)
-
 const LAYOUT := """
-##############################
-#......T...........T.........#
-#..T..E............T......D..#
-#........T......T............#
-#..T................T....T...#
-#...........T....T...........#
-#.................T..........#
-#...........T...........T....#
-#..T.......T......E..........#
-#...................T........#
-#........T........T..........#
-#..................T....T....#
-##############################
+########################################
+#..P...................................#
+#............TT.............TT.........#
+#..T................T................T.#
+#......T......TT..TT............T......#
+#.........................T............#
+#..TT.......T.......T..........TT......#
+#..............T....T..................#
+#......E..........TT..TT...........T...#
+#..T..........T..............T........T#
+#.....................T..T.............#
+#...........TT..............TT.........#
+#..T.....T..............T..............#
+#..................T..T................#
+#...........E..........T......T........#
+#..TT..............T...........TT......#
+#.........................T............#
+#......T.....TT..TT............T.......#
+#.................T....................#
+#..T..........T......T..........T......#
+#.....................T...........T....#
+#..............TT................TT....#
+#..T.....T..............T..............#
+#.........E...........T..T.............#
+#......................TT........T.....#
+#..T......T.......................T....#
+#.............................T..T..D..#
+#..T..............T........T...........#
+#...............T.......T....T......T..#
+########################################
 """
+
+const DRIZZLE_SPAWN := Vector2(4 * 16 + 8, 24 * 16 + 8)  # (72, 392)
+const SIGN_POS := Vector2(5 * 16 + 8, 2 * 16 + 8)  # (88, 40)
 
 func _ready() -> void:
 	var parsed := MapBuilder.parse_layout(LAYOUT)
-	parsed["grid"] = build_padded_grid(parsed["grid"])
 	var start := _spawn_point(parsed["player_start"]) + Vector2(8, 8)
 	var room := MapBuilder.build_room(parsed["grid"], GameTiles.SNOWDIN_STYLE)
 	add_child(room["background"])
@@ -37,7 +53,7 @@ func _ready() -> void:
 	tint.color = Color(0.85, 0.9, 1.0)
 	add_child(tint)
 	_spawn_player(start, parsed["grid"])
-	_spawn_sign(Vector2(18 * 16, 4 * 16) + PAD_PIXELS)
+	_spawn_sign(SIGN_POS)
 	_spawn_encounters(parsed["encounters"])
 	_spawn_door(parsed["doors"])
 	_spawn_props()
@@ -45,29 +61,6 @@ func _ready() -> void:
 	Audio.play_music("grumble")
 	Audio.play_sfx("door_close")
 	Fade.fade_from_black(0.67)
-
-static func build_padded_grid(grid: Array) -> Array:
-	var padded: Array = []
-	for row in grid:
-		var new_row: Array = []
-		for i in PAD_SIDE:
-			new_row.append(GameTiles.Tile.WALL)
-		for cell in row:
-			new_row.append(cell)
-		for i in PAD_SIDE:
-			new_row.append(GameTiles.Tile.WALL)
-		padded.append(new_row)
-	for i in PAD_TOP:
-		padded.push_front(_blank_row(padded[0].size(), GameTiles.Tile.TREE))
-	for i in PAD_TOP:
-		padded.push_back(_blank_row(padded[0].size(), GameTiles.Tile.TREE))
-	return padded
-
-static func _blank_row(width: int, fill: int) -> Array:
-	var row: Array = []
-	for i in width:
-		row.append(fill)
-	return row
 
 func _spawn_point(fallback: Vector2) -> Vector2:
 	if GameState.flags.has("current_room") and str(GameState.flags["current_room"]) == ROOM_PATH and GameState.flags.has("save_point"):
@@ -100,14 +93,14 @@ func _spawn_props() -> void:
 		p.name = "Prop" + str(i)
 		p.texture = Sprites.prop_texture("golden_flowers.png" if i % 2 == 0 else "rock.png")
 		p.scale = Vector2(0.5, 0.5)
-		p.position = spots[i] + PAD_PIXELS
+		p.position = spots[i]
 		add_child(p)
 
 func _spawn_encounters(points: Array) -> void:
 	for i in points.size():
 		var enc = load("res://scripts/rooms/encounter.gd").new()
 		enc.enemy_id = ENCOUNTER_ENEMIES[i % ENCOUNTER_ENEMIES.size()]
-		enc.position = points[i] + PAD_PIXELS
+		enc.position = points[i]
 		add_child(enc)
 
 func _spawn_door(doors: Array) -> void:
@@ -115,6 +108,6 @@ func _spawn_door(doors: Array) -> void:
 		return
 	var door = load("res://scripts/rooms/door.gd").new()
 	door.target_room = "res://scenes/rooms/DrizzleFields.tscn"
-	door.target_spawn = Vector2(32, 448)
-	door.position = doors[0]["pos"] + PAD_PIXELS
+	door.target_spawn = DRIZZLE_SPAWN
+	door.position = doors[0]["pos"]
 	add_child(door)
