@@ -1,24 +1,58 @@
 extends RefCounted
 
 
-func test_player_uses_frisk_rip() -> void:
-	for frame in 4:
-		var tex := Sprites.player_frisk_texture(frame)
-		TestHelper.is_true(tex != null, "frisk frame " + str(frame) + " loads")
-		if tex != null:
+func test_frisk_sheet_loads() -> void:
+	var tex := load("res://assets/sprites/overworld/frisk_sheet.png")
+	TestHelper.is_true(tex != null, "frisk_sheet.png should load")
+
+
+func test_frisk_all_facings_have_content() -> void:
+	for facing in 4:
+		for step in 3:
+			var tex := Sprites.player_frisk_texture(facing, step)
+			TestHelper.is_true(tex != null, "frisk texture facing=%d step=%d" % [facing, step])
+			if tex == null:
+				continue
 			var img := tex.get_image()
-			TestHelper.eq(img.get_width(), 19, "frame width 19")
-			TestHelper.eq(img.get_height(), 29, "frame height 29")
+			img.convert(Image.FORMAT_RGBA8)
+			var found_body := false
+			for y in range(10, 29):
+				for x in range(2, 17):
+					if img.get_pixel(x, y).a > 0.5:
+						found_body = true
+						break
+				if found_body:
+					break
+			TestHelper.is_true(found_body,
+					"Frisk facing=%d step=%d should have body content" % [facing, step])
 
 
-func test_frames_are_distinct() -> void:
+func test_frisk_left_mirrors_right() -> void:
+	for step in 3:
+		var right := Sprites.player_frisk_texture(3, step).get_image()
+		var left := Sprites.player_frisk_texture(2, step).get_image()
+		right.convert(Image.FORMAT_RGBA8)
+		left.convert(Image.FORMAT_RGBA8)
+		var mirrored := true
+		for y in 29:
+			for x in 19:
+				if right.get_pixel(x, y) != left.get_pixel(18 - x, y):
+					mirrored = false
+					break
+			if not mirrored:
+				break
+		TestHelper.is_true(mirrored,
+				"Facing 3 (right) should be the horizontal mirror of facing 2 (left), step %d" % step)
+
+
+func test_frisk_walk_steps_distinct() -> void:
 	var datas: Array = []
-	for frame in 4:
-		datas.append(Sprites.player_frisk_texture(frame).get_image().get_data())
-	var distinct: int = 0
+	for step in 3:
+		datas.append(Sprites.player_frisk_texture(0, step).get_image().get_data())
+	var distinct := 0
 	var seen: Array = []
 	for i in datas.size():
-		var is_new: bool = true
+		var is_new := true
 		for j in seen.size():
 			if datas[i] == seen[j]:
 				is_new = false
@@ -26,7 +60,7 @@ func test_frames_are_distinct() -> void:
 		if is_new:
 			seen.append(datas[i])
 			distinct += 1
-	TestHelper.is_true(distinct >= 3, "at least 3 distinct directions: " + str(distinct))
+	TestHelper.eq(distinct, 3, "down walk should have 3 distinct frames, got " + str(distinct))
 
 
 func test_aux_textures_exist() -> void:

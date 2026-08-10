@@ -11,7 +11,7 @@ var _shadow: Sprite2D
 
 func _ready() -> void:
 	_sprite = $Sprite2D
-	_sprite.texture = Sprites.player_frisk_texture(0)
+	_sprite.texture = Sprites.player_frisk_texture(0, 0)
 	_shadow = Sprite2D.new()
 	_shadow.texture = Sprites.player_shadow_texture()
 	_shadow.position = Vector2(0, 13)
@@ -52,7 +52,10 @@ func _physics_process(delta: float) -> void:
 		walk_t += delta
 	else:
 		walk_t = 0.0
-	_sprite.texture = Sprites.player_frisk_texture(facing)
+	var step := 0
+	if dir != Vector2.ZERO:
+		step = int(walk_t / 0.2) % 3
+	_sprite.texture = Sprites.player_frisk_texture(facing, step)
 	_sprite.position.y = -1.0 if (fmod(walk_t, 0.4) < 0.2 and dir != Vector2.ZERO) else 0.0
 	move_and_slide()
 
