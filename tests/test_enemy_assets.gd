@@ -19,3 +19,34 @@ func test_enemy_frame_sequences() -> void:
 			if f.ends_with(".png"):
 				pngs += 1
 		TestHelper.eq(pngs, counts[id], "frame count for " + id)
+
+func test_enemy_idle_cutout_removes_black_bg() -> void:
+	var anim := Sprites._enemy_idle_texture("froggit")
+	var img := anim.get_frame_texture(0).get_image()
+	img.convert(Image.FORMAT_RGBA8)
+	var corner := img.get_pixel(0, 0)
+	TestHelper.is_true(corner.a == 0.0,
+			"Enemy idle frame corner alpha should be 0 after cutout, got %f" % corner.a)
+
+func test_enemy_idle_cutout_preserves_white_body() -> void:
+	var anim := Sprites._enemy_idle_texture("froggit")
+	var img := anim.get_frame_texture(0).get_image()
+	img.convert(Image.FORMAT_RGBA8)
+	var found := false
+	for y in range(img.get_height()):
+		for x in range(img.get_width()):
+			var px := img.get_pixel(x, y)
+			if px.a > 0.5 and px.r > 0.5:
+				found = true
+				break
+		if found:
+			break
+	TestHelper.is_true(found, "Enemy idle frame should keep white silhouette pixels")
+
+func test_enemy_hurt_cutout_removes_black_bg() -> void:
+	var tex := Sprites.battle_enemy_texture("froggit", true)
+	var img := tex.get_image()
+	img.convert(Image.FORMAT_RGBA8)
+	var corner := img.get_pixel(0, 0)
+	TestHelper.is_true(corner.a == 0.0,
+			"Enemy hurt texture corner alpha should be 0 after cutout, got %f" % corner.a)

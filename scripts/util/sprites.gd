@@ -234,9 +234,23 @@ static func _enemy_idle_texture(id: String) -> AnimatedTexture:
 	var frame_duration := 1.0 / 15.0
 	for i in count:
 		var path := "res://assets/sprites/enemies/frames/" + id + "/" + id + "_%03d.png" % i
-		anim.set_frame_texture(i, load(path) as Texture2D)
+		var img := (load(path) as Texture2D).get_image()
+		if img != null:
+			anim.set_frame_texture(i, ImageTexture.create_from_image(_cutout_black(img)))
 		anim.set_frame_duration(i, frame_duration)
 	return anim
+
+static func _cutout_black(img: Image) -> Image:
+	img.convert(Image.FORMAT_RGBA8)
+	var w := img.get_width()
+	var h := img.get_height()
+	for y in range(h):
+		for x in range(w):
+			var px := img.get_pixel(x, y)
+			var lum := px.r * 0.299 + px.g * 0.587 + px.b * 0.114
+			if lum < 0.10:
+				img.set_pixel(x, y, Color(0, 0, 0, 0))
+	return img
 
 static func battle_enemy_texture(id: String, hurt: bool) -> Texture2D:
 	var key := id + ("_hurt" if hurt else "_idle")
@@ -244,9 +258,11 @@ static func battle_enemy_texture(id: String, hurt: bool) -> Texture2D:
 		return _enemy_cache[key]
 	var tex: Texture2D
 	if hurt:
-		tex = load("res://assets/sprites/enemies/" + id + "_hurt.png") as Texture2D
-		if tex == null:
+		var hurt_tex := load("res://assets/sprites/enemies/" + id + "_hurt.png") as Texture2D
+		if hurt_tex == null:
 			tex = battle_enemy_texture(id, false)
+		else:
+			tex = ImageTexture.create_from_image(_cutout_black(hurt_tex.get_image()))
 	else:
 		tex = _enemy_idle_texture(id)
 	_enemy_cache[key] = tex
