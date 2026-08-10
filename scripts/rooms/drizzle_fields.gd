@@ -40,8 +40,11 @@ const LAYOUT := """
 func _ready() -> void:
 	var parsed := MapBuilder.parse_layout(LAYOUT)
 	var start := _spawn_point(parsed["player_start"]) + Vector2(8, 8)
-	var tml := MapBuilder.build_tilemap(parsed["grid"])
-	add_child(tml)
+	var room := MapBuilder.build_room(parsed["grid"], GameTiles.RUINS_STYLE)
+	add_child(room["background"])
+	add_child(room["tilemap"])
+	for t in room["trees"]:
+		add_child(t)
 	var tint := CanvasModulate.new()
 	tint.color = Color(0.8, 0.78, 1.0)
 	add_child(tint)

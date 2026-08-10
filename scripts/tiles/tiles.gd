@@ -1,83 +1,40 @@
 class_name GameTiles
 
-enum Tile { GRASS = 0, PATH = 1, TREE = 2, WALL = 3 }
+enum Tile { FLOOR = 0, WALL = 1, TREE = 2 }
 
-const DEFAULT_PALETTE := {
-	Tile.GRASS: Color(0.3, 0.5, 0.28),
-	Tile.PATH: Color(0.72, 0.62, 0.4),
-	Tile.TREE: Color(0.18, 0.38, 0.2),
-	Tile.WALL: Color(0.42, 0.42, 0.5),
-}
+const RUINS_STYLE := "ruins"
+const SNOWDIN_STYLE := "snowdin"
 
-const SNOW_PALETTE := {
-	Tile.GRASS: Color(0.92, 0.92, 0.95),
-	Tile.PATH: Color(0.6, 0.62, 0.7),
-	Tile.TREE: Color(0.35, 0.4, 0.5),
-	Tile.WALL: Color(0.3, 0.35, 0.45),
-}
+const FLOOR_A := Vector2i(0, 0)
+const FLOOR_B := Vector2i(1, 0)
+const WALL_TILE := Vector2i(2, 0)
 
-static func build_tileset(palette: Dictionary = {}) -> TileSet:
+static func build_tileset(style: String) -> TileSet:
 	var ts := TileSet.new()
 	ts.tile_size = Vector2i(16, 16)
 	var src := TileSetAtlasSource.new()
-	src.texture = _atlas_texture(palette)
+	src.texture = _atlas_texture(style)
 	src.texture_region_size = Vector2i(16, 16)
-	for x in [0, 1, 2, 3, 6, 7]:
-		src.create_tile(Vector2i(x, 0))
-		src.create_tile(Vector2i(x, 1))
+	src.create_tile(FLOOR_A)
+	src.create_tile(FLOOR_B)
+	src.create_tile(WALL_TILE)
 	ts.add_source(src, 0)
+	ts.add_physics_layer()
+	ts.set_physics_layer_collision_layer(0, 1)
+	ts.set_physics_layer_collision_mask(0, 1)
+	var wall_data := src.get_tile_data(WALL_TILE, 0)
+	wall_data.add_collision_polygon(0)
+	wall_data.set_collision_polygon_points(0, 0, PackedVector2Array([
+		Vector2(0, 0), Vector2(16, 0), Vector2(16, 16), Vector2(0, 16)]))
 	return ts
 
-static func _atlas_texture(palette: Dictionary) -> Texture2D:
-	var img := Image.create(128, 32, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0.1, 0.1, 0.1, 1))
-	for tile in 4:
-		_fill_tile_detailed(img, tile, palette.get(tile, DEFAULT_PALETTE[tile]))
+static func _atlas_texture(style: String) -> Texture2D:
+	var img := Image.create(48, 16, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var a := Image.load_from_file("res://assets/sprites/tiles/%s_floor.png" % style)
+	if a != null:
+		img.blit_rect(a, Rect2i(0, 0, 16, 16), Vector2i.ZERO)
+	var b := Image.load_from_file("res://assets/sprites/tiles/%s_floor_b.png" % style)
+	if b != null:
+		img.blit_rect(b, Rect2i(0, 0, 16, 16), Vector2i(16, 0))
 	return ImageTexture.create_from_image(img)
-
-static func _fill_tile_detailed(img: Image, col: int, c: Color) -> void:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 100 + col
-	if col == Tile.TREE:
-		_draw_tree(img, c)
-		return
-	for y in 32:
-		for x in 16:
-			var color := c
-			if col == Tile.GRASS:
-				var roll := rng.randf()
-				if roll < 0.04:
-					color = c.lightened(0.1)
-				elif roll > 0.96:
-					color = c.darkened(0.12)
-				elif y == 0 and x < 3 and rng.randf() < 0.5:
-					color = Color(0.45, 0.65, 0.32)
-				elif y % 16 < 2:
-					color = c.darkened(0.2)
-				elif y % 16 >= 14:
-					color = c.darkened(0.1)
-			else:
-				if y % 16 < 2:
-					color = c.darkened(0.2)
-				elif y % 16 >= 14:
-					color = c.darkened(0.1)
-				elif rng.randf() < 0.08:
-					color = c.darkened(0.08)
-			img.set_pixel(col * 16 + x, y, color)
-
-const TREE_BLOCK_X := 96
-
-static func _draw_tree(img: Image, c: Color) -> void:
-	var trunk := Color(0.42, 0.26, 0.12)
-	for y in 32:
-		for x in 32:
-			img.set_pixel(TREE_BLOCK_X + x, y, Color(0, 0, 0, 0))
-	for y in 32:
-		for x in 32:
-			var px := Vector2(x - 16.0, y - 20.0)
-			var d := px.length()
-			if y >= 20 and y <= 31 and x >= 13 and x <= 18:
-				img.set_pixel(TREE_BLOCK_X + x, y, trunk)
-			elif d <= 9.0 and y >= 4:
-				var canopy := c.lightened(0.15) if (d < 6.0) else c
-				img.set_pixel(TREE_BLOCK_X + x, y, canopy)

@@ -16,14 +16,14 @@ static func parse(ascii: String) -> Dictionary:
 		var cells: Array = []
 		for x in row.length():
 			var ch := row[x]
-			var tile := int(GameTiles.Tile.GRASS)
+			var tile := int(GameTiles.Tile.FLOOR)
 			match ch:
 				"#":
 					tile = int(GameTiles.Tile.WALL)
 				"T":
 					tile = int(GameTiles.Tile.TREE)
 				".":
-					tile = int(GameTiles.Tile.PATH)
+					tile = int(GameTiles.Tile.FLOOR)
 			cells.append(tile)
 			var pos := Vector2(x * 16, y * 16)
 			match ch:
@@ -39,11 +39,11 @@ static func parse(ascii: String) -> Dictionary:
 		y += 1
 	for row in rows:
 		while row.size() < max_w:
-			row.append(int(GameTiles.Tile.GRASS))
+			row.append(int(GameTiles.Tile.FLOOR))
 	while rows.size() < 30:
 		var filler: Array = []
 		filler.resize(max_w)
-		filler.fill(int(GameTiles.Tile.GRASS))
+		filler.fill(int(GameTiles.Tile.FLOOR))
 		rows.append(filler)
 	return {
 		"grid": rows,

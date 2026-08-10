@@ -15,7 +15,7 @@ func test_parse_grid() -> void:
 	TestHelper.eq((grid[0] as Array).size(), 12, "twelve columns")
 	TestHelper.eq((grid[0] as Array)[0], int(GameTiles.Tile.WALL), "corner is wall")
 	TestHelper.eq((grid[1] as Array)[4], int(GameTiles.Tile.TREE), "tree parsed")
-	TestHelper.eq((grid[1] as Array)[2], int(GameTiles.Tile.PATH), "path parsed")
+	TestHelper.eq((grid[1] as Array)[2], int(GameTiles.Tile.FLOOR), "floor parsed")
 	TestHelper.eq((grid[1] as Array)[0], int(GameTiles.Tile.WALL), "left wall")
 
 func test_parse_points() -> void:
@@ -35,6 +35,6 @@ func test_padding_to_uniform_width() -> void:
 	var parsed := MapBuilder.parse_layout("#\n#P.")
 	var grid: Array = parsed["grid"]
 	TestHelper.eq((grid[0] as Array).size(), 3, "row padded to max width")
-	TestHelper.eq((grid[0] as Array)[1], int(GameTiles.Tile.GRASS), "padding is grass")
-	TestHelper.eq((grid[1] as Array)[2], int(GameTiles.Tile.PATH), "path survives padding")
+	TestHelper.eq((grid[0] as Array)[1], int(GameTiles.Tile.FLOOR), "padding is floor")
+	TestHelper.eq((grid[1] as Array)[2], int(GameTiles.Tile.FLOOR), "floor survives padding")
 	TestHelper.is_true(grid.size() >= 30, "grid padded to 30 rows")
