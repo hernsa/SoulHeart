@@ -225,6 +225,10 @@ static var _enemy_frames := {
 	"vegetoid": 5,
 	"migosp": 19,
 	"napstablook": 2,
+	"reminisc": 1, "hushroom": 1, "paneic": 1, "squish": 1,
+	"sentimint": 1, "repeato": 1, "toadally": 1, "punkin": 1,
+	"nullaby": 1, "quibble": 1, "margin": 1, "lookey": 1,
+	"remembran": 1,
 }
 
 static func _enemy_idle_texture(id: String) -> AnimatedTexture:
