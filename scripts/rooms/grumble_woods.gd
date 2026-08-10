@@ -103,7 +103,7 @@ func _spawn_encounters(points: Array) -> void:
 	for i in points.size():
 		var enc = load("res://scripts/rooms/encounter.gd").new()
 		enc.enemy_id = ENCOUNTER_ENEMIES[i % ENCOUNTER_ENEMIES.size()]
-		enc.position = points[i]
+		enc.position = points[i] + PAD_PIXELS
 		add_child(enc)
 
 func _spawn_door(doors: Array) -> void:
@@ -112,5 +112,5 @@ func _spawn_door(doors: Array) -> void:
 	var door = load("res://scripts/rooms/door.gd").new()
 	door.target_room = "res://scenes/rooms/DrizzleFields.tscn"
 	door.target_spawn = Vector2(32, 448)
-	door.position = doors[0]["pos"]
+	door.position = doors[0]["pos"] + PAD_PIXELS
 	add_child(door)

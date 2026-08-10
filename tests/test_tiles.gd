@@ -105,8 +105,10 @@ func test_grumble_woods_grid_padded_to_viewport() -> void:
 	TestHelper.eq(MapBuilder.room_pixel_size(padded), Vector2(640, 736), "room pixels cover 640x480 viewport")
 	for d in parsed["doors"]:
 		var pos: Vector2 = d["pos"]
-		var tile: int = int(padded[int(pos.y) / 16 + 8][int(pos.x) / 16 + 5])
-		TestHelper.is_true(tile != int(GameTiles.Tile.WALL) and tile != int(GameTiles.Tile.TREE), "door cell walkable after padding")
+		var runtime_pos: Vector2 = pos + room.PAD_PIXELS
+		var tile: int = int(padded[int(runtime_pos.y) / 16][int(runtime_pos.x) / 16])
+		TestHelper.is_true(tile != int(GameTiles.Tile.WALL) and tile != int(GameTiles.Tile.TREE), "door lands on walkable cell at padded runtime position")
 	for e in parsed["encounters"]:
-		var tile: int = int(padded[int(e.y) / 16 + 8][int(e.x) / 16 + 5])
-		TestHelper.is_true(tile != int(GameTiles.Tile.WALL) and tile != int(GameTiles.Tile.TREE), "encounter cell walkable after padding")
+		var runtime_pos: Vector2 = e + room.PAD_PIXELS
+		var tile: int = int(padded[int(runtime_pos.y) / 16][int(runtime_pos.x) / 16])
+		TestHelper.is_true(tile != int(GameTiles.Tile.WALL) and tile != int(GameTiles.Tile.TREE), "encounter lands on walkable cell at padded runtime position")
