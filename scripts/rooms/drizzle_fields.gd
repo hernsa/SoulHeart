@@ -50,6 +50,7 @@ func _ready() -> void:
 	_spawn_save_points(parsed["save_points"])
 	_spawn_encounters(parsed["encounters"])
 	_spawn_door(parsed["doors"])
+	_spawn_props()
 	GameState.set_flag("current_room", ROOM_PATH)
 	Audio.play_music("drizzle")
 	Audio.play_sfx("door_close")
@@ -69,16 +70,25 @@ func _spawn_player(start: Vector2, grid: Array) -> void:
 	var room := MapBuilder.room_pixel_size(grid)
 	cam.position = (room / 2.0).round()
 	add_child(cam)
-	cam.make_current()
+	if cam.is_inside_tree():
+		cam.make_current()
 
 func _spawn_npc(pos: Vector2, dlg: String) -> void:
 	var npc = load("res://scripts/rooms/npc.gd").new()
 	npc.dialogue_file = dlg
 	npc.position = pos
-	var spr := Sprite2D.new()
-	spr.texture = Sprites.toad_texture()
-	npc.add_child(spr)
+	npc._spawn_sprite(Sprites.prop_texture("froggit_npc.png"), Vector2(1.0, 1.0))
 	add_child(npc)
+
+func _spawn_props() -> void:
+	var spots: Array[Vector2] = [Vector2(96, 96), Vector2(160, 320), Vector2(480, 160), Vector2(560, 400)]
+	for i in spots.size():
+		var p := Sprite2D.new()
+		p.name = "Prop" + str(i)
+		p.texture = Sprites.prop_texture("golden_flowers.png" if i % 2 == 0 else "rock.png")
+		p.scale = Vector2(0.5, 0.5)
+		p.position = spots[i]
+		add_child(p)
 
 func _spawn_save_points(points: Array) -> void:
 	for p in points:

@@ -4,6 +4,10 @@ const ROOM_PATH := "res://scenes/rooms/GrumbleWoods.tscn"
 
 const ENCOUNTER_ENEMIES: Array[String] = ["migosp", "loox"]
 
+const PAD_TOP := 8
+const PAD_SIDE := 5
+const PAD_PIXELS := Vector2(80, 128)
+
 const LAYOUT := """
 ##############################
 #......T...........T.........#
@@ -22,19 +26,44 @@ const LAYOUT := """
 
 func _ready() -> void:
 	var parsed := MapBuilder.parse_layout(LAYOUT)
+	parsed["grid"] = build_padded_grid(parsed["grid"])
 	var start := _spawn_point(parsed["player_start"]) + Vector2(8, 8)
 	add_child(MapBuilder.build_tilemap(parsed["grid"], GameTiles.SNOW_PALETTE))
 	var tint := CanvasModulate.new()
 	tint.color = Color(0.85, 0.9, 1.0)
 	add_child(tint)
 	_spawn_player(start, parsed["grid"])
-	_spawn_sign(Vector2(18 * 16, 4 * 16))
+	_spawn_sign(Vector2(18 * 16, 4 * 16) + PAD_PIXELS)
 	_spawn_encounters(parsed["encounters"])
 	_spawn_door(parsed["doors"])
+	_spawn_props()
 	GameState.set_flag("current_room", ROOM_PATH)
 	Audio.play_music("grumble")
 	Audio.play_sfx("door_close")
 	Fade.fade_from_black(0.67)
+
+static func build_padded_grid(grid: Array) -> Array:
+	var padded: Array = []
+	for row in grid:
+		var new_row: Array = []
+		for i in PAD_SIDE:
+			new_row.append(GameTiles.Tile.WALL)
+		for cell in row:
+			new_row.append(cell)
+		for i in PAD_SIDE:
+			new_row.append(GameTiles.Tile.WALL)
+		padded.append(new_row)
+	for i in PAD_TOP:
+		padded.push_front(_blank_row(padded[0].size(), GameTiles.Tile.TREE))
+	for i in PAD_TOP:
+		padded.push_back(_blank_row(padded[0].size(), GameTiles.Tile.TREE))
+	return padded
+
+static func _blank_row(width: int, fill: int) -> Array:
+	var row: Array = []
+	for i in width:
+		row.append(fill)
+	return row
 
 func _spawn_point(fallback: Vector2) -> Vector2:
 	if GameState.flags.has("current_room") and str(GameState.flags["current_room"]) == ROOM_PATH and GameState.flags.has("save_point"):
@@ -50,23 +79,31 @@ func _spawn_player(start: Vector2, grid: Array) -> void:
 	var room := MapBuilder.room_pixel_size(grid)
 	cam.position = (room / 2.0).round()
 	add_child(cam)
-	cam.make_current()
+	if cam.is_inside_tree():
+		cam.make_current()
 
 func _spawn_sign(pos: Vector2) -> void:
 	var sign_npc = load("res://scripts/rooms/npc.gd").new()
 	sign_npc.dialogue_file = "res://dialogue/grumble_sign.dlg"
 	sign_npc.position = pos
-	var spr := Sprite2D.new()
-	spr.texture = Sprites.star_texture()
-	spr.scale = Vector2(2, 2)
-	sign_npc.add_child(spr)
+	sign_npc._spawn_sprite(Sprites.star_texture(), Vector2(2, 2))
 	add_child(sign_npc)
+
+func _spawn_props() -> void:
+	var spots: Array[Vector2] = [Vector2(48, 144), Vector2(240, 48), Vector2(352, 112), Vector2(416, 160)]
+	for i in spots.size():
+		var p := Sprite2D.new()
+		p.name = "Prop" + str(i)
+		p.texture = Sprites.prop_texture("golden_flowers.png" if i % 2 == 0 else "rock.png")
+		p.scale = Vector2(0.5, 0.5)
+		p.position = spots[i] + PAD_PIXELS
+		add_child(p)
 
 func _spawn_encounters(points: Array) -> void:
 	for i in points.size():
 		var enc = load("res://scripts/rooms/encounter.gd").new()
 		enc.enemy_id = ENCOUNTER_ENEMIES[i % ENCOUNTER_ENEMIES.size()]
-		enc.position = points[i]
+		enc.position = points[i] + PAD_PIXELS
 		add_child(enc)
 
 func _spawn_door(doors: Array) -> void:
@@ -75,5 +112,5 @@ func _spawn_door(doors: Array) -> void:
 	var door = load("res://scripts/rooms/door.gd").new()
 	door.target_room = "res://scenes/rooms/DrizzleFields.tscn"
 	door.target_spawn = Vector2(32, 448)
-	door.position = doors[0]["pos"]
+	door.position = doors[0]["pos"] + PAD_PIXELS
 	add_child(door)

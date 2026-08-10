@@ -7,13 +7,29 @@ static func build_tilemap(grid: Array, palette: Dictionary = {}) -> TileMapLayer
 	var tml := TileMapLayer.new()
 	tml.name = "TileMapLayer"
 	tml.tile_set = GameTiles.build_tileset(palette)
+	var trees: Array[Vector2i] = []
 	for y in grid.size():
 		var row: Array = grid[y]
 		for x in row.size():
 			var tile: int = row[x]
-			tml.set_cell(Vector2i(x, y), 0, Vector2i(tile, 0))
+			if tile == GameTiles.Tile.TREE:
+				trees.append(Vector2i(x, y))
+			else:
+				tml.set_cell(Vector2i(x, y), 0, Vector2i(tile, 0))
 			if tile == GameTiles.Tile.TREE or tile == GameTiles.Tile.WALL:
 				_add_solid_body(tml, Vector2i(x, y))
+	for t in trees:
+		var x: int = t.x
+		var y: int = t.y
+		tml.set_cell(Vector2i(x, y), 0, Vector2i(6, 1))
+		tml.set_cell(Vector2i(x + 1, y), 0, Vector2i(7, 1))
+		if y > 0:
+			var row_above: Array = grid[y - 1]
+			var above_left: int = row_above[x]
+			var above_right: int = row_above[x + 1] if x + 1 < row_above.size() else above_left
+			if above_left != GameTiles.Tile.WALL and above_right != GameTiles.Tile.WALL:
+				tml.set_cell(Vector2i(x, y - 1), 0, Vector2i(6, 0))
+				tml.set_cell(Vector2i(x + 1, y - 1), 0, Vector2i(7, 0))
 	return tml
 
 static func _add_solid_body(tml: TileMapLayer, cell: Vector2i) -> void:

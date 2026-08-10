@@ -3,20 +3,18 @@ extends CharacterBody2D
 const SPEED := 140.0
 const ACCEL := 1200.0
 
-var facing := Vector2.DOWN
+var facing: int = 0  # 0 down, 1 up, 2 left, 3 right
+var walk_t: float = 0.0
 var _last_dir := ""
-var _anim_time: float = 0.0
-var _frame: int = 0
-var _moving: bool = false
 var _sprite: Sprite2D
 var _shadow: Sprite2D
 
 func _ready() -> void:
 	_sprite = $Sprite2D
-	_sprite.texture = Sprites.player_texture_frame(0)
+	_sprite.texture = Sprites.player_frisk_texture(0)
 	_shadow = Sprite2D.new()
 	_shadow.texture = Sprites.player_shadow_texture()
-	_shadow.position = Vector2(0, 9)
+	_shadow.position = Vector2(0, 13)
 	add_child(_shadow)
 
 static func resolve_direction4(just_pressed: PackedStringArray, held: PackedStringArray, last: String) -> Array:
@@ -48,19 +46,20 @@ func _physics_process(delta: float) -> void:
 			just.append(action)
 	var res: Array = resolve_direction4(just, held, _last_dir)
 	_last_dir = str(res[1])
-	set_movement_input(res[0])
-	if res[0] != Vector2.ZERO:
-		_moving = true
-		_anim_time += get_physics_process_delta_time()
-		_frame = int(_anim_time / 0.15) % 2
-		_sprite.texture = Sprites.player_texture_frame(_frame)
-		_sprite.flip_h = res[0].x < 0
+	var dir: Vector2 = res[0]
+	set_movement_input(dir)
+	if dir != Vector2.ZERO:
+		walk_t += delta
 	else:
-		_moving = false
-		_sprite.texture = Sprites.player_texture_frame(0)
+		walk_t = 0.0
+	_sprite.texture = Sprites.player_frisk_texture(facing)
+	_sprite.position.y = -1.0 if (fmod(walk_t, 0.4) < 0.2 and dir != Vector2.ZERO) else 0.0
 	move_and_slide()
 
 func set_movement_input(dir: Vector2) -> void:
 	if dir != Vector2.ZERO:
-		facing = dir.normalized()
+		if absf(dir.x) > absf(dir.y):
+			facing = 3 if dir.x > 0.0 else 2
+		else:
+			facing = 0 if dir.y > 0.0 else 1
 	velocity = velocity.move_toward(dir * SPEED, ACCEL * get_physics_process_delta_time())

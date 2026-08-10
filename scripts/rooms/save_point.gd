@@ -1,14 +1,17 @@
 extends Area2D
 
+var _star: Sprite2D
+
 func _ready() -> void:
-	var spr := Sprite2D.new()
-	spr.texture = Sprites.star_texture()
-	spr.scale = Vector2(2.8, 2.8)
-	add_child(spr)
+	_star = Sprite2D.new()
+	_star.name = "StarSprite"
+	_star.texture = Sprites.save_point_texture()
+	_star.scale = Vector2(1.5, 1.5)
+	add_child(_star)
 	var pulse := create_tween()
 	pulse.set_loops()
-	pulse.tween_property(spr, "scale", Vector2(3.1, 3.1), 0.5)
-	pulse.tween_property(spr, "scale", Vector2(2.8, 2.8), 0.5)
+	pulse.tween_property(_star, "scale", Vector2(1.8, 1.8), 0.5)
+	pulse.tween_property(_star, "scale", Vector2(1.5, 1.5), 0.5)
 	var shape := CollisionShape2D.new()
 	var circ := CircleShape2D.new()
 	circ.radius = 12.0

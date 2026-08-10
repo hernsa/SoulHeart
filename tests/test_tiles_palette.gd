@@ -15,7 +15,7 @@ func test_snow_palette_differs() -> void:
 	var b: Image = _tileset_image(GameTiles.SNOW_PALETTE)
 	TestHelper.is_true(a.get_data() != b.get_data(), "snow palette should differ from default")
 
-func test_build_tileset_still_four_tiles() -> void:
+func test_build_tileset_has_twelve_tiles() -> void:
 	var ts: TileSet = GameTiles.build_tileset(GameTiles.SNOW_PALETTE)
 	var src: TileSetAtlasSource = ts.get_source(0) as TileSetAtlasSource
-	TestHelper.eq(src.get_tiles_count(), 4, "snow tileset keeps 4 tiles")
+	TestHelper.eq(src.get_tiles_count(), 12, "snow tileset keeps 12 tiles")

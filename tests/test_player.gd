@@ -7,29 +7,30 @@ func _new_player() -> CharacterBody2D:
 
 func test_default_facing() -> void:
 	var p := _new_player()
-	TestHelper.eq(p.facing, Vector2.DOWN, "faces down by default")
+	TestHelper.eq(p.facing, 0, "faces down by default (frame 0)")
 	p.free()
 
-func test_facing_updates() -> void:
+func test_facing_mapping() -> void:
 	var p := _new_player()
 	p.set_movement_input(Vector2.RIGHT)
-	TestHelper.eq(p.facing, Vector2.RIGHT, "faces right")
+	TestHelper.eq(p.facing, 3, "right -> frame 3")
 	p.set_movement_input(Vector2.UP)
-	TestHelper.eq(p.facing, Vector2.UP, "faces up")
+	TestHelper.eq(p.facing, 1, "up -> frame 1")
+	p.set_movement_input(Vector2.DOWN)
+	TestHelper.eq(p.facing, 0, "down -> frame 0")
 	p.free()
 
 func test_zero_input_keeps_facing() -> void:
 	var p := _new_player()
 	p.set_movement_input(Vector2.LEFT)
 	p.set_movement_input(Vector2.ZERO)
-	TestHelper.eq(p.facing, Vector2.LEFT, "facing preserved on no input")
+	TestHelper.eq(p.facing, 2, "facing preserved on no input (frame 2)")
 	p.free()
 
-func test_input_normalized() -> void:
+func test_diagonal_falls_to_vertical() -> void:
 	var p := _new_player()
 	p.set_movement_input(Vector2(1, 1))
-	TestHelper.is_true(
-		absf(p.facing.x - 0.707106) < 0.0001 and absf(p.facing.y - 0.707106) < 0.0001,
-		"diagonal normalized"
-	)
+	TestHelper.eq(p.facing, 0, "diagonal (1,1) faces down")
+	p.set_movement_input(Vector2(-1, -1))
+	TestHelper.eq(p.facing, 1, "diagonal (-1,-1) faces up")
 	p.free()
