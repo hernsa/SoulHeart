@@ -54,29 +54,49 @@ Get-ChildItem assets\sprites\enemies | Select-Object Name, Length
 ```
 Expected: 12 files; froggit_idle 26,608 B, whimsun_idle 28,093 B, moldsmal 14,358 B (verified sizes; others > 1 KB).
 
-- [ ] **Step 2: Write asset test** — `tests/test_enemy_assets.gd`:
+**AMENDMENT (executed): Godot 4.4 cannot import GIF files (GIF support was removed in 4.0 — no `.import` sidecar is generated and `load()` returns null).** Idle animation is achieved by converting each GIF to a PNG frame sequence with Python + Pillow, committing the frames, and building `AnimatedTexture` at runtime from the PNGs. Frame counts (verified): froggit_idle 38, whimsun_idle 65, moldsmal_idle 44, loox_idle 9, vegetoid_idle 5, migosp_idle 19, napstablook_idle 2.
+
+- [ ] **Step 2: Convert GIFs to PNG frames (Pillow)** — after Step 1 downloads the 12 files:
+
+```powershell
+python -c "from PIL import Image; import os; src='assets/sprites/enemies'; out='assets/sprites/enemies/frames'; counts={}
+for f in sorted(os.listdir(src)):
+    if not f.endswith('.gif'): continue
+    stem=f[:-4]; img=Image.open(os.path.join(src,f)); d=os.path.join(out,stem); os.makedirs(d,exist_ok=True); n=0
+    try:
+        while True:
+            img.convert('RGBA').save(os.path.join(d, f'{stem}_{n:03d}.png')); n+=1; img.seek(img.tell()+1)
+    except EOFError: pass
+    counts[stem]=n; print(stem,n)
+print(counts)"
+```
+Then DELETE the .gif files (`Remove-Item assets\sprites\enemies\*.gif`) — they are unimportable dead weight. Committed assets = 4 hurt PNGs + 7 frame dirs (182 PNGs total).
+
+- [ ] **Step 3: Write asset test** — `tests/test_enemy_assets.gd`:
 
 ```gdscript
 extends RefCounted
 
 func test_enemy_sprites_downloaded() -> void:
-	var files := ["froggit_idle.gif", "froggit_hurt.png", "whimsun_idle.gif",
-			"whimsun_hurt.png", "moldsmal_idle.gif", "loox_idle.gif", "loox_hurt.png",
-			"vegetoid_idle.gif", "vegetoid_hurt.png", "migosp_idle.gif", "migosp_hurt.png"]
-	for f in files:
+	for f in ["froggit_hurt.png", "whimsun_hurt.png", "loox_hurt.png",
+			"vegetoid_hurt.png", "migosp_hurt.png"]:
 		TestHelper.is_true(FileAccess.file_exists("res://assets/sprites/enemies/" + f),
 				"enemy sprite exists: " + f)
 
-func test_gifs_import_as_animated() -> void:
-	var tex := load("res://assets/sprites/enemies/froggit_idle.gif") as Texture2D
-	TestHelper.is_true(tex is AnimatedTexture, "froggit gif is AnimatedTexture")
-	if tex is AnimatedTexture:
-		TestHelper.is_true((tex as AnimatedTexture).frames > 1, "froggit has animation frames")
+func test_enemy_frame_sequences() -> void:
+	var counts := {"froggit": 38, "whimsun": 65, "moldsmal": 44, "loox": 9,
+			"vegetoid": 5, "migosp": 19, "napstablook": 2}
+	for id in counts:
+		var d := DirAccess.open("res://assets/sprites/enemies/frames/" + id)
+		TestHelper.is_true(d != null, "frames dir exists: " + id)
+		if d == null:
+			continue
+		TestHelper.eq(d.get_files().size(), counts[id], "frame count for " + id)
 ```
 
-- [ ] **Step 3: Run — verify fail** (files missing), then `tools\godot.exe --headless --import` and re-run.
+- [ ] **Step 4: Run — verify fail** (files missing), then `tools\godot.exe --headless --import` and re-run.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add assets/sprites/enemies tests/test_enemy_assets.gd
@@ -91,8 +111,8 @@ git commit -m "assets: ruin monsters battle sprites (froggit/whimsun/moldsmal/lo
 - Test: `tests/test_sprites.gd` (append)
 
 **Interfaces:**
-- Consumes: `assets/sprites/enemies/*` (Task 1).
-- Produces: `Sprites.battle_enemy_texture(id: String, hurt: bool) -> Texture2D` (cache; id keys: froggit, whimsun, moldsmal, loox, vegetoid, migosp, napstablook; hurt uses the `_hurt.png` when available, else the idle; returns idle fallback for moldsmal (no hurt rip)).
+- Consumes: `assets/sprites/enemies/*` (Task 1: `frames/<id>/<id>_NNN.png` sequences + `<id>_hurt.png`).
+- Produces: `Sprites.battle_enemy_texture(id: String, hurt: bool) -> Texture2D` (cache; id keys: froggit, whimsun, moldsmal, loox, vegetoid, migosp, napstablook). Idle = AnimatedTexture built at runtime from the frame PNGs (fps 15, frame count from the FRAME_COUNTS const). Hurt = `_hurt.png` when available; moldsmal (no hurt rip) falls back to idle.
 
 - [ ] **Step 1: Write the failing test** (append to `tests/test_sprites.gd`):
 
@@ -115,19 +135,35 @@ func test_battle_enemy_textures() -> void:
 
 ```gdscript
 static var _enemy_cache := {}
+static var _enemy_frames := {"froggit": 38, "whimsun": 65, "moldsmal": 44, "loox": 9,
+		"vegetoid": 5, "migosp": 19, "napstablook": 2}
 
 static func battle_enemy_texture(id: String, hurt: bool) -> Texture2D:
 	var key := id + ("_hurt" if hurt else "_idle")
 	if _enemy_cache.has(key):
 		return _enemy_cache[key]
-	var path := "res://assets/sprites/enemies/" + id + ("_hurt.png" if hurt else "_idle.gif")
-	var tex := load(path) as Texture2D
-	if tex == null and hurt:
-		tex = load("res://assets/sprites/enemies/" + id + "_idle.gif") as Texture2D
+	var tex := _load_enemy_hurt(id) if hurt else _load_enemy_idle(id)
 	_enemy_cache[key] = tex
 	return tex
+
+static func _load_enemy_hurt(id: String) -> Texture2D:
+	var path := "res://assets/sprites/enemies/" + id + "_hurt.png"
+	var tex := load(path) as Texture2D
+	if tex == null:
+		return _load_enemy_idle(id)
+	return tex
+
+static func _load_enemy_idle(id: String) -> Texture2D:
+	var count := int(_enemy_frames.get(id, 1))
+	var anim := AnimatedTexture.new()
+	anim.fps = 15
+	anim.frames = count
+	for i in count:
+		anim.set_frame_texture(i, load("res://assets/sprites/enemies/frames/"
+				+ id + "/" + id + "_%03d.png" % i) as Texture2D)
+	return anim
 ```
-Note: moldsmal's idle rip is named `moldsmal_idle.gif` per Task 1 mapping (file `Moldsmal_battle.gif`).
+Note: AnimatedTexture.set_frame_texture requires each frame to be a valid Texture2D; frames were verified present in Task 1's test. If a frame fails to load, set_frame_texture logs an error — the Task 1 frame-count test guards this.
 
 - [ ] **Step 4: Run suite — verify pass.**
 
