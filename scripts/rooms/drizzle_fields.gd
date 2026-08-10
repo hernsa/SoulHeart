@@ -58,6 +58,7 @@ func _ready() -> void:
 	_spawn_encounters(parsed["encounters"])
 	_spawn_door(parsed["doors"])
 	_spawn_props()
+	_spawn_wisp(_player)
 	GameState.set_flag("current_room", ROOM_PATH)
 	Audio.play_music("drizzle")
 	Audio.play_sfx("door_close")
@@ -69,16 +70,26 @@ func _spawn_point(fallback: Vector2) -> Vector2:
 		return Vector2(float(sp[0]), float(sp[1]))
 	return fallback
 
+var _player: Node2D
+
 func _spawn_player(start: Vector2, grid: Array) -> void:
 	var player = load("res://scenes/Player.tscn").instantiate()
 	player.position = start
 	add_child(player)
+	_player = player
 	var cam := Camera2D.new()
 	var room := MapBuilder.room_pixel_size(grid)
 	cam.position = (room / 2.0).round()
 	add_child(cam)
 	if cam.is_inside_tree():
 		cam.make_current()
+
+func _spawn_wisp(player: Node2D) -> void:
+	var wisp := preload("res://scenes/Wisp.tscn").instantiate()
+	add_child(wisp)
+	wisp.target_player = wisp.get_path_to(player)
+	WispState.set_area("drizzle_fields")
+	print(WispDialogue.get_line("intro"))
 
 func _spawn_npc(pos: Vector2, dlg: String) -> void:
 	var npc = load("res://scripts/rooms/npc.gd").new()
