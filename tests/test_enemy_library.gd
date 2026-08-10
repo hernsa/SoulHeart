@@ -1,10 +1,21 @@
 extends RefCounted
 
+const NEW_MOB_IDS := [
+	"reminisc", "hushroom", "paneic", "squish", "sentimint",
+	"repeato", "toadally", "punkin", "nullaby", "quibble",
+	"margin", "lookey", "remembran",
+]
+
 func test_all_enemies_present() -> void:
 	var ids := EnemyLibrary.enemy_ids()
-	TestHelper.eq(ids.size(), 6, "six enemies")
+	TestHelper.eq(ids.size(), 19, "nineteen enemies")
 	for id in ["froggit", "whimsun", "moldsmal", "loox", "vegetoid", "migosp"]:
 		TestHelper.is_true(ids.has(id), "has enemy: " + id)
+
+func test_library_has_all_new_mobs() -> void:
+	for mob_id in NEW_MOB_IDS:
+		var e: Dictionary = EnemyLibrary.get_enemy(mob_id)
+		TestHelper.is_true(not e.is_empty(), "%s must exist" % mob_id)
 
 func test_froggit_profile() -> void:
 	var e := EnemyLibrary.get_enemy("froggit")
