@@ -37,13 +37,9 @@ static func FLOOR_VARIANT(x: int, y: int) -> Vector2i:
 	return GameTiles.FLOOR_A if (x + y) % 2 == 0 else GameTiles.FLOOR_B
 
 static func _make_tree(x: int, y: int) -> Node2D:
-	var tree: Node2D = Node2D.new()
+	var tree := RoomTree.new()
 	tree.name = "Tree"
 	tree.position = Vector2(x * 16 + 8, y * 16 + 8)
-	var spr := Sprite2D.new()
-	spr.texture = load("res://assets/sprites/overworld/tree_pine.png")
-	spr.position = Vector2(0, 8)
-	tree.add_child(spr)
 	return tree
 
 static func room_pixel_size(grid: Array) -> Vector2:
