@@ -1,0 +1,10 @@
+cell (3, 0): layers=1
+  layer 0: 1 polygons
+    poly 0 points: [(0.0, 0.0), (16.0, 0.0), (16.0, 16.0), (0.0, 16.0)]
+cell (0, 1): layers=1
+  layer 0: 1 polygons
+    poly 0 points: [(0.0, 0.0), (16.0, 0.0), (16.0, 16.0), (0.0, 16.0)]
+cell (3, 1): layers=0
+INTERSECT SHAPE at player: 1 hits
+  hit: Player:<CharacterBody2D#53687093161> at (56.0, 40.0)
+PROBE DONE
