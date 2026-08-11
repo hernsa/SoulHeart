@@ -4,6 +4,8 @@ const MUSIC := {
 	"title": preload("res://assets/audio/music/mus_t.ogg"),
 	"drizzle": preload("res://assets/audio/music/mus_room.ogg"),
 	"grumble": preload("res://assets/audio/music/mus_snowdin.ogg"),
+	"echo": preload("res://assets/audio/music/mus_echo.wav"),
+	"hometown": preload("res://assets/audio/music/mus_hometown.wav"),
 	"battle": preload("res://assets/audio/music/mus_battle1.ogg"),
 	"death": preload("res://assets/audio/music/mus_dontgiveup.ogg"),
 	"door_open": preload("res://assets/audio/music/mus_dooropen.ogg"),
@@ -65,8 +67,7 @@ func play_music(id: String) -> void:
 		return
 	_music_swap_prev(_music.stream)
 	_music.stream = stream
-	if stream is AudioStreamOggVorbis:
-		stream.loop = true
+	setup_stream_loop(stream)
 	_music.volume_db = 0.0
 	_music.play()
 
@@ -104,6 +105,12 @@ func play_sfx(id: String, pitch: float = 1.0) -> void:
 	p.stream = stream
 	p.pitch_scale = pitch
 	p.play()
+
+static func setup_stream_loop(stream: AudioStream) -> void:
+	if stream is AudioStreamOggVorbis:
+		stream.loop = true
+	elif stream is AudioStreamWAV:
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 
 func _warn_once(what: String, id: String) -> void:
 	var key := what + ":" + id
