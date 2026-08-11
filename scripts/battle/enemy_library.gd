@@ -376,3 +376,18 @@ static func act_by_label(acts: Array, label: String) -> Dictionary:
 		if str(act.get("label", "")) == label:
 			return act
 	return {}
+
+static func apply_form(target: Dictionary, form: Dictionary) -> Dictionary:
+	for key in ["name", "hp", "def", "spare_after", "acts", "attack_lines",
+			"patterns", "intro_line", "sprite_id"]:
+		if form.has(key):
+			target[key] = form[key]
+	return target
+
+static func monologue_lines(monologue: Array, hp_frac: float, shown: Array) -> Array:
+	var out: Array = []
+	for line in monologue:
+		var at: float = float(line.get("at", 1.0))
+		if at >= hp_frac and not shown.has(at):
+			out.append(line)
+	return out
