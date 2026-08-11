@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/rooms/cracks.gd" id="1_cracks"]
+
+[node name="Cracks" type="Node2D"]
+script = ExtResource("1_cracks")
