@@ -459,6 +459,9 @@ func _resolve_fight() -> void:
 		_spawn_vaporize_poof(_enemy_sprite.position)
 		_enemy_sprite.visible = false
 		await get_tree().create_timer(0.3).timeout
+		var ending_id := Ending.end_for_victory(str(GameState.flags.get("pending_enemy", "")))
+		if not ending_id.is_empty():
+			GameState.set_flag("keeper_victory", ending_id)
 		_end_battle()
 	else:
 		_enemy_turn()

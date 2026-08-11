@@ -70,6 +70,10 @@ func _ready() -> void:
 	Audio.play_music("drizzle")
 	Audio.play_sfx("door_close")
 	Fade.fade_from_black(0.67)
+	var victory := str(GameState.flags.get("keeper_victory", ""))
+	if not victory.is_empty():
+		GameState.flags.erase("keeper_victory")
+		await Ending.play_ending(victory, get_tree())
 
 func _spawn_point(fallback: Vector2) -> Vector2:
 	if GameState.flags.has("current_room") and str(GameState.flags["current_room"]) == ROOM_PATH and GameState.flags.has("save_point"):
