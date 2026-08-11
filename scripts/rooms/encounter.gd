@@ -1,6 +1,7 @@
 extends Area2D
 
 @export var enemy_id := "froggit"
+@export var boss := false
 var used := false
 
 func _ready() -> void:
@@ -23,6 +24,9 @@ func _ready() -> void:
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("player") and not used:
 		used = true
+		if boss:
+			GameState.set_flag("last_boss_save", enemy_id)
+			GameState.save_game()
 		GameState.set_flag("pending_enemy", enemy_id)
 		GameState.set_flag("from_room", str(GameState.flags.get("current_room", "res://scenes/rooms/DrizzleFields.tscn")))
 		_show_bang()

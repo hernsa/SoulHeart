@@ -5,6 +5,11 @@ const ROOM_PATH := "res://scenes/rooms/Cracks.tscn"
 
 const ENCOUNTER_ENEMIES: Array[String] = ["lookey", "remembran"]
 
+const BOSSES: Array[Dictionary] = [
+	{"id": "index", "pos": Vector2(328, 248)},
+	{"id": "canon_true", "pos": Vector2(88, 392)},
+]
+
 const DOOR_TARGETS: Array[Dictionary] = [
 	{"target_room": "res://scenes/rooms/Canon.tscn", "target_spawn": Vector2(600, 232)},
 ]
@@ -56,6 +61,7 @@ func _ready() -> void:
 	_spawn_player(start, parsed["grid"])
 	_spawn_save_points(parsed["save_points"])
 	_spawn_encounters(parsed["encounters"])
+	_spawn_bosses()
 	_spawn_door(parsed["doors"])
 	_spawn_props()
 	_spawn_wisp(_player)
@@ -112,6 +118,14 @@ func _spawn_encounters(points: Array) -> void:
 		var enc = load("res://scripts/rooms/encounter.gd").new()
 		enc.enemy_id = ENCOUNTER_ENEMIES[i % ENCOUNTER_ENEMIES.size()]
 		enc.position = points[i]
+		add_child(enc)
+
+func _spawn_bosses() -> void:
+	for b in BOSSES:
+		var enc = load("res://scripts/rooms/encounter.gd").new()
+		enc.enemy_id = str(b["id"])
+		enc.boss = true
+		enc.position = b["pos"]
 		add_child(enc)
 
 func _spawn_door(doors: Array) -> void:
