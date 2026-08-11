@@ -312,6 +312,8 @@ static func player_frisk_texture(facing: int, step: int) -> Texture2D:
 	var rect := Rect2i(col * 19, row * 29, 19, 29)
 	var out: Image = Image.create(19, 29, false, Image.FORMAT_RGBA8)
 	out.blit_rect(_frisk_sheet, rect, Vector2i.ZERO)
+	if facing == 2:
+		out.flip_x()
 	var tex: Texture2D = ImageTexture.create_from_image(out)
 	_frisk_cache[key] = tex
 	return tex
