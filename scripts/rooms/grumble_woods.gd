@@ -5,6 +5,11 @@ const ROOM_PATH := "res://scenes/rooms/GrumbleWoods.tscn"
 
 const ENCOUNTER_ENEMIES: Array[String] = ["migosp", "loox"]
 
+const DOOR_TARGETS: Array[Dictionary] = [
+	{"target_room": "res://scenes/rooms/Echo.tscn", "target_spawn": Vector2(40, 232)},
+	{"target_room": "res://scenes/rooms/DrizzleFields.tscn", "target_spawn": Vector2(520, 392)},
+]
+
 const LAYOUT := """
 ########################################
 #..P...................................#
@@ -26,10 +31,10 @@ const LAYOUT := """
 #......T.....TT..TT............T.......#
 #.................T....................#
 #..T..........T......T..........T......#
-#.....................T...........T....#
 #..............TT................TT....#
 #..T.....T..............T..............#
 #.........E...........T..T.............#
+#.....................................D#
 #......................TT........T.....#
 #..T......T.......................T....#
 #.............................T..T..D..#
@@ -115,10 +120,10 @@ func _spawn_encounters(points: Array) -> void:
 		add_child(enc)
 
 func _spawn_door(doors: Array) -> void:
-	if doors.is_empty():
-		return
-	var door = load("res://scripts/rooms/door.gd").new()
-	door.target_room = "res://scenes/rooms/DrizzleFields.tscn"
-	door.target_spawn = DRIZZLE_SPAWN
-	door.position = doors[0]["pos"]
-	add_child(door)
+	for i in doors.size():
+		var cfg: Dictionary = DOOR_TARGETS[i % DOOR_TARGETS.size()]
+		var door = load("res://scripts/rooms/door.gd").new()
+		door.target_room = cfg["target_room"]
+		door.target_spawn = cfg["target_spawn"]
+		door.position = doors[i]["pos"]
+		add_child(door)
