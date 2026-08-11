@@ -270,6 +270,7 @@ This is too large for one plan. Decomposed into **4 sub-plans**, each self-conta
 - Wisp leitmotif + 4 new area themes + credits + Hollow silence-track.
 - Final commit, export, delivery kit, README rewrite.
 - **Shippable:** full playable game.
+- **Plan D: COMPLETE** (branch plan-d-story; 6 edit events at The Canon, save point echoes, Old Dreamer + 3 ending doors at The Cracks, 3 endings, 5 new area themes + 2 new SFX, keeper battle via canon_true, export + boot verified).
 
 Each plan produces a working, testable build that adds content to the existing world.
 
