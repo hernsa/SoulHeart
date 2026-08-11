@@ -12,6 +12,12 @@ var rule := Rule.NONE
 var behavior := "straight"
 var phase := 0.0
 var orbit_center := Vector2.ZERO
+var edit_at := -1.0
+var edit_btype := Type.PELLET
+var edit_rule := Rule.NONE
+var edit_vel := Vector2.ZERO
+var edited := false
+var _sprite: Sprite2D
 
 func setup(d: Dictionary) -> void:
 	var pos: Vector2 = d.get("pos", Vector2.ZERO)
@@ -27,6 +33,23 @@ func setup(d: Dictionary) -> void:
 	var spr := Sprite2D.new()
 	spr.texture = Sprites.bullet_texture_for(btype)
 	add_child(spr)
+	_sprite = spr
+	if behavior == "edit":
+		edit_at = float(d.get("edit_at", 0.5))
+		edit_btype = int(d.get("edit_btype", btype))
+		edit_rule = int(d.get("edit_rule", Rule.NONE))
+		edit_vel = d.get("edit_vel", vel)
+		edited = false
+
+func _apply_edit() -> void:
+	if edited:
+		return
+	edited = true
+	btype = edit_btype
+	rule = edit_rule
+	vel = edit_vel
+	if _sprite != null:
+		_sprite.texture = Sprites.bullet_texture_for(btype)
 
 func dead() -> bool:
 	return life <= 0.0

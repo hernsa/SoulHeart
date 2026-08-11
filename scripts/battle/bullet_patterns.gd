@@ -25,6 +25,9 @@ static func make(pattern: Dictionary, heart_pos: Vector2) -> Array[Dictionary]:
 			return _with_rule(_spear_volley(count, speed, origin), rule, Bullet.Type.SPEAR)
 		"laser_sweep":
 			return _with_rule(_laser_sweep(count, origin), rule, Bullet.Type.LASER)
+		"edit":
+			return _edit(count, float(pattern.get("speed", 90.0)), rule, base_type,
+					float(pattern.get("edit_at", 0.5)), origin, heart_pos)
 		_:
 			return _with_rule(burst(count, speed, dir, origin), rule, base_type)
 
@@ -106,4 +109,22 @@ static func _laser_sweep(count: int, origin: Vector2) -> Array[Dictionary]:
 	for i in count:
 		out.append({"pos": Vector2(-40.0, origin.y + i * 90.0), "vel": Vector2(180.0, 0.0),
 				"life": 5.0, "size": 8.0})
+	return out
+
+static func _edit(count: int, speed: float, rule: int, btype: int, edit_at: float,
+		origin: Vector2, heart_pos: Vector2) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for i in count:
+		var angle := (TAU / count) * i
+		var vel := Vector2.from_angle(angle) * speed
+		out.append({
+			"pos": heart_pos, "vel": vel, "life": 4.0, "size": 3.0,
+			"type": btype, "rule": rule,
+			"behavior": "edit",
+			"edit_at": edit_at + i * 0.08,
+			"edit_btype": btype,
+			"edit_rule": Bullet.Rule.ORANGE if rule == Bullet.Rule.BLUE else Bullet.Rule.BLUE,
+			"edit_vel": vel.rotated(PI * 0.5),
+			"phase": 0.0,
+		})
 	return out

@@ -82,6 +82,10 @@ func _process(delta: float) -> void:
 				b.position += b.vel * delta
 			"orbit":
 				b.position = b.orbit_center + Vector2.from_angle(b.phase * 2.0) * 80.0
+			"edit":
+				if not b.edited and b.phase >= b.edit_at:
+					b._apply_edit()
+				b.position += b.vel * delta
 			_:
 				b.position += b.vel * delta
 		b.life -= delta
