@@ -4,9 +4,13 @@ func test_floors_load() -> void:
 	for f in ["ruins_floor.png", "ruins_floor_b.png", "snowdin_floor.png", "snowdin_floor_b.png"]:
 		TestHelper.is_true(ResourceLoader.exists("res://assets/sprites/tiles/" + f),
 				"floor asset missing: " + f)
+	for f in ["echo_floor.png", "echo_floor_b.png", "hometown_floor.png", "hometown_floor_b.png",
+			"canon_floor.png", "canon_floor_b.png", "cracks_floor.png", "cracks_floor_b.png"]:
+		TestHelper.is_true(ResourceLoader.exists("res://assets/sprites/tiles/" + f),
+				"floor asset missing: " + f)
 
 func test_floor_tiles_seamless_horizontal() -> void:
-	for style in [GameTiles.RUINS_STYLE, GameTiles.SNOWDIN_STYLE]:
+	for style in GameTiles.AREA_STYLES:
 		var img := Image.load_from_file("res://assets/sprites/tiles/%s_floor.png" % style)
 		for y in 16:
 			var left := img.get_pixel(0, y)
@@ -15,7 +19,7 @@ func test_floor_tiles_seamless_horizontal() -> void:
 					"%s row %d left != right (seamless fail)" % [style, y])
 
 func test_floor_tiles_seamless_vertical() -> void:
-	for style in [GameTiles.RUINS_STYLE, GameTiles.SNOWDIN_STYLE]:
+	for style in GameTiles.AREA_STYLES:
 		var img := Image.load_from_file("res://assets/sprites/tiles/%s_floor.png" % style)
 		for x in 16:
 			var top := img.get_pixel(x, 0)
@@ -24,7 +28,7 @@ func test_floor_tiles_seamless_vertical() -> void:
 					"%s col %d top != bottom (seamless fail)" % [style, x])
 
 func test_floor_b_variants_seamless_and_distinct() -> void:
-	for style in [GameTiles.RUINS_STYLE, GameTiles.SNOWDIN_STYLE]:
+	for style in GameTiles.AREA_STYLES:
 		var a := Image.load_from_file("res://assets/sprites/tiles/%s_floor.png" % style)
 		var b := Image.load_from_file("res://assets/sprites/tiles/%s_floor_b.png" % style)
 		TestHelper.is_true(a.get_data() != b.get_data(),

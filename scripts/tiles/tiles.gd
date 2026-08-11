@@ -4,6 +4,14 @@ enum Tile { FLOOR = 0, WALL = 1, TREE = 2 }
 
 const RUINS_STYLE := "ruins"
 const SNOWDIN_STYLE := "snowdin"
+const ECHO_STYLE := "echo"
+const HOMETOWN_STYLE := "hometown"
+const CANON_STYLE := "canon"
+const CRACKS_STYLE := "cracks"
+
+const AREA_STYLES: Array[String] = [
+	RUINS_STYLE, SNOWDIN_STYLE, ECHO_STYLE, HOMETOWN_STYLE, CANON_STYLE, CRACKS_STYLE,
+]
 
 const FLOOR_A := Vector2i(0, 0)
 const FLOOR_B := Vector2i(1, 0)
