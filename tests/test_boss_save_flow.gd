@@ -38,7 +38,7 @@ func test_normal_trigger_skips_autosave() -> void:
 func test_room_boss_consts() -> void:
 	var rooms: Array[Dictionary] = [
 		{"script": "res://scripts/rooms/canon.gd", "want": ["mourning_knight"]},
-		{"script": "res://scripts/rooms/cracks.gd", "want": ["index", "canon_true"]},
+		{"script": "res://scripts/rooms/cracks.gd", "want": ["index"]},
 	]
 	for r in rooms:
 		var script := load(r["script"])

@@ -7,7 +7,6 @@ const ENCOUNTER_ENEMIES: Array[String] = ["lookey", "remembran"]
 
 const BOSSES: Array[Dictionary] = [
 	{"id": "index", "pos": Vector2(328, 248)},
-	{"id": "canon_true", "pos": Vector2(88, 392)},
 ]
 
 const DOOR_TARGETS: Array[Dictionary] = [
@@ -64,6 +63,8 @@ func _ready() -> void:
 	_spawn_bosses()
 	_spawn_door(parsed["doors"])
 	_spawn_props()
+	_spawn_dreamer()
+	_spawn_ending_doors()
 	_spawn_wisp(_player)
 	GameState.set_flag("current_room", ROOM_PATH)
 	Audio.play_music("drizzle")
@@ -106,6 +107,31 @@ func _spawn_props() -> void:
 		p.scale = Vector2(0.5, 0.5)
 		p.position = spots[i]
 		add_child(p)
+
+func _spawn_dreamer() -> void:
+	var npc = load("res://scripts/rooms/npc.gd").new()
+	npc.dialogue_file = "res://dialogue/old_dreamer.dlg"
+	npc.position = Vector2(320, 360)
+	npc._spawn_sprite(Sprites.prop_texture("old_dreamer.png"), Vector2(1.0, 1.0))
+	var shape := CollisionShape2D.new()
+	var circ := CircleShape2D.new()
+	circ.radius = 12.0
+	shape.shape = circ
+	npc.add_child(shape)
+	npc.body_entered.connect(npc._on_body_entered)
+	add_child(npc)
+
+func _spawn_ending_doors() -> void:
+	var doors: Array[Dictionary] = [
+		{"id": "keeper", "pos": Vector2(120, 440)},
+		{"id": "wanderer", "pos": Vector2(320, 440)},
+		{"id": "hollow", "pos": Vector2(520, 440)},
+	]
+	for d in doors:
+		var door = load("res://scripts/world/ending_door.gd").new()
+		door.door_id = str(d["id"])
+		door.position = d["pos"]
+		add_child(door)
 
 func _spawn_save_points(points: Array) -> void:
 	for p in points:
