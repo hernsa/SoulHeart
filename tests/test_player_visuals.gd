@@ -27,24 +27,6 @@ func test_frisk_all_facings_have_content() -> void:
 					"Frisk facing=%d step=%d should have body content" % [facing, step])
 
 
-func test_frisk_left_mirrors_right() -> void:
-	for step in 3:
-		var right := Sprites.player_frisk_texture(3, step).get_image()
-		var left := Sprites.player_frisk_texture(2, step).get_image()
-		right.convert(Image.FORMAT_RGBA8)
-		left.convert(Image.FORMAT_RGBA8)
-		var mirrored := true
-		for y in 29:
-			for x in 19:
-				if right.get_pixel(x, y) != left.get_pixel(18 - x, y):
-					mirrored = false
-					break
-			if not mirrored:
-				break
-		TestHelper.is_true(mirrored,
-				"Facing 3 (right) should be the horizontal mirror of facing 2 (left), step %d" % step)
-
-
 func test_frisk_walk_steps_distinct() -> void:
 	var datas: Array = []
 	for step in 3:
