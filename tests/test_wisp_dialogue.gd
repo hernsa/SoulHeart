@@ -34,3 +34,18 @@ func test_lines_cycle_through_file() -> void:
 	var first := WispDialogue.get_line("drizzle")
 	var second := WispDialogue.get_line("drizzle")
 	TestHelper.is_true(first != second, "sequential drizzle lines must differ (cycle)")
+
+func test_area_contexts_non_empty() -> void:
+	for ctx in ["echo", "hometown", "canon", "cracks"]:
+		var line := WispDialogue.get_line(ctx)
+		TestHelper.is_true(line.length() > 0, "%s line must be non-empty" % ctx)
+
+func test_area_contexts_cycle_after_repeat_calls() -> void:
+	var first := WispDialogue.get_line("echo")
+	var second := WispDialogue.get_line("echo")
+	TestHelper.is_true(first != second, "echo lines must cycle (3 distinct lines file)")
+
+func test_new_area_dlg_files_exist() -> void:
+	for ctx in ["echo", "hometown", "canon", "cracks"]:
+		var path := "res://dialogue/wisp_%s.dlg" % ctx
+		TestHelper.is_true(FileAccess.file_exists(path), "missing %s" % path)
