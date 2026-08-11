@@ -10,6 +10,11 @@ const MUSIC := {
 	"death": preload("res://assets/audio/music/mus_dontgiveup.ogg"),
 	"door_open": preload("res://assets/audio/music/mus_dooropen.ogg"),
 	"door_close": preload("res://assets/audio/music/mus_doorclose.ogg"),
+	"canon": preload("res://assets/audio/music/mus_canon.wav"),
+	"cracks": preload("res://assets/audio/music/mus_cracks.wav"),
+	"credits": preload("res://assets/audio/music/mus_credits.wav"),
+	"hollow": preload("res://assets/audio/music/mus_hollow.wav"),
+	"wisp": preload("res://assets/audio/music/mus_wisp.wav"),
 }
 
 const SFX := {
@@ -29,6 +34,8 @@ const SFX := {
 	"slice": preload("res://assets/audio/sfx/slice.wav"),
 	"vaporize": preload("res://assets/audio/sfx/vaporize.wav"),
 	"levelup": preload("res://assets/audio/sfx/levelup.wav"),
+	"edit_bell": preload("res://assets/audio/sfx/edit_bell.wav"),
+	"door_seal": preload("res://assets/audio/sfx/door_seal.wav"),
 }
 
 const SFX_POOL_SIZE := 8

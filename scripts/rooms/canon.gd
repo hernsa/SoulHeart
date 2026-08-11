@@ -76,7 +76,7 @@ func _ready() -> void:
 	_spawn_edit_events()
 	_spawn_wisp(_player)
 	GameState.set_flag("current_room", ROOM_PATH)
-	Audio.play_music("grumble")
+	Audio.play_music("canon")
 	Audio.play_sfx("door_close")
 	Fade.fade_from_black(0.67)
 

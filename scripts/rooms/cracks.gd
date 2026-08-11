@@ -67,7 +67,7 @@ func _ready() -> void:
 	_spawn_ending_doors()
 	_spawn_wisp(_player)
 	GameState.set_flag("current_room", ROOM_PATH)
-	Audio.play_music("drizzle")
+	Audio.play_music("cracks")
 	Audio.play_sfx("door_close")
 	Fade.fade_from_black(0.67)
 	var victory := str(GameState.flags.get("keeper_victory", ""))
