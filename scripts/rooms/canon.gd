@@ -9,6 +9,15 @@ const BOSSES: Array[Dictionary] = [
 	{"id": "mourning_knight", "pos": Vector2(328, 248)},
 ]
 
+const EDIT_EVENTS: Array[Dictionary] = [
+	{"id": "shelf_book", "pos": Vector2(72, 40), "prompt": "A bookshelf gains a book you might have read."},
+	{"id": "wall_window", "pos": Vector2(584, 40), "prompt": "A wall gains a window. Outside, it is raining somewhere."},
+	{"id": "door_moves", "pos": Vector2(72, 424), "prompt": "A door that led somewhere now leads elsewhere."},
+	{"id": "name_changes", "pos": Vector2(584, 424), "prompt": "A sign's name changes. The old name was almost yours."},
+	{"id": "portrait", "pos": Vector2(296, 72), "prompt": "A portrait appears on the wall. It is not anyone you know."},
+	{"id": "floor_crack", "pos": Vector2(360, 424), "prompt": "A crack in the floor closes. The floor is still deciding."},
+]
+
 const DOOR_TARGETS: Array[Dictionary] = [
 	{"target_room": "res://scenes/rooms/Hometown.tscn", "target_spawn": Vector2(600, 232)},
 	{"target_room": "res://scenes/rooms/Cracks.tscn", "target_spawn": Vector2(40, 232)},
@@ -64,6 +73,7 @@ func _ready() -> void:
 	_spawn_bosses()
 	_spawn_door(parsed["doors"])
 	_spawn_props()
+	_spawn_edit_events()
 	_spawn_wisp(_player)
 	GameState.set_flag("current_room", ROOM_PATH)
 	Audio.play_music("grumble")
@@ -106,6 +116,14 @@ func _spawn_props() -> void:
 		p.scale = Vector2(0.5, 0.5)
 		p.position = spots[i]
 		add_child(p)
+
+func _spawn_edit_events() -> void:
+	for e in EDIT_EVENTS:
+		var ev = load("res://scripts/world/edit_event.gd").new()
+		ev.event_id = str(e["id"])
+		ev.prompt = str(e["prompt"])
+		ev.position = e["pos"]
+		add_child(ev)
 
 func _spawn_save_points(points: Array) -> void:
 	for p in points:
