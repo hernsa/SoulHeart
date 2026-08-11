@@ -22,6 +22,18 @@ static func parse(ascii: String) -> Dictionary:
 					tile = int(GameTiles.Tile.WALL)
 				"T":
 					tile = int(GameTiles.Tile.TREE)
+				"t":
+					tile = int(GameTiles.Tile.PINE2)
+				"b":
+					tile = int(GameTiles.Tile.BIRCH)
+				"d":
+					tile = int(GameTiles.Tile.DEAD)
+				"B":
+					tile = int(GameTiles.Tile.BUSH)
+				"M":
+					tile = int(GameTiles.Tile.MUSHROOM)
+				"g":
+					tile = int(GameTiles.Tile.GRASS)
 				".":
 					tile = int(GameTiles.Tile.FLOOR)
 			cells.append(tile)

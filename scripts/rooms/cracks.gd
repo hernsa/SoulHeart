@@ -15,8 +15,8 @@ const DOOR_TARGETS: Array[Dictionary] = [
 
 const LAYOUT := """
 ########################################
-#P...................................#
 #......................................#
+#..P....................................
 #......................................#
 #.............E........................#
 #......................................#
@@ -54,6 +54,8 @@ func _ready() -> void:
 	add_child(room["tilemap"])
 	for t in room["trees"]:
 		add_child(t)
+	for pr in room["props"]:
+		add_child(pr)
 	var tint := CanvasModulate.new()
 	tint.color = Color(0.62, 0.62, 0.8)
 	add_child(tint)
@@ -166,3 +168,7 @@ func _spawn_door(doors: Array) -> void:
 		door.target_spawn = cfg["target_spawn"]
 		door.position = doors[i]["pos"]
 		add_child(door)
+
+
+
+

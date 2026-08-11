@@ -10,6 +10,7 @@ var _sprite: Sprite2D
 var _shadow: Sprite2D
 
 func _ready() -> void:
+	y_sort_enabled = true
 	_sprite = $Sprite2D
 	_sprite.texture = Sprites.player_frisk_texture(0, 0)
 	_shadow = Sprite2D.new()

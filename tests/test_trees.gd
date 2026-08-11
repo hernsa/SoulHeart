@@ -13,7 +13,7 @@ func test_tree_position_and_sprite() -> void:
 	var tree: RoomTree = room["trees"][0]
 	TestHelper.eq(tree.position, Vector2(8, 24), "tree centered on cell (0,1)")
 	TestHelper.is_true(tree.texture != null, "tree has pine texture")
-	TestHelper.eq(tree.z_index, 1, "tree draws above floor")
+	TestHelper.eq(tree.z_index, 0, "tree shares y-sort layer with player")
 	TestHelper.is_true(tree.y_sort_enabled, "tree y-sorts with player")
 
 func test_tree_trunk_collision_narrow() -> void:

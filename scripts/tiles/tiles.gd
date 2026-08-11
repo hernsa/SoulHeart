@@ -1,6 +1,6 @@
 class_name GameTiles
 
-enum Tile { FLOOR = 0, WALL = 1, TREE = 2 }
+enum Tile { FLOOR = 0, WALL = 1, TREE = 2, PINE2 = 3, BIRCH = 4, DEAD = 5, BUSH = 6, MUSHROOM = 7, GRASS = 8 }
 
 const RUINS_STYLE := "ruins"
 const SNOWDIN_STYLE := "snowdin"

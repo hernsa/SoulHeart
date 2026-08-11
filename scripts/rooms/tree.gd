@@ -5,7 +5,7 @@ var _shadow: Sprite2D
 
 func _init() -> void:
 	texture = load("res://assets/sprites/overworld/tree_pine.png")
-	z_index = 1
+	z_index = 0
 	y_sort_enabled = true
 	_shadow = Sprite2D.new()
 	_shadow.texture = load("res://assets/sprites/shadow_ellipse.png")

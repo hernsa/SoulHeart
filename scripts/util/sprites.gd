@@ -314,6 +314,31 @@ static func player_frisk_texture(facing: int, step: int) -> Texture2D:
 	out.blit_rect(_frisk_sheet, rect, Vector2i.ZERO)
 	if facing == 2:
 		out.flip_x()
+	out = _outline(out)
 	var tex: Texture2D = ImageTexture.create_from_image(out)
 	_frisk_cache[key] = tex
 	return tex
+
+static func _outline(img: Image) -> Image:
+	var w := img.get_width()
+	var h := img.get_height()
+	var edge := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	edge.blit_rect(img, Rect2i(0, 0, w, h), Vector2i.ZERO)
+	for y in h:
+		for x in w:
+			if img.get_pixel(x, y).a > 0.4:
+				continue
+			if _neighbor_opaque(img, x, y, w, h):
+				edge.set_pixel(x, y, Color(0.08, 0.05, 0.12, 0.65))
+	return edge
+
+static func _neighbor_opaque(img: Image, x: int, y: int, w: int, h: int) -> bool:
+	if x > 0 and img.get_pixel(x - 1, y).a > 0.4:
+		return true
+	if x < w - 1 and img.get_pixel(x + 1, y).a > 0.4:
+		return true
+	if y > 0 and img.get_pixel(x, y - 1).a > 0.4:
+		return true
+	if y < h - 1 and img.get_pixel(x, y + 1).a > 0.4:
+		return true
+	return false

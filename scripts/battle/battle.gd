@@ -115,6 +115,12 @@ func _spawn_enemy_sprite() -> void:
 	_enemy_sprite.position = Vector2(216, 136)
 	_enemy_sprite.scale = Vector2(0.8, 0.8)
 	add_child(_enemy_sprite)
+	var shadow := Sprite2D.new()
+	shadow.texture = load("res://assets/sprites/shadow_ellipse.png")
+	shadow.position = Vector2(216, 152)
+	shadow.modulate = Color(0, 0, 0, 0.4)
+	shadow.z_index = -1
+	add_child(shadow)
 	if _hp_bar_bg != null:
 		_hp_bar_bg.position = Vector2(207, 161)
 	if _hp_bar != null:
@@ -278,7 +284,9 @@ func _process(delta: float) -> void:
 	if _ending:
 		return
 	if _enemy_in:
-		_enemy_sprite.position.y = 136.0 + sin(Time.get_ticks_msec() * 0.003) * 2.0
+		var t := Time.get_ticks_msec() * 0.004
+		_enemy_sprite.position.y = 136.0 + sin(Time.get_ticks_msec() * 0.003) * 3.0
+		_enemy_sprite.scale = Vector2(0.8 * (1.0 + sin(t + 1.5) * 0.015), 0.8 * (1.0 + sin(t) * 0.02))
 		_enemy_hp_display = CombatMath.drain_toward(_enemy_hp_display, float(_enemy["hp"]), delta, 40.0)
 		_hp_bar.size.x = 16.0 * (_enemy_hp_display / float(_enemy_max_hp))
 	match _state.phase:
