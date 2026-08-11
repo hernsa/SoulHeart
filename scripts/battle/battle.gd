@@ -43,11 +43,17 @@ var _menu_cursor: Sprite2D
 var _enemy_hp_display := 0.0
 var _enemy_in := false
 var _ending := false
+var _forms: Array = []
+var _form_index := 0
+var _monologue_shown: Array = []
+var _form_label: Label
 
 func _ready() -> void:
 	Audio.play_music("battle")
 	_build_ui()
 	_enemy = EnemyLibrary.get_enemy(str(GameState.flags.get("pending_enemy", "froggit")))
+	_forms = _enemy.get("forms", [])
+	_update_form_label()
 	_spawn_enemy_sprite()
 	_enemy_sprite.position = Vector2(216, -40)
 	_enemy_max_hp = int(_enemy["hp"])
@@ -77,6 +83,11 @@ func _build_ui() -> void:
 	_hp_label.add_theme_font_size_override("font_size", 16)
 	_hp_label.position = Vector2(30, 60)
 	add_child(_hp_label)
+	_form_label = Label.new()
+	_form_label.add_theme_font_size_override("font_size", 10)
+	_form_label.position = Vector2(30, 48)
+	_form_label.visible = false
+	add_child(_form_label)
 	_hp_bar_bg = ColorRect.new()
 	_hp_bar_bg.position = Vector2(207, 161)
 	_hp_bar_bg.size = Vector2(18, 6)
@@ -322,7 +333,10 @@ func _choose() -> void:
 		"ITEM":
 			_open_submenu(_item_labels(), "ITEM")
 		"MERCY":
-			_open_submenu(["Spare", "Flee"], "MERCY")
+			var mercy: Array[String] = ["Spare"]
+			if not bool(_enemy.get("no_flee", false)):
+				mercy.append("Flee")
+			_open_submenu(mercy, "MERCY")
 
 func _item_labels() -> Array[String]:
 	var out: Array[String] = []
@@ -392,12 +406,15 @@ func _resolve_submenu() -> void:
 				else:
 					await _say([{"speaker": "", "text": "%s wavers, but stays on guard." % _enemy["name"]}])
 			else:
-				if flee_roll(randf()):
+				if bool(_enemy.get("no_flee", false)):
+					await _say([{"speaker": "", "text": "There is nowhere to flee."}])
+				elif flee_roll(randf()):
 					Audio.play_sfx("flee")
 					await _say([{"speaker": "", "text": "You flee, heart pounding."}])
 					_end_battle()
 					return
-				await _say([{"speaker": "", "text": "But it failed."}])
+				else:
+					await _say([{"speaker": "", "text": "But it failed."}])
 	_refresh_enemy_ui()
 	_enemy_turn()
 
@@ -420,6 +437,21 @@ func _resolve_fight() -> void:
 		_refresh_enemy_ui()
 		await _say([{"speaker": "", "text": "You strike. %s takes %d damage." % [_enemy["name"], dmg]}])
 	if int(_enemy["hp"]) <= 0:
+		if _form_index < _forms.size() - 1:
+			_form_index += 1
+			EnemyLibrary.apply_form(_enemy, _forms[_form_index])
+			_enemy_max_hp = int(_enemy["hp"])
+			_enemy_hp_display = float(_enemy_max_hp)
+			_mood = 0
+			_enemy_sprite.texture = Sprites.battle_enemy_texture(_enemy["sprite_id"], false)
+			var form_flash := create_tween()
+			form_flash.tween_property(_enemy_sprite, "modulate", Color(3.0, 3.0, 3.0), 0.05)
+			form_flash.tween_property(_enemy_sprite, "modulate", Color(1, 1, 1), 0.1)
+			_refresh_enemy_ui()
+			_update_form_label()
+			await _say([{"speaker": "", "text": str(_enemy["intro_line"])}])
+			_enemy_turn()
+			return
 		_state.transition(BattleState.Phase.WIN)
 		GameState.add_kill()
 		GameState.player_stats["gold"] = int(GameState.player_stats["gold"]) + 2
@@ -445,6 +477,11 @@ func _spawn_damage_digit(amount: int, miss: bool) -> void:
 	t.chain().tween_callback(digit.queue_free)
 
 func _enemy_turn() -> void:
+	var hp_frac: float = float(_enemy["hp"]) / float(_enemy_max_hp) if _enemy_max_hp > 0 else 1.0
+	var monologue: Array = EnemyLibrary.monologue_lines(_enemy.get("monologue", []), hp_frac, _monologue_shown)
+	if not monologue.is_empty():
+		_monologue_shown.append(monologue[0]["at"])
+		await _say([{"speaker": str(monologue[0].get("speaker", "")), "text": str(monologue[0]["text"])}])
 	var attack_lines: Array = _enemy["attack_lines"]
 	var line: String = str(attack_lines[randi() % attack_lines.size()])
 	await _say([{"speaker": "", "text": line}])
@@ -491,6 +528,15 @@ func _enter_player_turn() -> void:
 	_menu_index = 0
 	_menu.visible = true
 	_update_menu_colors()
+
+func _update_form_label() -> void:
+	if _form_label == null:
+		return
+	if _forms.is_empty():
+		_form_label.visible = false
+	else:
+		_form_label.visible = true
+		_form_label.text = "FORM %d/%d" % [_form_index + 1, _forms.size()]
 
 func _refresh_enemy_ui() -> void:
 	_name_label.text = str(_enemy["name"])
