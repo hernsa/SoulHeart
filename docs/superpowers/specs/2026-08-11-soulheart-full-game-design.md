@@ -260,6 +260,7 @@ This is too large for one plan. Decomposed into **4 sub-plans**, each self-conta
 - The Canon true form (Keeper-only).
 - Boss ACT menus, multi-phase fight bar, save-before-boss flow.
 - **Shippable:** walk the whole game, beat bosses, but ending choice has no consequences yet.
+- **Plan C: COMPLETE** (branch plan-c-bosses; Mourning Knight mini-boss, Index 3-form final boss, Canon true form, boss ACT menus, multi-phase form fight bar, edit bullets, monologue lines, autosave before boss fights).
 
 **Plan D — Story system + Endings + Music + Edit events + Delivery**
 - Edit event system + 6 scripted edit events.
