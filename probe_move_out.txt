@@ -1,6 +1,6 @@
 Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
 
-Wisp: * The stones here remember being part of something larger.
+Wisp: * A small light drifts toward you. It smells like printer paper and cold coffee.
 SPAWN pos=(56.0, 40.0) slide_cols=0
   move_right vel=(60.0, 0.0) slide_cols=0
     delta=(68.00007, 0.0)

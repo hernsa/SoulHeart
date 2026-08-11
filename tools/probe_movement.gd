@@ -1,7 +1,7 @@
 extends Node2D
 
 func _ready() -> void:
-	var room: Node2D = load("res://scenes/rooms/GrumbleWoods.tscn").instantiate()
+	var room: Node2D = load("res://scenes/rooms/DrizzleFields.tscn").instantiate()
 	add_child(room)
 	await get_tree().process_frame
 	await get_tree().physics_frame
