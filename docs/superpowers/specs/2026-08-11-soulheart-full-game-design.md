@@ -252,6 +252,7 @@ This is too large for one plan. Decomposed into **4 sub-plans**, each self-conta
 - Doors + transitions from Murmur → Echo → Hometown → Canon → Cracks.
 - 2 area themes (Echo, Hometown). 4 new mob placements per area.
 - **Shippable:** walkable Ruins → Snowdin → Echo → Hometown → Canon → Cracks. No bosses yet.
+- **Plan B: COMPLETE** (branch plan-b-areas-3-6; Echo/Hometown/Canon/Cracks rooms, 4 tile styles, 2 area themes, 6-room door chain).
 
 **Plan C — Bosses + Mini-boss + Final fight**
 - The Mourning Knight (mini-boss).
