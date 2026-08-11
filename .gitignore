@@ -1,1 +1,8 @@
+.godot/
+tools/*.exe
+*.tmp
+.worktrees/
+.superpowers/
+*.import
+*.uid
 export_presets.cfg
