@@ -6,3 +6,5 @@ tools/*.exe
 *.import
 *.uid
 export_presets.cfg
+
+dist/
