@@ -16,6 +16,7 @@ static var _enemies := {
 		"patterns": [
 			{"type": "sine", "count": 5, "speed": 70.0, "rule": Bullet.Rule.BLUE},
 			{"type": "aimed", "count": 3, "speed": 110.0},
+			{"type": "weave", "count": 5, "speed": 80.0, "rule": Bullet.Rule.BLUE},
 		],
 	},
 	"whimsun": {
@@ -33,6 +34,7 @@ static var _enemies := {
 		"patterns": [
 			{"type": "sine", "count": 6, "speed": 60.0},
 			{"type": "ring", "count": 10, "speed": 80.0},
+			{"type": "gray_pass", "count": 6, "speed": 50.0},
 		],
 	},
 	"moldsmal": {
@@ -50,6 +52,7 @@ static var _enemies := {
 		"patterns": [
 			{"type": "burst", "count": 4, "speed": 60.0},
 			{"type": "burst", "count": 6, "speed": 90.0, "rule": Bullet.Rule.BLUE},
+			{"type": "rain", "count": 8, "speed": 70.0},
 		],
 	},
 	"loox": {
@@ -67,6 +70,7 @@ static var _enemies := {
 		"patterns": [
 			{"type": "fan", "count": 5, "spread": 50.0, "speed": 100.0},
 			{"type": "aimed", "count": 4, "speed": 130.0, "rule": Bullet.Rule.ORANGE},
+			{"type": "bait", "count": 4, "speed": 90.0, "telegraph": true},
 		],
 	},
 	"vegetoid": {
@@ -84,6 +88,7 @@ static var _enemies := {
 		"patterns": [
 			{"type": "ring", "count": 8, "speed": 70.0, "rule": Bullet.Rule.GREEN},
 			{"type": "fan", "count": 4, "spread": 40.0, "speed": 90.0},
+			{"type": "green_heal", "count": 6, "speed": 60.0},
 		],
 	},
 	"migosp": {
@@ -101,6 +106,7 @@ static var _enemies := {
 		"patterns": [
 			{"type": "spiral", "count": 8, "speed": 60.0},
 			{"type": "fan", "count": 6, "spread": 70.0, "speed": 110.0},
+			{"type": "beam_sweep", "count": 10},
 		],
 	},
 	"reminisc": _make_mob(
@@ -120,6 +126,7 @@ static var _enemies := {
 		[
 			{"type": "aimed", "count": 4, "speed": 70.0, "rule": Bullet.Rule.BLUE},
 			{"type": "ring", "count": 8, "speed": 35.0},
+			{"type": "gray_pass", "count": 6, "speed": 45.0, "rule": Bullet.Rule.GRAY},
 		],
 		"* A Reminisc flickers into view. It looks like it's remembering you from somewhere you haven't been.",
 	),
@@ -138,6 +145,7 @@ static var _enemies := {
 		[
 			{"type": "sine", "count": 6, "speed": 60.0, "rule": Bullet.Rule.BLUE},
 			{"type": "fan", "count": 5, "spread": 34.0, "speed": 80.0, "rule": Bullet.Rule.ORANGE},
+			{"type": "bait", "count": 5, "speed": 75.0, "telegraph": true},
 		],
 		"* A Hushroom tilts its cap toward you. It hums at a frequency just out of hearing.",
 	),
@@ -156,6 +164,7 @@ static var _enemies := {
 		[
 			{"type": "aimed", "count": 3, "speed": 90.0},
 			{"type": "ring", "count": 6, "speed": 30.0, "rule": Bullet.Rule.BLUE},
+			{"type": "rain", "count": 10, "speed": 60.0},
 		],
 		"* Pane-ic stands in front of you. It is exactly the size of a doorway.",
 	),
@@ -174,6 +183,7 @@ static var _enemies := {
 		[
 			{"type": "burst", "count": 8, "speed": 80.0, "rule": Bullet.Rule.ORANGE},
 			{"type": "spiral", "count": 12, "speed": 50.0},
+			{"type": "wall", "count": 9, "speed": 80.0},
 		],
 		"* Squi-sh jiggles nervously. It has not been squeezed in a long time.",
 	),
@@ -192,6 +202,7 @@ static var _enemies := {
 		[
 			{"type": "fan", "count": 7, "spread": 46.0, "speed": 70.0, "rule": Bullet.Rule.BLUE},
 			{"type": "aimed", "count": 5, "speed": 85.0, "rule": Bullet.Rule.ORANGE},
+			{"type": "homing", "count": 5, "speed": 50.0},
 		],
 		"* Senti-mint rests on your tongue. The first thing it tastes like is the word 'almost.'",
 	),
@@ -210,6 +221,7 @@ static var _enemies := {
 		[
 			{"type": "ring", "count": 10, "speed": 40.0},
 			{"type": "sine", "count": 6, "speed": 60.0, "rule": Bullet.Rule.ORANGE},
+			{"type": "weave", "count": 6, "speed": 65.0, "rule": Bullet.Rule.ORANGE},
 		],
 		"* Repeato opens its mouth. It is going to say something you've heard before.",
 	),
@@ -228,6 +240,7 @@ static var _enemies := {
 		[
 			{"type": "aimed", "count": 6, "speed": 80.0, "rule": Bullet.Rule.GREEN},
 			{"type": "burst", "count": 10, "speed": 70.0, "rule": Bullet.Rule.BLUE},
+			{"type": "green_heal", "count": 6, "speed": 55.0},
 		],
 		"* Toadally sits on a rock. It has been sitting on this rock for some time.",
 	),
@@ -246,6 +259,7 @@ static var _enemies := {
 		[
 			{"type": "bone_wall", "count": 7, "speed": 70.0},
 			{"type": "fan", "count": 5, "spread": 29.0, "speed": 80.0, "rule": Bullet.Rule.ORANGE},
+			{"type": "wall", "count": 8, "speed": 75.0},
 		],
 		"* A Pun-kin waddles in. It is absolutely going to say something.",
 	),
@@ -264,9 +278,10 @@ static var _enemies := {
 		[
 			{"type": "aimed", "count": 2, "speed": 50.0, "rule": Bullet.Rule.BLUE},
 			{"type": "sine", "count": 4, "speed": 40.0},
+			{"type": "bait", "count": 3, "speed": 55.0, "telegraph": true},
 		],
 		"* Nullaby is very small. It has not slept in a long time.",
-	),
+		"blue"),
 	"quibble": _make_mob(
 		"quibble", "Quibble", 10, 4, 2, 4, "quibble",
 		[
@@ -282,6 +297,7 @@ static var _enemies := {
 		[
 			{"type": "spear_volley", "count": 5, "speed": 90.0, "rule": Bullet.Rule.ORANGE},
 			{"type": "aimed", "count": 4, "speed": 75.0, "rule": Bullet.Rule.BLUE},
+			{"type": "homing", "count": 4, "speed": 55.0},
 		],
 		"* Quibble clears its throat. It has been waiting for someone to be wrong at.",
 	),
@@ -302,7 +318,7 @@ static var _enemies := {
 			{"type": "aimed", "count": 3, "speed": 60.0, "rule": Bullet.Rule.BLUE},
 		],
 		"* Mar-gin unrolls itself across the floor. It is older than the room.",
-	),
+		"purple"),
 	"lookey": _make_mob(
 		"lookey", "Loo-key", 12, 5, 2, 5, "lookey",
 		[
@@ -318,9 +334,10 @@ static var _enemies := {
 		[
 			{"type": "ring", "count": 8, "speed": 50.0, "rule": Bullet.Rule.GRAY},
 			{"type": "fan", "count": 6, "spread": 40.0, "speed": 80.0},
+			{"type": "gray_pass", "count": 8, "speed": 40.0, "rule": Bullet.Rule.GRAY},
 		],
 		"* Loo-key floats in front of you. It is the right key. Nothing here is the right lock.",
-	),
+		"green"),
 	"remembran": _make_mob(
 		"remembran", "Re-mem-bran", 18, 7, 4, 7, "remembran",
 		[
@@ -337,17 +354,22 @@ static var _enemies := {
 			{"type": "spiral", "count": 14, "speed": 60.0, "rule": Bullet.Rule.BLUE},
 			{"type": "burst", "count": 12, "speed": 85.0, "rule": Bullet.Rule.ORANGE},
 			{"type": "aimed", "count": 6, "speed": 90.0, "rule": Bullet.Rule.GRAY},
+			{"type": "beam_sweep", "count": 12},
 		],
 		"* Re-mem-bran stands very still. It is remembering something it will not tell you.",
 	),
 	"mourning_knight": {
 		"id": "mourning_knight", "name": "Mourning Knight",
 		"hp": 60, "atk": 5, "def": 2, "spare_after": 6,
-		"acts": [{"id": "mourn", "label": "* Mourn", "mood": 3,
+		"acts": [{"id": "check", "label": "* Check", "mood": 0,
+				"text": "* MOURNING KNIGHT - ATK 5 DEF 2. The armor remembers someone. It is waiting to be remembered back."},
+			 {"id": "mourn", "label": "* Mourn", "mood": 3,
 				"text": "* You kneel beside the empty armor. It sighs like a bell. The clank is smaller now."}],
 		"attack_lines": ["* It kneels. The grief is the attack.", "* It raises its visor. There is no one inside."],
 		"patterns": [{"type": "fan", "count": 4, "spread": 60.0, "speed": 50.0, "rule": Bullet.Rule.BLUE},
-				{"type": "aimed", "count": 2, "speed": 70.0, "rule": Bullet.Rule.ORANGE}],
+				{"type": "aimed", "count": 2, "speed": 70.0, "rule": Bullet.Rule.ORANGE},
+				{"type": "wall", "count": 10, "speed": 75.0, "rule": Bullet.Rule.BLUE},
+				{"type": "bait", "count": 6, "speed": 80.0, "telegraph": true}],
 		"intro_line": "* Mourning Knight. The armor remembers someone.",
 		"sprite_id": "mourning_knight",
 		"boss": true, "no_flee": true,
@@ -360,40 +382,53 @@ static var _enemies := {
 	"index": {
 		"id": "index", "name": "The Index — Cross-Out",
 		"hp": 40, "atk": 7, "def": 3, "spare_after": 5,
-		"acts": [{"id": "read", "label": "* Read", "mood": 2,
+		"acts": [{"id": "check", "label": "* Check", "mood": 0,
+				"text": "* THE INDEX - ATK 7 DEF 3. It crosses out what it cannot carry."},
+			 {"id": "read", "label": "* Read", "mood": 2,
 				"text": "* You read aloud. The page tears itself before you finish."}],
 		"attack_lines": ["* It crosses out a word. The word obeys."],
 		"patterns": [{"type": "edit", "count": 5, "speed": 90.0, "rule": Bullet.Rule.ORANGE, "edit_at": 0.5},
-				{"type": "aimed", "count": 4, "speed": 80.0, "rule": Bullet.Rule.BLUE}],
+				{"type": "aimed", "count": 4, "speed": 80.0, "rule": Bullet.Rule.BLUE},
+				{"type": "homing", "count": 6, "speed": 60.0}],
 		"intro_line": "* The Index — Page One. It opens itself to a blank.",
 		"sprite_id": "index_f1",
 		"boss": true, "no_flee": true,
 		"forms": [
 			{"name": "The Index — Cross-Out", "hp": 40, "def": 3,
 			 "spare_after": 5,
-			 "acts": [{"id": "read", "label": "* Read", "mood": 2,
+			 "acts": [{"id": "check", "label": "* Check", "mood": 0,
+				   "text": "* THE INDEX - ATK 7 DEF 3. It crosses out what it cannot carry."},
+				   {"id": "read", "label": "* Read", "mood": 2,
 				   "text": "* You read aloud. The page tears itself before you finish."}],
 			 "attack_lines": ["* It crosses out a word. The word obeys."],
 			 "patterns": [{"type": "edit", "count": 5, "speed": 90.0, "rule": Bullet.Rule.ORANGE, "edit_at": 0.5},
-				      {"type": "aimed", "count": 4, "speed": 80.0, "rule": Bullet.Rule.BLUE}],
+				      {"type": "aimed", "count": 4, "speed": 80.0, "rule": Bullet.Rule.BLUE},
+				      {"type": "homing", "count": 6, "speed": 60.0}],
 			 "intro_line": "* The Index — Page One. It opens itself to a blank.",
 			 "sprite_id": "index_f1"},
 			{"name": "The Index — Edit", "hp": 50, "def": 4,
 			 "spare_after": 4,
-			 "acts": [{"id": "edit", "label": "* Edit", "mood": 2,
+			 "acts": [{"id": "check", "label": "* Check", "mood": 0,
+				   "text": "* THE INDEX - ATK 7 DEF 4. It edits what was, so that what is might stay."},
+				   {"id": "edit", "label": "* Edit", "mood": 2,
 				   "text": "* You write in the margin. It writes back."}],
 			 "attack_lines": ["* It edits a memory. The memory stands corrected."],
 			 "patterns": [{"type": "edit", "count": 7, "speed": 100.0, "rule": Bullet.Rule.BLUE, "edit_at": 0.4},
-				      {"type": "ring", "count": 6, "speed": 70.0, "rule": Bullet.Rule.ORANGE}],
+				      {"type": "ring", "count": 6, "speed": 70.0, "rule": Bullet.Rule.ORANGE},
+				      {"type": "rain", "count": 12, "speed": 80.0}],
 			 "intro_line": "* The Index — Page Two. It edits what was.",
-			 "sprite_id": "index_f2"},
+			 "sprite_id": "index_f2",
+			 "soul_mode": "yellow"},
 			{"name": "The Index — Accept", "hp": 60, "def": 5,
 			 "spare_after": 3,
-			 "acts": [{"id": "accept", "label": "* Accept", "mood": 3,
+			 "acts": [{"id": "check", "label": "* Check", "mood": 0,
+				   "text": "* THE INDEX - ATK 7 DEF 5. It offers you the final page, blank and patient."},
+				   {"id": "accept", "label": "* Accept", "mood": 3,
 				   "text": "* You accept the corrections. The page is quiet."}],
 			 "attack_lines": ["* It offers you a final reading. There is no choice in accepting it."],
 			 "patterns": [{"type": "edit", "count": 9, "speed": 110.0, "rule": Bullet.Rule.ORANGE, "edit_at": 0.35},
-				      {"type": "spiral", "count": 8, "speed": 90.0, "rule": Bullet.Rule.BLUE}],
+				      {"type": "spiral", "count": 8, "speed": 90.0, "rule": Bullet.Rule.BLUE},
+				      {"type": "beam_sweep", "count": 14}],
 			 "intro_line": "* The Index — Page Three. It opens itself to you.",
 			 "sprite_id": "index_f3"},
 		],
@@ -401,14 +436,18 @@ static var _enemies := {
 	"canon_true": {
 		"id": "canon_true", "name": "Canon",
 		"hp": 120, "atk": 9, "def": 6, "spare_after": 6,
-		"acts": [{"id": "accept", "label": "* Accept", "mood": 3,
+		"acts": [{"id": "check", "label": "* Check", "mood": 0,
+				"text": "* CANON - ATK 9 DEF 6. The shape of what was. It is not unkind, merely certain."},
+			 {"id": "accept", "label": "* Accept", "mood": 3,
 				"text": "* You accept what was. The Canon softens."},
 			 {"id": "refuse", "label": "* Refuse", "mood": 3,
 				"text": "* You refuse the Canon. It is impressed."}],
 		"attack_lines": ["* The Canon rewrites a wall. The wall remembers.",
 				"* The Canon speaks a name that does not exist anymore."],
 		"patterns": [{"type": "burst", "count": 12, "speed": 100.0, "rule": Bullet.Rule.ORANGE},
-				{"type": "spiral", "count": 14, "speed": 110.0, "rule": Bullet.Rule.BLUE}],
+				{"type": "spiral", "count": 14, "speed": 110.0, "rule": Bullet.Rule.BLUE},
+				{"type": "rain", "count": 14, "speed": 90.0},
+				{"type": "wall", "count": 12, "speed": 85.0, "rule": Bullet.Rule.ORANGE}],
 		"intro_line": "* Canon. The shape of what was, if what was had a shape.",
 		"sprite_id": "canon_true",
 		"boss": true, "no_flee": true,
@@ -417,12 +456,15 @@ static var _enemies := {
 
 static func _make_mob(p_id: String, p_name: String, p_hp: int, p_atk: int, p_def: int,
 		p_spare: int, p_sprite: String, p_acts: Array, p_lines: Array,
-		p_patterns: Array, p_intro: String) -> Dictionary:
-	return {
+		p_patterns: Array, p_intro: String, p_soul_mode := "") -> Dictionary:
+	var out := {
 		"id": p_id, "name": p_name, "hp": p_hp, "atk": p_atk, "def": p_def,
 		"acts": p_acts, "spare_after": p_spare, "intro_line": p_intro,
 		"attack_lines": p_lines, "sprite_id": p_sprite, "patterns": p_patterns,
 	}
+	if p_soul_mode != "":
+		out["soul_mode"] = p_soul_mode
+	return out
 
 static func ids() -> Array[String]:
 	return enemy_ids()
@@ -452,7 +494,7 @@ static func act_by_label(acts: Array, label: String) -> Dictionary:
 
 static func apply_form(target: Dictionary, form: Dictionary) -> Dictionary:
 	for key in ["name", "hp", "def", "spare_after", "acts", "attack_lines",
-			"patterns", "intro_line", "sprite_id"]:
+			"patterns", "intro_line", "sprite_id", "soul_mode"]:
 		if form.has(key):
 			target[key] = form[key]
 	return target

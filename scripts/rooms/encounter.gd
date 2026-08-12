@@ -29,21 +29,32 @@ func _on_body_entered(body: Node) -> void:
 			GameState.save_game()
 		GameState.set_flag("pending_enemy", enemy_id)
 		GameState.set_flag("from_room", str(GameState.flags.get("current_room", "res://scenes/rooms/DrizzleFields.tscn")))
+		var tree := get_tree()
+		if tree == null:
+			return
 		_show_bang()
 		Audio.play_sfx("sting")
 		Fade.flash(0.15)
-		await get_tree().create_timer(0.4).timeout
-		get_tree().change_scene_to_file("res://scenes/Battle.tscn")
+		await tree.create_timer(0.4).timeout
+		tree.change_scene_to_file("res://scenes/Battle.tscn")
 
 func _show_bang() -> void:
+	if not is_inside_tree():
+		return
+	var tree := get_tree()
+	if tree == null:
+		return
 	var label := Label.new()
 	label.text = "!"
 	label.add_theme_font_size_override("font_size", 28)
 	label.add_theme_color_override("font_color", Color(1, 1, 1))
-	var player := get_tree().get_first_node_in_group("player")
+	var player := tree.get_first_node_in_group("player")
 	if player:
 		label.global_position = player.global_position + Vector2(6, -30)
-	get_tree().current_scene.add_child(label)
+	var scene := tree.current_scene
+	if scene == null:
+		return
+	scene.add_child(label)
 	label.pivot_offset = Vector2(7, 7)
 	label.scale = Vector2(0.5, 0.5)
 	var pop := create_tween()

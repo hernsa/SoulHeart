@@ -90,6 +90,9 @@ func _rebuild_deco(visible_deco: bool) -> void:
 	add_child(_deco)
 
 static func _deco_texture(id: String) -> Texture2D:
+	var tex := load("res://assets/sprites/overworld/edits/%s.png" % id) as Texture2D
+	if tex != null:
+		return tex
 	var size := Vector2i(8, 8)
 	var color := Color(0.9, 0.78, 0.5)
 	match id:
@@ -121,8 +124,8 @@ func _show_banner(text: String) -> void:
 	add_child(panel)
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", 16)
-	label.position = Vector2(30, 410)
+	label.add_theme_font_size_override("font_size", 8)
+	label.position = Vector2(30, 406)
 	panel.add_child(label)
 	var tw := create_tween()
 	tw.tween_interval(1.2)

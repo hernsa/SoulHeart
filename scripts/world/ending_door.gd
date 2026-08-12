@@ -27,11 +27,18 @@ func _on_body_entered(body: Node) -> void:
 	if door_id == "keeper":
 		Ending.flag_keeper_battle(str(GameState.flags.get("current_room", "")))
 		Audio.play_sfx("door_seal")
-		await get_tree().create_timer(0.4).timeout
+		Fade.fade_to_black(0.67)
+		await get_tree().create_timer(0.8).timeout
+		if not is_inside_tree():
+			return
+		_show_banner("You step through.")
+		await get_tree().create_timer(1.0).timeout
 		if get_tree() != null:
 			get_tree().change_scene_to_file("res://scenes/Battle.tscn")
 		return
 	Audio.play_sfx("door_seal")
+	_show_banner("You step through.")
+	await get_tree().create_timer(0.9).timeout
 	await Ending.play_ending(door_id, get_tree())
 
 func _show_banner(text: String) -> void:
@@ -46,8 +53,8 @@ func _show_banner(text: String) -> void:
 	add_child(panel)
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", 16)
-	label.position = Vector2(30, 410)
+	label.add_theme_font_size_override("font_size", 8)
+	label.position = Vector2(30, 406)
 	panel.add_child(label)
 	var tw := create_tween()
 	tw.tween_interval(1.2)

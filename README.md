@@ -11,17 +11,36 @@ to be made at The Canon. The save points remember more than they say. At the end
 of the road, the Old Dreamer watches over three doors — and the ending you reach
 depends on what you did with the edits you were given.
 
-Three endings:
+Three endings — the doors at the end of the world react to what you did with
+the edits:
 
-- **The Keeper** — refuse the edit. Keep the world from being changed.
-- **The Wanderer** — walk through with the world half-changed, half-remembered.
-- **The Hollow** — accept the edit completely. Perfect quiet. No going back.
+- **The Keeper** — refuse at least 4 of the 6 edits. The world stays as it is;
+  the armor remembers someone, and so do you.
+- **The Wanderer** — accept some, refuse some. Half-changed, half-remembered;
+  this door is always open.
+- **The Hollow** — accept all 6 edits at The Canon. Perfect quiet. No going
+  back.
+
+## Areas
+
+- **Echo** — the first fields, tall grass and low light.
+- **Grumble Woods** — trees with opinions, and a sign that knows your name.
+- **Drizzle Fields** — long grass under a sky that never quite stops drizzling.
+- **Hometown** — quiet houses and doors that move when you blink.
+- **The Cracks** — a floor that remembers being whole.
+- **The Canon** — six edits, each waiting on its own page.
+
+Edit events hide in these rooms — each one offers a choice, and the world
+remembers which way you leaned.
 
 ## Controls
 
 - WASD / Arrows — move
-- Z / Enter — confirm, advance text
+- Z / Enter — confirm, advance text, and hum to the Wisp
 - X / Shift — cancel, skip text
+
+Tap Z near the Wisp to hum to it — its mood grows, and it follows a little
+closer. Hold nothing; a tap is enough.
 
 ## Run
 

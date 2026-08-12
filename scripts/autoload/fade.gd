@@ -38,6 +38,8 @@ func flash(dur: float = 0.15) -> void:
 	_tween_alpha(_white, 1.0, dur * 0.5, dur)
 
 func _tween_alpha(rect: ColorRect, target: float, dur: float, hold: float = 0.0) -> void:
+	if rect == null or not is_inside_tree():
+		return
 	if _tween and _tween.is_valid():
 		_tween.kill()
 	if is_equal_approx(rect.color.a, target) and hold <= 0.0:

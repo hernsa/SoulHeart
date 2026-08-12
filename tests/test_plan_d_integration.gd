@@ -9,7 +9,7 @@ func test_edit_events_full_chain() -> void:
 	for id in EDIT_IDS:
 		TestHelper.is_true(EditEvent.EVENT_IDS.has(id), "edit event registered: " + id)
 		EditEvent.choose(id, "accept")
-		TestHelper.is_true(GameState.flags.get("edit_event_" + id, false),
+		TestHelper.eq(str(GameState.flags.get("edit_event_" + id, "")), "accept",
 			"accept sets flag for " + id)
 		TestHelper.is_true(EditEvent.count("edit_accepts") > 0, "accept counter moves")
 	GameState.reset()

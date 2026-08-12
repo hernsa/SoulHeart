@@ -6,7 +6,7 @@ static func soul_texture(color_name: String) -> Texture2D:
 	if _soul_cache.has(color_name):
 		return _soul_cache[color_name]
 	var path := "res://assets/sprites/" + color_name + "_SOUL_sprite.png"
-	var tex := load(path) as Texture2D
+	var tex := load(path) as Texture2D if ResourceLoader.exists(path) else null
 	if tex == null:
 		tex = load("res://assets/sprites/Red_SOUL_sprite.png") as Texture2D
 	_soul_cache[color_name] = tex
@@ -306,7 +306,10 @@ static func player_frisk_texture(facing: int, step: int) -> Texture2D:
 	if _frisk_cache.has(key):
 		return _frisk_cache[key]
 	if _frisk_sheet == null:
-		_frisk_sheet = Image.load_from_file("res://assets/sprites/overworld/frisk_sheet.png")
+		var sheet_tex := load("res://assets/sprites/overworld/frisk_sheet.png") as Texture2D
+		if sheet_tex == null:
+			return ImageTexture.create_from_image(Image.create(19, 29, false, Image.FORMAT_RGBA8))
+		_frisk_sheet = sheet_tex.get_image()
 	var col := step % 3
 	var row := facing % 4
 	var rect := Rect2i(col * 19, row * 29, 19, 29)

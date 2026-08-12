@@ -87,5 +87,28 @@ static func play_ending(id: String, tree: SceneTree) -> void:
 		return
 	if id == "hollow":
 		wipe_save()
-	await tree.create_timer(0.4).timeout
+	if not is_instance_valid(current) or not current.is_inside_tree():
+		return
+	Fade.fade_to_black(0.4)
+	await tree.create_timer(0.5).timeout
+	if not is_instance_valid(current) or not current.is_inside_tree():
+		return
+	Audio.play_music("credits")
+	var credits: Node = load("res://scripts/dialogue/dialogue_ui.gd").new()
+	credits.layer = 10
+	current.add_child(credits)
+	credits.open(credits_lines())
+	await credits.finished
+	credits.queue_free()
+	var layer := CanvasLayer.new()
+	layer.layer = 50
+	current.add_child(layer)
+	var end_label := Label.new()
+	end_label.text = "THE END"
+	end_label.add_theme_font_size_override("font_size", 32)
+	end_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	end_label.size = Vector2(640, 40)
+	end_label.position = Vector2(0, 220)
+	layer.add_child(end_label)
+	await tree.create_timer(2.0).timeout
 	tree.change_scene_to_file(MAIN_SCENE)

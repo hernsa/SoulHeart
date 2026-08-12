@@ -26,7 +26,7 @@ func _ready() -> void:
 	_hint.add_theme_font_size_override("font_size", 16)
 	add_child(_hint)
 	var version := Label.new()
-	version.text = "SOULHEART v0.3"
+	version.text = "SOULHEART v1.0"
 	version.position = Vector2(160, 232)
 	version.add_theme_font_size_override("font_size", 8)
 	version.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))

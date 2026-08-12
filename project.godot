@@ -32,3 +32,5 @@ theme/custom_font="res://assets/fonts/DMT-Mono.ttf"
 theme/default_font_antialiasing=0
 theme/default_font_subpixel_positioning=0
 theme/default_font_hinting=1
+theme/default_font_outline_size=2
+theme/default_font_outline_color=Color(0,0,0,1)

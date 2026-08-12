@@ -24,7 +24,7 @@ func open(prompt_text: String, options: Array[String]) -> void:
 	add_child(panel)
 	var prompt_label := Label.new()
 	prompt_label.text = _prompt
-	prompt_label.add_theme_font_size_override("font_size", 14)
+	prompt_label.add_theme_font_size_override("font_size", 8)
 	prompt_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	prompt_label.size = Vector2(310, 50)
 	prompt_label.position = Vector2(30, 306)
@@ -33,8 +33,8 @@ func open(prompt_text: String, options: Array[String]) -> void:
 	for i in _options.size():
 		var label := Label.new()
 		label.text = _options[i]
-		label.add_theme_font_size_override("font_size", 18)
-		label.position = Vector2(42, 362 + i * 24)
+		label.add_theme_font_size_override("font_size", 8)
+		label.position = Vector2(42, 340 + i * 14)
 		panel.add_child(label)
 		_labels.append(label)
 	_refresh()

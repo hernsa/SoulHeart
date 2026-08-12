@@ -18,7 +18,7 @@ func _make_boss(boss_id: String, size: int) -> void:
 	var dir := "res://assets/sprites/enemies/frames/%s/" % boss_id
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
 	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
+	img.fill(Color(0, 0, 0, 1))
 	match boss_id:
 		"mourning_knight":
 			_knight(img)

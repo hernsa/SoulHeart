@@ -60,8 +60,8 @@ func _show_banner(text: String, echo: String = "") -> void:
 	add_child(panel)
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", 16)
-	label.position = Vector2(30, 410)
+	label.add_theme_font_size_override("font_size", 8)
+	label.position = Vector2(30, 406)
 	panel.add_child(label)
 	if not echo.is_empty():
 		var echo_label := Label.new()

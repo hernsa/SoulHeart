@@ -39,10 +39,14 @@ static func build_tileset(style: String) -> TileSet:
 static func _atlas_texture(style: String) -> Texture2D:
 	var img := Image.create(48, 16, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
-	var a := Image.load_from_file("res://assets/sprites/tiles/%s_floor.png" % style)
+	var a := load("res://assets/sprites/tiles/%s_floor.png" % style) as Texture2D
 	if a != null:
-		img.blit_rect(a, Rect2i(0, 0, 16, 16), Vector2i.ZERO)
-	var b := Image.load_from_file("res://assets/sprites/tiles/%s_floor_b.png" % style)
+		var a_img := a.get_image()
+		a_img.convert(Image.FORMAT_RGBA8)
+		img.blit_rect(a_img, Rect2i(0, 0, 16, 16), Vector2i.ZERO)
+	var b := load("res://assets/sprites/tiles/%s_floor_b.png" % style) as Texture2D
 	if b != null:
-		img.blit_rect(b, Rect2i(0, 0, 16, 16), Vector2i(16, 0))
+		var b_img := b.get_image()
+		b_img.convert(Image.FORMAT_RGBA8)
+		img.blit_rect(b_img, Rect2i(0, 0, 16, 16), Vector2i(16, 0))
 	return ImageTexture.create_from_image(img)
