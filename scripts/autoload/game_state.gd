@@ -14,7 +14,10 @@ func _ready() -> void:
 
 func reset() -> void:
 	player_stats = {"hp": 20, "max_hp": 20, "atk": 1, "def": 0, "gold": 0}
-	inventory = [{"id": "dream_candy", "name": "Dream Candy", "heal": 6, "count": 1}]
+	inventory = [
+		{"id": "dream_candy", "name": "Dream Candy", "heal": 6, "count": 1},
+		{"id": "stick", "name": "Stick", "heal": 0, "count": 1},
+	]
 	flags = {}
 	kills = 0
 	spares = 0

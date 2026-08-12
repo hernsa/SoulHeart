@@ -6,7 +6,7 @@ signal finished
 static var open_count := 0
 
 const OVERWORLD_BOX := Rect2(24, 404, 592, 64)
-const BATTLE_BOX := Rect2(30, 390, 290, 75)
+const BATTLE_BOX := Rect2(322, 388, 290, 78)
 
 var _lines: Array = []
 var _index: int = 0

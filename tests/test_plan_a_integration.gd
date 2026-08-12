@@ -2,7 +2,7 @@
 extends RefCounted
 
 func test_enemy_library_total() -> void:
-	TestHelper.eq(EnemyLibrary.ids().size(), 22, "19 mobs plus 3 bosses")
+	TestHelper.eq(EnemyLibrary.ids().size(), 24, "21 mobs plus 3 bosses")
 
 func test_wisp_scene_spawns_in_both_rooms() -> void:
 	var DrizzleScene := preload("res://scenes/rooms/DrizzleFields.tscn")

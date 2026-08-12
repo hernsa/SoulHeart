@@ -1,50 +1,50 @@
 extends Node2D
-class_name DrizzleFields
+class_name SnowdinRoom
 
-const ROOM_PATH := "res://scenes/rooms/DrizzleFields.tscn"
+const ROOM_PATH := "res://scenes/rooms/Snowdin.tscn"
 
-const ENCOUNTER_ENEMIES: Array[String] = ["froggit", "whimsun", "vegetoid", "loox"]
+const ENCOUNTER_ENEMIES: Array[String] = ["froggit", "loox", "moldsmal", "whimsun"]
 
 const LAYOUT := """
 ########################################
-#...g.........t.................t....T.#
-#..P..T..........tt..............t.....#
-#....g...........E.....................#
-#..t.....t....TT...t....t.....t........#
-#............t.................g.......#
-#..B.....g..t......t.....t...B.........#
-#.............t....t......t..t.........#
-#..g..............g..................g.#
-#..t..................t......t.........#
-#......t....t...........tt......t......#
-#..B..t......t.........................#
-#...........t.......E....t.....t.......#
-#..t....t.................tt...........#
-#............g..........t..............#
-#..t..........t...........t....t.......#
-#......t......t..t.....................#
-#..B......g.........t......t...........#
-#...........t..........t..t......B.....#
-#..t..........t.g......................#
-#......t.....t......E.......t....t.....#
-#.....................t................#
-#..t..........t......t..t....t.........#
-#.............g................g.......#
-#...........S.....t...........t......D.#
-#..t..............t....................#
-#......t......t..........t.............#
-#..g..........t....t...................#
-#....t.............t..t.....g..........#
+#...t.....g......t..........t....t...B.#
+#.g...T.....t...P..t......t..........g.#
+#......t....t.........g......t...t.....#
+#..t...........t.....E..t..........t...#
+#...t.t.....g......t........t.g........#
+#......t.....t...t...........t....g....#
+#.B........t..........t.......t.....t..#
+#......g....t......t..t............t...#
+#..t.........t...S....g.....t........t.#
+#......t....t.........t.....E...t......#
+#..t......g......t...........t....t....#
+#....t....t.......t..g.....t..........t#
+#...........S...........t......t.t.....#
+#..t.g.t.......t....t..g.........t.....#
+#......t....t.....E......t......t..g...#
+#.B....t........g...........t........t.#
+#..t......t....t....t.......t....B.....#
+#....g.........t......g..t....t........#
+#..t....t............t......t.....t.g..#
+#......t..t....S..........t.......t....#
+#.g.....t......t....t..g..........t....#
+#..........t............t..t.....g....t#
+#..t...g....t......t...........t...B...#
+#....t...........t...E.........t.......#
+#..t........t..........t......t.....g..#
+#....t..g....t.....t.........t....t....#
+#..t......t..........S....t..........t.#
+#...t.......t..........t......t......D.#
 ########################################
 """
 
-const NPC_POS := Vector2(96, 144)
-const GRUMBLE_SPAWN := Vector2(32 * 16 + 8, 24 * 16 + 8)  # (520, 392)
+const NPC_POS := Vector2(7 * 16 + 8, 5 * 16 + 8)
+const DRIZZLE_SPAWN := Vector2(520, 392)
 
 func _ready() -> void:
 	var parsed := MapBuilder.parse_layout(LAYOUT)
 	var start := _spawn_point(parsed["player_start"]) + Vector2(8, 8)
-	var room := MapBuilder.build_room(parsed["grid"], GameTiles.RUINS_STYLE)
+	var room := MapBuilder.build_room(parsed["grid"], GameTiles.SNOWDIN_STYLE)
 	add_child(room["background"])
 	add_child(room["tilemap"])
 	for t in room["trees"]:
@@ -52,18 +52,16 @@ func _ready() -> void:
 	for pr in room["props"]:
 		add_child(pr)
 	var tint := CanvasModulate.new()
-	tint.color = Color(0.8, 0.78, 1.0)
+	tint.color = Color(0.85, 0.9, 1.0)
 	add_child(tint)
 	_spawn_player(start, parsed["grid"])
-	_spawn_npc(NPC_POS, "res://dialogue/drizzle_toad.dlg")
+	_spawn_npc()
 	_spawn_save_points(parsed["save_points"])
 	_spawn_encounters(parsed["encounters"])
 	_spawn_door(parsed["doors"])
 	_spawn_props()
-	_spawn_wisp(_player)
 	GameState.set_flag("current_room", ROOM_PATH)
 	Audio.play_music("drizzle")
-	Audio.play_sfx("door_close")
 	Fade.fade_from_black(0.67)
 
 func _spawn_point(fallback: Vector2) -> Vector2:
@@ -86,27 +84,24 @@ func _spawn_player(start: Vector2, grid: Array) -> void:
 	if cam.is_inside_tree():
 		cam.make_current()
 
-func _spawn_wisp(player: Node2D) -> void:
-	var wisp := preload("res://scenes/Wisp.tscn").instantiate()
-	add_child(wisp)
-	wisp.target_player = wisp.get_path_to(player)
-	WispState.set_area("drizzle_fields")
-	wisp.show_line("intro")
-
-
-func _spawn_npc(pos: Vector2, dlg: String) -> void:
+func _spawn_npc() -> void:
+	if not ResourceLoader.exists("res://assets/sprites/overworld/froggit_npc.png"):
+		return
 	var npc = load("res://scripts/rooms/npc.gd").new()
-	npc.dialogue_file = dlg
-	npc.position = pos
+	npc.dialogue_file = "res://dialogue/grumble_sign.dlg"
+	npc.position = NPC_POS
 	npc._spawn_sprite(Sprites.prop_texture("froggit_npc.png"), Vector2(1.0, 1.0))
 	add_child(npc)
 
 func _spawn_props() -> void:
-	var spots: Array[Vector2] = [Vector2(96, 96), Vector2(160, 320), Vector2(480, 160), Vector2(560, 400)]
+	var spots: Array[Vector2] = [Vector2(96, 176), Vector2(128, 320), Vector2(480, 160), Vector2(560, 400)]
 	for i in spots.size():
+		var tex_name := "golden_flowers.png" if i % 2 == 0 else "rock.png"
+		if not ResourceLoader.exists("res://assets/sprites/overworld/" + tex_name):
+			continue
 		var p := Sprite2D.new()
 		p.name = "Prop" + str(i)
-		p.texture = Sprites.prop_texture("golden_flowers.png" if i % 2 == 0 else "rock.png")
+		p.texture = Sprites.prop_texture(tex_name)
 		p.scale = Vector2(0.5, 0.5)
 		p.position = spots[i]
 		add_child(p)
@@ -128,11 +123,7 @@ func _spawn_door(doors: Array) -> void:
 	if doors.is_empty():
 		return
 	var door = load("res://scripts/rooms/door.gd").new()
-	door.target_room = "res://scenes/rooms/Snowdin.tscn"
-	door.target_spawn = Vector2(520, 32)
+	door.target_room = "res://scenes/rooms/DrizzleFields.tscn"
+	door.target_spawn = DRIZZLE_SPAWN
 	door.position = doors[0]["pos"]
 	add_child(door)
-
-
-
-

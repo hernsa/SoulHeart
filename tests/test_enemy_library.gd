@@ -8,7 +8,7 @@ const NEW_MOB_IDS := [
 
 func test_all_enemies_present() -> void:
 	var ids := EnemyLibrary.enemy_ids()
-	TestHelper.eq(ids.size(), 22, "nineteen enemies plus three bosses")
+	TestHelper.eq(ids.size(), 24, "21 enemies plus three bosses")
 	for id in ["froggit", "whimsun", "moldsmal", "loox", "vegetoid", "migosp"]:
 		TestHelper.is_true(ids.has(id), "has enemy: " + id)
 

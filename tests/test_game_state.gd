@@ -13,7 +13,7 @@ func test_reset_defaults() -> void:
 	TestHelper.eq(gs.player_stats["max_hp"], 20, "default max hp")
 	TestHelper.eq(gs.player_stats["atk"], 1, "default atk")
 	TestHelper.eq(gs.player_stats["gold"], 0, "default gold")
-	TestHelper.eq(gs.inventory.size(), 1, "starter item")
+	TestHelper.eq(gs.inventory.size(), 2, "starter items")
 	TestHelper.eq(gs.inventory[0]["id"], "dream_candy", "starter item id")
 	TestHelper.eq(gs.kills, 0, "no kills")
 	TestHelper.eq(gs.spares, 0, "no spares")
@@ -51,7 +51,7 @@ func test_use_item_heals_and_consumes() -> void:
 	var used: Dictionary = gs.use_item(0)
 	TestHelper.eq(used["id"], "dream_candy", "used item returned")
 	TestHelper.eq(gs.player_stats["hp"], 16, "heal applied")
-	TestHelper.eq(gs.inventory.size(), 0, "item consumed")
+	TestHelper.eq(gs.inventory.size(), 1, "one item remains after use")
 	gs.free()
 
 func test_use_item_out_of_range() -> void:

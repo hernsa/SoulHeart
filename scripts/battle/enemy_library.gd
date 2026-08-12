@@ -109,6 +109,48 @@ static var _enemies := {
 			{"type": "beam_sweep", "count": 10},
 		],
 	},
+	"whimsun_awake": {
+		"id": "whimsun_awake", "name": "WHIMSUN", "hp": 14, "atk": 6, "def": 0,
+		"soul_mode": "yellow",
+		"acts": [
+			{"id": "check", "label": "Check", "mood": 0,
+			 "text": "* WHIMSUN - ATK 6 DEF 0. A crying cloud. It has woken up."},
+			{"id": "soothe", "label": "Soothe", "mood": 2,
+			 "text": "You soothe Whimsun. Its crying softens into hiccups."},
+			{"id": "hum", "label": "Hum", "mood": 1,
+			 "text": "You hum a soft note. Whimsun calms, blinking."},
+		],
+		"spare_after": 3,
+		"intro_line": "Whimsun wakes, eyes wide and ringing.",
+		"attack_lines": ["Whimsun cries out!", "* Whimsun is frightened."],
+		"sprite_id": "whimsun",
+		"patterns": [
+			{"type": "fan", "count": 5, "spread": 45.0, "speed": 110.0},
+			{"type": "aimed", "count": 3, "speed": 140.0, "rule": Bullet.Rule.ORANGE},
+			{"type": "ring", "count": 8, "speed": 90.0},
+		],
+	},
+	"napstablook": {
+		"id": "napstablook", "name": "NAPSTABLOOK", "hp": 22, "atk": 5, "def": 0,
+		"soul_mode": "blue",
+		"acts": [
+			{"id": "check", "label": "Check", "mood": 0,
+			 "text": "* NAPSTABLOOK - ATK 5 DEF 0. It doesn't seem to want to fight."},
+			{"id": "cheer", "label": "Cheer Up", "mood": 2,
+			 "text": "You cheer Napstablook up. Its frown flickers."},
+			{"id": "listen", "label": "Listen", "mood": 1,
+			 "text": "You listen. Napstablook hums a quiet tune back."},
+		],
+		"spare_after": 2,
+		"intro_line": "Napstablook drifts in, quiet and apologetic.",
+		"attack_lines": ["Napstablook doesn't feel like much.", "* Napstablook pokes you with a shadow."],
+		"sprite_id": "napstablook",
+		"patterns": [
+			{"type": "rain", "count": 4, "spread": 60.0, "speed": 70.0},
+			{"type": "aimed", "count": 4, "speed": 100.0, "rule": Bullet.Rule.BLUE},
+			{"type": "gray_pass", "count": 5, "speed": 60.0},
+		],
+	},
 	"reminisc": _make_mob(
 		"reminisc", "Reminisc", 12, 4, 2, 4, "reminisc",
 		[

@@ -9,7 +9,7 @@ const NEW_IDS := [
 
 func test_new_mob_count() -> void:
     var ids := EnemyLibrary.ids()
-    TestHelper.eq(ids.size(), 22, "EnemyLibrary must have 22 entries (19 mobs + 3 bosses)")
+    TestHelper.eq(ids.size(), 24, "EnemyLibrary must have 24 entries (21 mobs + 3 bosses)")
 
 func test_each_new_mob_has_required_keys() -> void:
     var required := ["id", "name", "hp", "atk", "def", "acts",

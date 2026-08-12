@@ -191,24 +191,25 @@ func _build_hud() -> void:
 	_player_name_label.name = "NameLabel"
 	_player_name_label.text = "DREAMCATCHER LV %d" % lv
 	_player_name_label.add_theme_font_size_override("font_size", 16)
-	_player_name_label.position = Vector2(30, 400)
+	_player_name_label.add_theme_color_override("font_color", Color.WHITE)
+	_player_name_label.position = Vector2(30, 380)
 	add_child(_player_name_label)
 	_player_hp_bar = ColorRect.new()
 	_player_hp_bar.name = "HPUnderlay"
 	_player_hp_bar.color = Color(0.753, 0.0, 0.0)
-	_player_hp_bar.position = Vector2(275, 400)
+	_player_hp_bar.position = Vector2(30, 398)
 	_player_hp_bar.size = Vector2(float(max_hp) * 1.25, 21.0)
 	add_child(_player_hp_bar)
 	_player_hp_fill = ColorRect.new()
 	_player_hp_fill.name = "HPFill"
 	_player_hp_fill.color = Color(1.0, 1.0, 0.0)
-	_player_hp_fill.position = Vector2(275, 400)
+	_player_hp_fill.position = Vector2(30, 398)
 	_player_hp_fill.size = Vector2(float(hp) * 1.25, 21.0)
 	add_child(_player_hp_fill)
 	_player_hp_label = Label.new()
 	_player_hp_label.name = "HPLabel"
 	_player_hp_label.add_theme_font_size_override("font_size", 16)
-	_player_hp_label.position = Vector2(275 + float(max_hp) * 1.25 + 4.0, 404)
+	_player_hp_label.position = Vector2(30 + float(max_hp) * 1.25 + 4.0, 402)
 	_player_hp_label.text = "%02d / %02d" % [hp, max_hp]
 	add_child(_player_hp_label)
 
@@ -292,7 +293,7 @@ func _update_menu_colors() -> void:
 	if _submenu_open:
 		target = _submenu_pos(idx) + Vector2(-14, 0)
 	else:
-		target = _button_center(idx) + Vector2(-40, 0)
+		target = _button_center(idx) + Vector2(-12, -1)
 	_menu_cursor.position = target
 
 func _build_fight_bar() -> void:

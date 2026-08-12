@@ -4,7 +4,7 @@ extends Control
 signal player_hit
 signal heal_requested(amount: int)
 
-const HEART_SPEED := 160.0
+const HEART_SPEED := 128.0
 const BOX_RECT := Rect2(162, 220, 316, 190)
 const BOX_INNER := Rect2(167, 225, 306, 180)
 const HEART_START := Vector2(320, 315)
@@ -189,7 +189,7 @@ func _process(delta: float) -> void:
 			if to_b.length() > 0.0 and (to_b / to_b.length()).dot(_shield_dir) > 0.7:
 				b.life = 0.0
 				continue
-		var hit := CombatMath.circle_hit(heart.position, 4.0, b.position, b.size)
+		var hit := CombatMath.circle_hit(heart.position, maxf(heart.texture.get_width(), heart.texture.get_height()) * 0.45, b.position, b.size)
 		if hit and _bullet_damages(b, heart_vel):
 			hit_bullet = b
 			break
