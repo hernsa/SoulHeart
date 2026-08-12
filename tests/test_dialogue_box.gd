@@ -11,8 +11,8 @@ func _make_ui() -> void:
 func test_battle_box_geometry() -> void:
 	_make_ui()
 	_ui.open([{"speaker": "", "text": "Hello."}], true)
-	TestHelper.eq(_ui._panel.position, Vector2(322, 388), "battle box position")
-	TestHelper.eq(_ui._panel.size, Vector2(290, 78), "battle box size")
+	TestHelper.eq(_ui._panel.position, Vector2(24, 412), "battle box position")
+	TestHelper.eq(_ui._panel.size, Vector2(360, 60), "battle box size")
 	TestHelper.is_true(_ui.visible, "ui visible while typing")
 
 func test_overworld_box_geometry() -> void:

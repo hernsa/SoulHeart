@@ -290,9 +290,9 @@ static func save_point_texture() -> AnimatedTexture:
 	if _save_point_anim != null:
 		return _save_point_anim
 	var anim := AnimatedTexture.new()
-	anim.frames = 4
-	var frame_duration := 1.0 / 15.0
-	for i in 4:
+	anim.frames = 2
+	var frame_duration := 1.0 / 6.0
+	for i in 2:
 		anim.set_frame_texture(i, load("res://assets/sprites/overworld/frames/save_point/save_point_%03d.png" % i) as Texture2D)
 		anim.set_frame_duration(i, frame_duration)
 	_save_point_anim = anim

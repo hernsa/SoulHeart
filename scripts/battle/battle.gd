@@ -26,7 +26,7 @@ var _submenu_context := ""
 var _submenu_items: Array[String] = []
 var _fight_bar := FightBar.new()
 var _fight_bar_ui: Control
-var _fight_marker: ColorRect
+var _fight_marker: Sprite2D
 var _dodge_box: DodgeBox
 var _text: DialogueUI
 var _enemy_sprite: Sprite2D
@@ -34,7 +34,7 @@ var _name_label: Label
 var _hp_label: Label
 var _hp_bar: ColorRect
 var _hp_bar_bg: ColorRect
-var _hp_bar_w := 16.0
+var _hp_bar_w := 98.0
 var _player_name_label: Label
 var _player_hp_label: Label
 var _player_hp_bar: ColorRect
@@ -62,7 +62,7 @@ func _ready() -> void:
 		await _show_boss_intro()
 	_enemy_max_hp = int(_enemy["hp"])
 	_enemy_hp_display = float(_enemy_max_hp)
-	var bar_w := clampf(_enemy_sprite.texture.get_width() * 0.8, 16.0, 60.0)
+	var bar_w := clampf(_enemy_sprite.texture.get_width() * 0.8, 20.0, 98.0)
 	_hp_bar_w = bar_w
 	_hp_bar.size.x = bar_w
 	_hp_bar_bg.size.x = bar_w + 2.0
@@ -96,14 +96,14 @@ func _build_ui() -> void:
 	_form_label.visible = false
 	add_child(_form_label)
 	_hp_bar_bg = ColorRect.new()
-	_hp_bar_bg.position = Vector2(207, 161)
-	_hp_bar_bg.size = Vector2(18, 6)
-	_hp_bar_bg.color = Color.BLACK
+	_hp_bar_bg.position = Vector2(207, 159)
+	_hp_bar_bg.size = Vector2(100, 12)
+	_hp_bar_bg.color = Color.WHITE
 	add_child(_hp_bar_bg)
 	_hp_bar = ColorRect.new()
-	_hp_bar.position = Vector2(208, 162)
-	_hp_bar.size = Vector2(16, 4)
-	_hp_bar.color = Color(0.75, 1.0, 0.25)
+	_hp_bar.position = Vector2(208, 160)
+	_hp_bar.size = Vector2(98, 10)
+	_hp_bar.color = Color(0.0, 1.0, 0.0)
 	add_child(_hp_bar)
 	_build_hud()
 	_build_menu()
@@ -129,9 +129,9 @@ func _spawn_enemy_sprite() -> void:
 	shadow.z_index = -1
 	add_child(shadow)
 	if _hp_bar_bg != null:
-		_hp_bar_bg.position = Vector2(207, 161)
+		_hp_bar_bg.position = Vector2(207, 159)
 	if _hp_bar != null:
-		_hp_bar.position = Vector2(208, 162)
+		_hp_bar.position = Vector2(208, 160)
 
 func _on_enemy_hurt_frame() -> void:
 	var hurt_tex := Sprites.battle_enemy_texture(_enemy["sprite_id"], true)
@@ -298,18 +298,14 @@ func _update_menu_colors() -> void:
 
 func _build_fight_bar() -> void:
 	_fight_bar_ui = Control.new()
-	var panel := Panel.new()
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0, 0, 0, 0.85)
-	sb.set_border_width_all(1)
-	sb.border_color = Color.WHITE
-	panel.add_theme_stylebox_override("panel", sb)
-	panel.position = Vector2(45, 415)
-	panel.size = Vector2(260, 28)
-	_fight_bar_ui.add_child(panel)
-	_fight_marker = ColorRect.new()
-	_fight_marker.color = Color.WHITE
-	_fight_marker.size = Vector2(2, 28)
+	var bar := Sprite2D.new()
+	bar.name = "FightBarSprite"
+	bar.texture = load("res://assets/sprites/battle/spr_target.png")
+	bar.position = Vector2(45, 250)
+	_fight_bar_ui.add_child(bar)
+	_fight_marker = Sprite2D.new()
+	_fight_marker.texture = load("res://assets/sprites/battle/spr_targetchoice_0.png")
+	_fight_marker.position = Vector2(45, 250)
 	_fight_bar_ui.add_child(_fight_marker)
 	add_child(_fight_bar_ui)
 	_fight_bar_ui.visible = false
@@ -331,7 +327,7 @@ func _process(delta: float) -> void:
 				_handle_menu_input()
 		BattleState.Phase.FIGHT:
 			_fight_bar.tick(delta)
-			_fight_marker.position = Vector2(45 + _fight_bar.marker * 256.0, 415)
+			_fight_marker.position = Vector2(45 + _fight_bar.marker * 532.0, 250)
 			if Input.is_action_just_pressed("confirm"):
 				_resolve_fight()
 

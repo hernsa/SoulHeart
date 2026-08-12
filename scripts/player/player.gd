@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
-const SPEED := 140.0
-const ACCEL := 1200.0
+const SPEED := 100.0
+const ACCEL := 1600.0
 
 var facing: int = 0  # 0 down, 1 up, 2 left, 3 right
 var walk_t: float = 0.0
@@ -48,6 +48,10 @@ func _physics_process(delta: float) -> void:
 	var res: Array = resolve_direction4(just, held, _last_dir)
 	_last_dir = str(res[1])
 	var dir: Vector2 = res[0]
+	var x_axis := Input.get_axis("move_left", "move_right")
+	var y_axis := Input.get_axis("move_up", "move_down")
+	if x_axis != 0.0 and y_axis != 0.0:
+		dir = Vector2(x_axis, y_axis).normalized()
 	set_movement_input(dir)
 	if dir != Vector2.ZERO:
 		walk_t += delta
