@@ -22,6 +22,7 @@ func _ready() -> void:
 	_label.add_theme_color_override("font_color", Color.WHITE)
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_child(_label)
+	Fade.fade_from_black(0.4)
 	for line in STORY_LINES:
 		await _show(line)
 	await _fall_in()
