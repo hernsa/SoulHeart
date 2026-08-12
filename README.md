@@ -4,6 +4,8 @@ An Undertale-style gift RPG. Top-down, bullet-hell dodge combat, mercy-vs-kill
 morality, typewriter dialogue, humor and heartbreak. A small game about a red
 heart and the edits of a dream.
 
+Built in Godot 4.4 (GDScript). Windows target.
+
 ## Story
 
 You fall into a quiet world that was never quite finished. Six edits are waiting
@@ -44,21 +46,21 @@ closer. Hold nothing; a tap is enough.
 
 ## Run
 
-- Game: `powershell -File tools\run_game.ps1` (or `& .\tools\godot.exe --path .`)
-- Tests: `powershell -File tools\run_tests.ps1` (also runnable as
-  `& .\tools\godot.exe --headless -s res://tests\run_all.gd`)
+Requires a Godot 4.4 binary. Then:
+
+- Game: `godot.exe --path .`
+- Tests: `godot.exe --headless -s res://tests/run_all.gd`
 
 ## Structure
 
 - `scripts/` — all game code (autoload, player, rooms, dialogue, battle, world)
 - `scenes/` — scene roots (thin; UI is built in code)
-- `assets/audio/` — music and sfx; Plan D area themes are synthesized in-engine
-  by `tools/gen_area_music.gd`
+- `dialogue/` — dialogue files
+- `assets/audio/` — music and sfx
+- `assets/sprites/` — pixel art
 - `tests/` — headless unit tests (`run_all.gd`, sorted, `test_*.gd`)
-- `docs/superpowers/` — design spec and implementation plans
 
 ## Music
 
-Area themes are 8-note leitmotifs synthesized to 8-bit WAVs by
-`tools/gen_area_music.gd` (Echo, Hometown, Canon, Cracks, Credits, Hollow, Wisp).
-Battle and title music are from UNDERTALE (see CREDITS.txt).
+Area themes are 8-note leitmotifs synthesized to 8-bit WAVs. Battle and title
+music are from UNDERTALE (see CREDITS.txt).
