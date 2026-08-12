@@ -31,7 +31,7 @@ func test_bullet_dead_lifecycle() -> void:
 
 func test_heart_starts_at_center_and_visibility() -> void:
 	var box := _make_box()
-	TestHelper.eq(box.heart.position, Vector2(319, 305), "heart at box center")
+	TestHelper.eq(box.heart.position, Vector2(320, 315), "heart at box center")
 	TestHelper.eq(box.visible, false, "hidden until active")
 	TestHelper.eq(box.active, false, "inactive until set_active")
 	box.set_active(true)
@@ -104,7 +104,7 @@ func test_heart_moves_and_clamps_to_box() -> void:
 	box.set_active(true)
 	Input.action_press("move_right")
 	box._process(10.0)
-	TestHelper.eq(box.heart.position.x, 471.0, "clamps at right edge")
+	TestHelper.eq(box.heart.position.x, 472.0, "clamps at right edge")
 	Input.action_release("move_right")
 	Input.action_press("move_left")
 	box._process(10.0)
@@ -116,10 +116,10 @@ func test_heart_moves_and_clamps_to_box() -> void:
 	Input.action_release("move_up")
 	Input.action_press("move_down")
 	box._process(10.0)
-	TestHelper.eq(box.heart.position.y, 384.0, "clamps at bottom edge")
+	TestHelper.eq(box.heart.position.y, 404.0, "clamps at bottom edge")
 	Input.action_release("move_down")
 	box._process(1.0)
-	TestHelper.eq(box.heart.position, Vector2(167, 384), "stays put with no input")
+	TestHelper.eq(box.heart.position, Vector2(167, 404), "stays put with no input")
 	box.free()
 
 func test_inactive_box_ignores_process() -> void:
@@ -129,7 +129,7 @@ func test_inactive_box_ignores_process() -> void:
 	Input.action_press("move_right")
 	box._process(1.0)
 	Input.action_release("move_right")
-	TestHelper.eq(box.heart.position, Vector2(319, 305), "heart unmoved while inactive")
+	TestHelper.eq(box.heart.position, Vector2(320, 315), "heart unmoved while inactive")
 	TestHelper.is_true(box.has_bullets(), "bullets untouched while inactive")
 	box.free()
 

@@ -91,7 +91,8 @@ func _spawn_wisp(player: Node2D) -> void:
 	add_child(wisp)
 	wisp.target_player = wisp.get_path_to(player)
 	WispState.set_area("drizzle_fields")
-	print(WispDialogue.get_line("intro"))
+	wisp.show_line("intro")
+
 
 func _spawn_npc(pos: Vector2, dlg: String) -> void:
 	var npc = load("res://scripts/rooms/npc.gd").new()

@@ -99,7 +99,7 @@ func _ensure_input_actions() -> void:
 	_ensure_action("move_right", [KEY_D, KEY_RIGHT])
 	_ensure_action("confirm", [KEY_Z, KEY_ENTER, KEY_KP_ENTER])
 	_ensure_action("cancel", [KEY_X, KEY_SHIFT])
-	_ensure_action("hum", [KEY_Z, KEY_ENTER, KEY_KP_ENTER])
+	_ensure_action("hum", [KEY_Z])
 
 func _ensure_action(action: StringName, keys: Array) -> void:
 	if not InputMap.has_action(action):

@@ -95,7 +95,8 @@ func _spawn_wisp(player: Node2D) -> void:
 	add_child(wisp)
 	wisp.target_player = wisp.get_path_to(player)
 	WispState.set_area("grumble_woods")
-	print(WispDialogue.get_line("drizzle"))
+	wisp.show_line("grumble")
+
 
 func _spawn_sign(pos: Vector2) -> void:
 	var sign_npc = load("res://scripts/rooms/npc.gd").new()

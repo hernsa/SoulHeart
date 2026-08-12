@@ -1,9 +1,11 @@
 extends RefCounted
 
 func test_authentic_box_geometry() -> void:
-	TestHelper.eq(DodgeBox.BOX_RECT, Rect2(162, 220, 315, 170), "box 315x170 at 162,220")
-	TestHelper.eq(DodgeBox.BOX_INNER, Rect2(167, 225, 305, 160), "inner playfield inset by 5px frame")
-	TestHelper.eq(DodgeBox.HEART_START, Vector2(319, 305), "heart starts centered")
+	TestHelper.eq(DodgeBox.BOX_RECT, Rect2(162, 220, 316, 190), "box 316x190 at 162,220")
+	TestHelper.eq(DodgeBox.BOX_INNER, Rect2(167, 225, 306, 180), "inner playfield inset by 5px frame")
+	TestHelper.eq(DodgeBox.HEART_START, Vector2(320, 315), "heart starts centered")
+	TestHelper.is_true(DodgeBox.BOX_RECT.size.x / DodgeBox.BOX_RECT.size.y < 2.0, "box wider than tall but under 2:1")
+	TestHelper.is_true(DodgeBox.BOX_RECT.size.x / DodgeBox.BOX_RECT.size.y > 1.4, "box keeps wide feel")
 
 func test_hp_bar_dimensions() -> void:
 	var battle := preload("res://scripts/battle/battle.gd").new()

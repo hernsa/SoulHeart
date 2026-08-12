@@ -92,7 +92,8 @@ func _spawn_wisp(player: Node2D) -> void:
 	add_child(wisp)
 	wisp.target_player = wisp.get_path_to(player)
 	WispState.set_area("hometown")
-	print(WispDialogue.get_line("hometown"))
+	wisp.show_line("hometown")
+
 
 func _spawn_props() -> void:
 	var spots: Array[Vector2] = [Vector2(96, 96), Vector2(160, 320), Vector2(480, 160), Vector2(560, 400)]

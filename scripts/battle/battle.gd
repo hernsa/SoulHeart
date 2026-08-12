@@ -34,6 +34,7 @@ var _name_label: Label
 var _hp_label: Label
 var _hp_bar: ColorRect
 var _hp_bar_bg: ColorRect
+var _hp_bar_w := 16.0
 var _player_name_label: Label
 var _player_hp_label: Label
 var _player_hp_bar: ColorRect
@@ -47,6 +48,7 @@ var _forms: Array = []
 var _form_index := 0
 var _monologue_shown: Array = []
 var _form_label: Label
+var _turn_count := 0
 
 func _ready() -> void:
 	Audio.play_music("battle")
@@ -56,9 +58,14 @@ func _ready() -> void:
 	_update_form_label()
 	_spawn_enemy_sprite()
 	_enemy_sprite.position = Vector2(216, -40)
+	if bool(_enemy.get("boss", false)):
+		await _show_boss_intro()
 	_enemy_max_hp = int(_enemy["hp"])
 	_enemy_hp_display = float(_enemy_max_hp)
-	_hp_bar.size.x = 16.0
+	var bar_w := clampf(_enemy_sprite.texture.get_width() * 0.8, 16.0, 60.0)
+	_hp_bar_w = bar_w
+	_hp_bar.size.x = bar_w
+	_hp_bar_bg.size.x = bar_w + 2.0
 	var entrance := create_tween()
 	entrance.tween_property(_enemy_sprite, "position", Vector2(216, 136), 0.4)
 	await entrance.finished
@@ -138,6 +145,32 @@ func _on_enemy_hurt_frame() -> void:
 
 func _restore_enemy_frame() -> void:
 	_enemy_sprite.texture = Sprites.battle_enemy_texture(_enemy["sprite_id"], false)
+
+func _show_boss_intro() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	Fade.fade_to_black(0.4)
+	await tree.create_timer(0.45).timeout
+	if not is_inside_tree():
+		return
+	var layer := CanvasLayer.new()
+	layer.layer = 50
+	add_child(layer)
+	var label := Label.new()
+	var intro_name := str(_enemy["name"]).to_upper()
+	if intro_name.begins_with("THE "):
+		intro_name = intro_name.substr(4)
+	label.text = "THE %s" % intro_name
+	label.add_theme_font_size_override("font_size", 32)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.size = Vector2(640, 40)
+	label.position = Vector2(0, 220)
+	layer.add_child(label)
+	await tree.create_timer(1.1).timeout
+	layer.queue_free()
+	Fade.fade_from_black(0.4)
+	await tree.create_timer(0.45).timeout
 
 func _spawn_vaporize_poof(at: Vector2) -> void:
 	Audio.play_sfx("vaporize")
@@ -288,7 +321,7 @@ func _process(delta: float) -> void:
 		_enemy_sprite.position.y = 136.0 + sin(Time.get_ticks_msec() * 0.003) * 3.0
 		_enemy_sprite.scale = Vector2(0.8 * (1.0 + sin(t + 1.5) * 0.015), 0.8 * (1.0 + sin(t) * 0.02))
 		_enemy_hp_display = CombatMath.drain_toward(_enemy_hp_display, float(_enemy["hp"]), delta, 40.0)
-		_hp_bar.size.x = 16.0 * (_enemy_hp_display / float(_enemy_max_hp))
+		_hp_bar.size.x = _hp_bar_w * (_enemy_hp_display / float(_enemy_max_hp))
 	match _state.phase:
 		BattleState.Phase.PLAYER_TURN:
 			if _submenu_open:
@@ -408,6 +441,8 @@ func _resolve_submenu() -> void:
 				if _mood >= int(_enemy["spare_after"]):
 					_state.transition(BattleState.Phase.SPARED)
 					GameState.add_spare()
+					_dodge_box.fade_out_bullets()
+					await get_tree().create_timer(0.5).timeout
 					await _say([{"speaker": "", "text": "You spare %s. It settles, grateful." % _enemy["name"]}])
 					_end_battle()
 					return
@@ -483,11 +518,12 @@ func _spawn_damage_digit(amount: int, miss: bool) -> void:
 	add_child(digit)
 	var t := create_tween()
 	t.set_parallel(true)
-	t.tween_property(digit, "position:y", digit.position.y - 12.0, 0.6)
+	t.tween_property(digit, "position:y", digit.position.y + 12.0, 0.6)
 	t.tween_property(digit, "modulate:a", 0.0, 0.6)
 	t.chain().tween_callback(digit.queue_free)
 
 func _enemy_turn() -> void:
+	_turn_count += 1
 	var hp_frac: float = float(_enemy["hp"]) / float(_enemy_max_hp) if _enemy_max_hp > 0 else 1.0
 	var monologue: Array = EnemyLibrary.monologue_lines(_enemy.get("monologue", []), hp_frac, _monologue_shown)
 	if not monologue.is_empty():
@@ -496,12 +532,19 @@ func _enemy_turn() -> void:
 	var attack_lines: Array = _enemy["attack_lines"]
 	var line: String = str(attack_lines[randi() % attack_lines.size()])
 	await _say([{"speaker": "", "text": line}])
+	_dodge_box.set_mode(str(_enemy.get("soul_mode", "red")))
 	_dodge_box.set_active(true)
 	for i in _enemy["patterns"].size():
 		var pattern: Dictionary = _enemy["patterns"][i]
 		if bool(pattern.get("telegraph", false)):
 			await _dodge_box.show_telegraph(0.6)
-		_dodge_box.spawn_patterns(BulletPatterns.make(pattern, _dodge_box.heart_position()))
+		var mult := minf(1.0 + 0.08 * float(maxi(_turn_count - 1, 0)), 1.6)
+		var bullets := BulletPatterns.make(pattern, _dodge_box.heart_position())
+		if mult > 1.0:
+			for d in bullets:
+				if str(d.get("behavior", "straight")) != "orbit":
+					d["vel"] = (d.get("vel", Vector2.ZERO) as Vector2) * mult
+		_dodge_box.spawn_patterns(bullets)
 		match str(pattern.get("type", "burst")):
 			"bone_wall":
 				Audio.play_sfx("bone_clack")
@@ -534,6 +577,7 @@ func _enemy_turn() -> void:
 
 func _enter_player_turn() -> void:
 	_state.transition(BattleState.Phase.PLAYER_TURN)
+	_dodge_box.set_mode("red")
 	_menu_items = ["FIGHT", "ACT", "ITEM", "MERCY"]
 	_render_menu_labels()
 	_menu_index = 0

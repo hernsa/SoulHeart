@@ -57,6 +57,8 @@ func _maybe_handle_hum() -> void:
 		return
 	if not Input.is_action_just_pressed("hum"):
 		return
+	if DialogueUI.open_count > 0:
+		return
 	if WispState.hum():
 		WispState.add_hum(hum_mood_gain)
 		WispAudio.play_hum(WispState.mood())
@@ -80,11 +82,22 @@ func _mood_band(mood: int) -> int:
 	return 2
 
 func _lit_texture() -> Texture2D:
-	var img := Image.load_from_file("res://assets/sprites/wisp/wisp_lit.png")
-	if img == null:
+	var tex := load("res://assets/sprites/wisp/wisp_lit.png") as Texture2D
+	if tex == null:
 		return Sprites.wisp_texture()
-	return ImageTexture.create_from_image(img)
+	return tex
+
+var _wisp_ui: Node
+var _pulse_shown := false
+
+func show_line(context: String) -> void:
+	if not is_instance_valid(_wisp_ui):
+		_wisp_ui = load("res://scripts/dialogue/dialogue_ui.gd").new()
+		add_child(_wisp_ui)
+	_wisp_ui.open_wisp(WispDialogue.get_line(context))
+	await _wisp_ui.finished
 
 func _on_body_entered(body: Node) -> void:
-	if body.is_in_group("player"):
-		print(WispDialogue.get_line("hum_ready"))
+	if body.is_in_group("player") and not _pulse_shown:
+		_pulse_shown = true
+		show_line("hum_ready")
