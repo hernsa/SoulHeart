@@ -264,7 +264,8 @@ static func compose(sections: Array, adjacency: Array) -> Dictionary:
             return {"error": "adjacency references unplaced section %s" % a_id}
         var a_size: Vector2i = sizes[a_id]
         var a_origin: Vector2i = placed[a_id]
-        var b_origin := _neighbor_origin(a_origin, a_size, side)
+        var b_size: Vector2i = sizes[b_id]
+        var b_origin := _neighbor_origin(a_origin, a_size, b_size, side)
         if placed.has(b_id):
             # Validate that the existing placement matches the implied origin
             if placed[b_id] != b_origin:
@@ -272,6 +273,19 @@ static func compose(sections: Array, adjacency: Array) -> Dictionary:
         else:
             placed[b_id] = b_origin
             origins[b_id] = b_origin
+
+    # Shift all origins so the composed graph starts at (0,0): the graph can
+    # extend west/north of the anchor (pond west of the grove, ridge north of
+    # the path), and the master grid cannot hold negative indices.
+    var min_x := 0
+    var min_y := 0
+    for id in placed.keys():
+        min_x = mini(min_x, placed[id].x)
+        min_y = mini(min_y, placed[id].y)
+    if min_x != 0 or min_y != 0:
+        for id in placed.keys():
+            placed[id] = placed[id] - Vector2i(min_x, min_y)
+            origins[id] = placed[id]
 
     # Build master bounds.
     var max_x := 0
@@ -306,7 +320,7 @@ static func compose(sections: Array, adjacency: Array) -> Dictionary:
         var a_id: String = link["a"]
         var b_id: String = link["b"]
         var side: String = link["side"]
-        var err := _validate_edge(grid, origins, sizes, a_id, b_id, side)
+        var err := _validate_edge(origins, sizes, by_id, a_id, b_id, side)
         if err != null:
             return {"error": err}
 
@@ -355,12 +369,12 @@ static func _section_size(s: Dictionary) -> Vector2i:
         w = maxi(w, (row as String).length())
     return Vector2i(w, h)
 
-static func _neighbor_origin(a_origin: Vector2i, a_size: Vector2i, side: String) -> Vector2i:
+static func _neighbor_origin(a_origin: Vector2i, a_size: Vector2i, b_size: Vector2i, side: String) -> Vector2i:
     match side:
         "e": return Vector2i(a_origin.x + a_size.x, a_origin.y)
-        "w": return Vector2i(a_origin.x - a_size.x, a_origin.y)
+        "w": return Vector2i(a_origin.x - b_size.x, a_origin.y)
         "s": return Vector2i(a_origin.x, a_origin.y + a_size.y)
-        "n": return Vector2i(a_origin.x, a_origin.y - a_size.y)
+        "n": return Vector2i(a_origin.x, a_origin.y - b_size.y)
     return a_origin
 
 static func _set_cell(row: String, x: int, ch: String) -> String:
@@ -369,24 +383,39 @@ static func _set_cell(row: String, x: int, ch: String) -> String:
         s += "."
     return s.substr(0, x) + ch + s.substr(x + 1)
 
-static func _validate_edge(grid: Array, origins: Dictionary, sizes: Dictionary, a_id: String, b_id: String, side: String) -> Variant:
-    var a_o: Vector2i = origins[a_id]
-    var b_o: Vector2i = origins[b_id]
+static func _validate_edge(origins: Dictionary, sizes: Dictionary, by_id: Dictionary, a_id: String, b_id: String, side: String) -> Variant:
+    # Sections are placed side-by-side WITHOUT overlap, so a master-grid overlap
+    # check would never fire. Validate the facing edge cells of the two layouts
+    # directly: a wall on one side facing floor on the other breaks the seam.
     var a_s: Vector2i = sizes[a_id]
     var b_s: Vector2i = sizes[b_id]
-    # Overlap rectangle
-    var ox := maxi(a_o.x, b_o.x)
-    var oy := maxi(a_o.y, b_o.y)
-    var ex := mini(a_o.x + a_s.x, b_o.x + b_s.x)
-    var ey := mini(a_o.y + a_s.y, b_o.y + b_s.y)
-    if ox >= ex or oy >= ey:
-        return null  # no overlap; OK
-    for y in range(oy, ey):
-        for x in range(ox, ex):
-            var row: String = grid[y]
-            var ch := row[x]
-            if ch == "#":
-                return "wall at overlap (%d,%d) in adjacency %s-%s" % [x, y, a_id, b_id]
+    var a_layout: Array = by_id[a_id]["layout"]
+    var b_layout: Array = by_id[b_id]["layout"]
+    match side:
+        "e":
+            for i in mini(a_s.y, b_s.y):
+                var ac: String = (a_layout[i] as String)[a_s.x - 1]
+                var bc: String = (b_layout[i] as String)[0]
+                if (ac == "#") != (bc == "#"):
+                    return "edge mismatch %s-%s at row %d: A '%s' vs B '%s'" % [a_id, b_id, i, ac, bc]
+        "w":
+            for i in mini(a_s.y, b_s.y):
+                var ac: String = (a_layout[i] as String)[0]
+                var bc: String = (b_layout[i] as String)[b_s.x - 1]
+                if (ac == "#") != (bc == "#"):
+                    return "edge mismatch %s-%s at row %d: A '%s' vs B '%s'" % [a_id, b_id, i, ac, bc]
+        "s":
+            for i in mini(a_s.x, b_s.x):
+                var ac: String = (a_layout[a_s.y - 1] as String)[i]
+                var bc: String = (b_layout[0] as String)[i]
+                if (ac == "#") != (bc == "#"):
+                    return "edge mismatch %s-%s at col %d: A '%s' vs B '%s'" % [a_id, b_id, i, ac, bc]
+        "n":
+            for i in mini(a_s.x, b_s.x):
+                var ac: String = (a_layout[0] as String)[i]
+                var bc: String = (b_layout[b_s.y - 1] as String)[i]
+                if (ac == "#") != (bc == "#"):
+                    return "edge mismatch %s-%s at col %d: A '%s' vs B '%s'" % [a_id, b_id, i, ac, bc]
     return null
 ```
 
@@ -732,7 +761,7 @@ func test_spawn_flavor_adds_sprite() -> void:
 
 - [ ] **Step 4.2: Run tests to confirm fail**
 
-Run: `& "C:\Users\Admin\Downloads\SoulHeart\tools\godot.exe" --headless --path "C:\UsersAdmin\Downloads\SoulHeart" -s res://tests/run_all.gd` (note: use actual path)
+Run: `& "C:\Users\Admin\Downloads\SoulHeart\tools\godot.exe" --headless --path "C:\Users\Admin\Downloads\SoulHeart" -s res://tests/run_all.gd`
 Expected: `FAIL: res://tests/test_section_placer.gd`.
 
 - [ ] **Step 4.3: Implement the placer**
@@ -865,6 +894,10 @@ const ROOM_PATH := "res://scenes/rooms/DrizzleFields.tscn"
 # Kept for legacy test_door_spawn.gd which asserts the spawn cell is walkable.
 const GRUMBLE_SPAWN := Vector2(32 * 16 + 8, 24 * 16 + 8)  # (520, 392)
 
+# Snowdin exit target. Required by tests/test_snowdin.gd (file-text assertion)
+# and validated in _ready: the composed objects must include an exit targeting it.
+const SNOWDIN_EXIT := "res://scenes/rooms/Snowdin.tscn"
+
 func _ready() -> void:
     var sections: Array = DrizzleSections.SECTIONS
     var adjacency: Array = DrizzleSections.ADJACENCY
@@ -891,6 +924,13 @@ func _ready() -> void:
     _spawn_player(start)
 
     SectionPlacer.spawn_all(self, composed["objects"], composed["flavor"], composed["layout_meta"])
+
+    var has_snowdin_exit := false
+    for obj in composed["objects"]:
+        if obj["type"] == "exit" and str(obj["data"].get("target", "")) == SNOWDIN_EXIT:
+            has_snowdin_exit = true
+    if not has_snowdin_exit:
+        push_error("DrizzleFields: no composed exit targets " + SNOWDIN_EXIT)
 
     _spawn_wisp(_player)
     GameState.set_flag("current_room", ROOM_PATH)
