@@ -3,6 +3,7 @@ class_name GameTiles
 enum Tile { FLOOR = 0, WALL = 1, TREE = 2, PINE2 = 3, BIRCH = 4, DEAD = 5, BUSH = 6, MUSHROOM = 7, GRASS = 8 }
 
 const RUINS_STYLE := "ruins"
+const DRIZZLE_STYLE := "drizzle"
 const SNOWDIN_STYLE := "snowdin"
 const ECHO_STYLE := "echo"
 const HOMETOWN_STYLE := "hometown"
@@ -10,7 +11,7 @@ const CANON_STYLE := "canon"
 const CRACKS_STYLE := "cracks"
 
 const AREA_STYLES: Array[String] = [
-	RUINS_STYLE, SNOWDIN_STYLE, ECHO_STYLE, HOMETOWN_STYLE, CANON_STYLE, CRACKS_STYLE,
+	RUINS_STYLE, DRIZZLE_STYLE, SNOWDIN_STYLE, ECHO_STYLE, HOMETOWN_STYLE, CANON_STYLE, CRACKS_STYLE,
 ]
 
 const FLOOR_A := Vector2i(0, 0)

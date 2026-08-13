@@ -43,3 +43,11 @@ func test_tree_cells_spawn_nodes() -> void:
 	var grid := [[GameTiles.Tile.TREE]]
 	var room := MapBuilder.build_room(grid, GameTiles.RUINS_STYLE)
 	TestHelper.eq((room["trees"] as Array).size(), 1, "one tree node spawned")
+
+func test_drizzle_style_constant_present() -> void:
+	TestHelper.is_true(GameTiles.AREA_STYLES.has("drizzle"), "drizzle style registered")
+
+func test_drizzle_style_atlas_loads() -> void:
+	var tex: Texture2D = GameTiles._atlas_texture("drizzle")
+	TestHelper.is_true(tex != null, "drizzle atlas texture built")
+	TestHelper.is_true(tex.get_width() == 48 and tex.get_height() == 16, "drizzle atlas is 48x16")

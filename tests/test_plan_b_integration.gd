@@ -1,8 +1,8 @@
 # tests/test_plan_b_integration.gd
 extends RefCounted
 
-func test_six_areas_all_styles() -> void:
-	TestHelper.eq(GameTiles.AREA_STYLES.size(), 6, "6 area styles")
+func test_all_area_styles_registered() -> void:
+	TestHelper.eq(GameTiles.AREA_STYLES.size(), 7, "7 area styles")
 
 func test_full_chain_all_targets_exist() -> void:
 	var rooms := ["grumble_woods", "echo", "hometown", "canon", "cracks"]

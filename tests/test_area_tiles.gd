@@ -7,8 +7,8 @@ const NEW_STYLES := [
 
 func test_styles_consts_exist_and_unique() -> void:
 	TestHelper.is_true(NEW_STYLES.size() == 4, "4 new styles defined")
-	TestHelper.is_true(GameTiles.AREA_STYLES.size() == 6,
-		"AREA_STYLES must contain all 6 styles")
+	TestHelper.is_true(GameTiles.AREA_STYLES.size() == 7,
+		"AREA_STYLES must contain all 7 styles")
 	for s in NEW_STYLES:
 		TestHelper.is_true(GameTiles.AREA_STYLES.has(s),
 			"AREA_STYLES must include %s" % s)
