@@ -51,15 +51,15 @@ const SECTIONS: Array = [
     },
     {
         "id": "wisp_grove",
-        "layout": [
-            "ddddd",
-            "d...d",
+"layout": [
+			"d.d.d",
+			"d...d",
             "d.W.d",
             "d.S.d",
             "d...d",
-            "d..dd",
-            "ddddd",
-        ],
+"d..dd",
+			"d.d.d",
+		],
         "objects": [
             {"type": "save",    "cell": Vector2i(2, 3), "data": {}},
             {"type": "npc",     "cell": Vector2i(2, 2), "data": {"id": "wisp"}},
@@ -73,13 +73,13 @@ const SECTIONS: Array = [
     },
     {
         "id": "path_north",
-        "layout": [
-            "#t.t#",
-            "t...t",
-            "t...t",
-            "t...t",
-            "t...t",
-            "t...t",
+"layout": [
+			"#t.t#",
+			"t...t",
+			"t...t",
+			"t...t",
+			"t...t",
+			"t..t.",
             "t...t",
             "t...t",
             "t...t",
