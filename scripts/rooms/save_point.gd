@@ -1,4 +1,5 @@
 extends Area2D
+class_name SavePoint
 
 const ECHO_NAMES: Array[String] = ["Merritt", "Anja", "Silas", "Ro"]
 const ECHO_LINES: Array[String] = [
