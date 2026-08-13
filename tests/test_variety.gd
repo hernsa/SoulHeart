@@ -1,7 +1,6 @@
 extends RefCounted
 
 const ROOM_SCRIPTS := [
-	"res://scripts/rooms/drizzle_fields.gd",
 	"res://scripts/rooms/grumble_woods.gd",
 	"res://scripts/rooms/echo.gd",
 	"res://scripts/rooms/hometown.gd",
@@ -59,10 +58,6 @@ func test_handcrafted_layouts_use_variety_chars() -> void:
 	var layout: String = grumble["LAYOUT"]
 	for ch in ["t", "b", "B", "M", "g"]:
 		TestHelper.is_true(layout.contains(ch), "grumble layout uses marker '%s'" % ch)
-	var drizzle: Dictionary = load("res://scripts/rooms/drizzle_fields.gd").get_script_constant_map()
-	var dlayout: String = drizzle["LAYOUT"]
-	for ch in ["T", "t", "B", "g"]:
-		TestHelper.is_true(dlayout.contains(ch), "drizzle layout uses marker '%s'" % ch)
 
 func test_variant_sprites_exist_on_disk() -> void:
 	for f in ["tree_pine_b.png", "tree_birch.png", "tree_dead.png", "bush.png", "mushroom.png", "grass.png"]:

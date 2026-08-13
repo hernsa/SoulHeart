@@ -20,7 +20,7 @@ func test_rooms_have_props() -> void:
 	drizzle._ready()
 	var count := 0
 	for child: Node in drizzle.get_children():
-		if child is Sprite2D and child.name.begins_with("Prop"):
+		if child is Sprite2D and child.name.begins_with("Flavor_"):
 			count += 1
 	TestHelper.is_true(count >= 3, "drizzle has at least 3 props: " + str(count))
 	drizzle.free()
