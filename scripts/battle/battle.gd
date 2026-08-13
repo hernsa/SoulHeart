@@ -34,7 +34,9 @@ var _name_label: Label
 var _hp_label: Label
 var _hp_bar: ColorRect
 var _hp_bar_bg: ColorRect
+var _hp_bar_frame: ColorRect
 var _hp_bar_w := 98.0
+var _fight_bar_y := 250.0
 var _player_name_label: Label
 var _player_hp_label: Label
 var _player_hp_bar: ColorRect
@@ -57,17 +59,16 @@ func _ready() -> void:
 	_forms = _enemy.get("forms", [])
 	_update_form_label()
 	_spawn_enemy_sprite()
-	_enemy_sprite.position = Vector2(216, -40)
+	_enemy_sprite.position = Vector2(320, -40)
 	if bool(_enemy.get("boss", false)):
 		await _show_boss_intro()
 	_enemy_max_hp = int(_enemy["hp"])
 	_enemy_hp_display = float(_enemy_max_hp)
 	var bar_w := clampf(_enemy_sprite.texture.get_width() * 0.8, 20.0, 98.0)
 	_hp_bar_w = bar_w
-	_hp_bar.size.x = bar_w
-	_hp_bar_bg.size.x = bar_w + 2.0
+	_layout_combat()
 	var entrance := create_tween()
-	entrance.tween_property(_enemy_sprite, "position", Vector2(216, 136), 0.4)
+	entrance.tween_property(_enemy_sprite, "position", Vector2(320, 170), 0.4)
 	await entrance.finished
 	_enemy_in = true
 	_refresh_enemy_ui()
@@ -84,26 +85,37 @@ func _build_ui() -> void:
 	add_child(bg)
 	_name_label = Label.new()
 	_name_label.add_theme_font_size_override("font_size", 16)
-	_name_label.position = Vector2(30, 30)
+	_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_name_label.position = Vector2(170, 90)
+	_name_label.size = Vector2(300, 22)
 	add_child(_name_label)
 	_hp_label = Label.new()
 	_hp_label.add_theme_font_size_override("font_size", 16)
-	_hp_label.position = Vector2(30, 60)
+	_hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_hp_label.position = Vector2(170, 120)
+	_hp_label.size = Vector2(300, 22)
 	add_child(_hp_label)
 	_form_label = Label.new()
 	_form_label.add_theme_font_size_override("font_size", 10)
-	_form_label.position = Vector2(30, 48)
+	_form_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_form_label.position = Vector2(170, 142)
+	_form_label.size = Vector2(300, 16)
 	_form_label.visible = false
 	add_child(_form_label)
 	_hp_bar_bg = ColorRect.new()
-	_hp_bar_bg.position = Vector2(207, 159)
-	_hp_bar_bg.size = Vector2(100, 12)
-	_hp_bar_bg.color = Color.WHITE
+	_hp_bar_bg.position = Vector2(270, 200)
+	_hp_bar_bg.size = Vector2(102, 12)
+	_hp_bar_bg.color = Color.BLACK
 	add_child(_hp_bar_bg)
+	_hp_bar_frame = ColorRect.new()
+	_hp_bar_frame.position = Vector2(271, 201)
+	_hp_bar_frame.size = Vector2(100, 10)
+	_hp_bar_frame.color = Color.WHITE
+	add_child(_hp_bar_frame)
 	_hp_bar = ColorRect.new()
-	_hp_bar.position = Vector2(208, 160)
-	_hp_bar.size = Vector2(98, 10)
-	_hp_bar.color = Color(0.0, 1.0, 0.0)
+	_hp_bar.position = Vector2(272, 202)
+	_hp_bar.size = Vector2(98, 8)
+	_hp_bar.color = Color(0.25, 0.85, 0.25)
 	add_child(_hp_bar)
 	_build_hud()
 	_build_menu()
@@ -119,19 +131,36 @@ func _build_ui() -> void:
 func _spawn_enemy_sprite() -> void:
 	_enemy_sprite = Sprite2D.new()
 	_enemy_sprite.texture = Sprites.battle_enemy_texture(_enemy["sprite_id"], false)
-	_enemy_sprite.position = Vector2(216, 136)
-	_enemy_sprite.scale = Vector2(0.8, 0.8)
+	_enemy_sprite.position = Vector2(320, 170)
+	_enemy_sprite.scale = Vector2(1.15, 1.15)
 	add_child(_enemy_sprite)
 	var shadow := Sprite2D.new()
 	shadow.texture = load("res://assets/sprites/shadow_ellipse.png")
-	shadow.position = Vector2(216, 152)
+	shadow.position = Vector2(320, 188)
 	shadow.modulate = Color(0, 0, 0, 0.4)
 	shadow.z_index = -1
 	add_child(shadow)
 	if _hp_bar_bg != null:
-		_hp_bar_bg.position = Vector2(207, 159)
-	if _hp_bar != null:
-		_hp_bar.position = Vector2(208, 160)
+		_layout_combat()
+
+func _layout_combat() -> void:
+	if _enemy_sprite == null:
+		return
+	var sprite_h := float(_enemy_sprite.texture.get_height()) * 1.15
+	var bar_x := 320.0 - _hp_bar_w / 2.0 - 1.0
+	var bar_y := 170.0 + sprite_h / 2.0 + 8.0
+	_hp_bar_bg.position = Vector2(bar_x - 1.0, bar_y - 1.0)
+	_hp_bar_bg.size = Vector2(_hp_bar_w + 4.0, 12.0)
+	_hp_bar_frame.position = Vector2(bar_x, bar_y)
+	_hp_bar_frame.size = Vector2(_hp_bar_w + 2.0, 10.0)
+	_hp_bar.position = Vector2(bar_x + 1.0, bar_y + 1.0)
+	_hp_bar.size = Vector2(_hp_bar_w, 8.0)
+	_fight_bar_y = bar_y + 22.0
+	if _fight_bar_ui != null:
+		var bar_node := _fight_bar_ui.get_node_or_null("FightBarSprite") as Sprite2D
+		if bar_node != null:
+			bar_node.position = Vector2(45, _fight_bar_y)
+		_fight_marker.position = Vector2(45, _fight_bar_y - 6.0)
 
 func _on_enemy_hurt_frame() -> void:
 	var hurt_tex := Sprites.battle_enemy_texture(_enemy["sprite_id"], true)
@@ -315,8 +344,8 @@ func _process(delta: float) -> void:
 		return
 	if _enemy_in:
 		var t := Time.get_ticks_msec() * 0.004
-		_enemy_sprite.position.y = 136.0 + sin(Time.get_ticks_msec() * 0.003) * 3.0
-		_enemy_sprite.scale = Vector2(0.8 * (1.0 + sin(t + 1.5) * 0.015), 0.8 * (1.0 + sin(t) * 0.02))
+		_enemy_sprite.position.y = 170.0 + sin(Time.get_ticks_msec() * 0.003) * 3.0
+		_enemy_sprite.scale = Vector2(1.15 * (1.0 + sin(t + 1.5) * 0.015), 1.15 * (1.0 + sin(t) * 0.02))
 		_enemy_hp_display = CombatMath.drain_toward(_enemy_hp_display, float(_enemy["hp"]), delta, 40.0)
 		_hp_bar.size.x = _hp_bar_w * (_enemy_hp_display / float(_enemy_max_hp))
 	match _state.phase:
@@ -327,7 +356,7 @@ func _process(delta: float) -> void:
 				_handle_menu_input()
 		BattleState.Phase.FIGHT:
 			_fight_bar.tick(delta)
-			_fight_marker.position = Vector2(45 + _fight_bar.marker * 532.0, 250)
+			_fight_marker.position = Vector2(45 + _fight_bar.marker * 532.0, _fight_bar_y - 6.0)
 			if Input.is_action_just_pressed("confirm"):
 				_resolve_fight()
 
@@ -472,6 +501,10 @@ func _resolve_fight() -> void:
 		_enemy_sprite.modulate = Color(3.0, 3.0, 3.0)
 		var flash := create_tween()
 		flash.tween_property(_enemy_sprite, "modulate", Color(1, 1, 1), 0.1)
+		var root_shake := create_tween()
+		root_shake.tween_property(self, "position", Vector2(3, 0), 0.05)
+		root_shake.tween_property(self, "position", Vector2(-3, 0), 0.05)
+		root_shake.tween_property(self, "position", Vector2.ZERO, 0.1)
 		_on_enemy_hurt_frame()
 		_spawn_damage_digit(dmg, false)
 		_refresh_enemy_ui()
