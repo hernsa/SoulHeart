@@ -1,7 +1,7 @@
 extends RefCounted
 
-func test_nine_sections_in_roster() -> void:
-	TestHelper.eq(DrizzleSections.SECTIONS.size(), 9, "exactly 9 sections")
+func test_ten_sections_in_roster() -> void:
+	TestHelper.eq(DrizzleSections.SECTIONS.size(), 10, "exactly 10 sections")
 
 func test_adjacency_ids_exist_in_sections() -> void:
 	var ids: Dictionary = {}
@@ -37,4 +37,4 @@ func test_compose_produces_no_error() -> void:
 	TestHelper.is_true(not out.has("error"), "DrizzleSections compose clean")
 	var grid: Array = out["grid"]
 	TestHelper.is_true(grid.size() > 0, "composed grid non-empty")
-	TestHelper.eq(out["origins"].size(), 9, "all 9 sections placed")
+	TestHelper.eq(out["origins"].size(), 10, "all 10 sections placed")

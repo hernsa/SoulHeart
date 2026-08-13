@@ -21,6 +21,15 @@ func test_exits_reachable() -> void:
 		if obj["type"] == "exit":
 			TestHelper.is_true(reach.has(obj["cell"]), "exit %s reachable" % obj["data"].get("target", "?"))
 
+func test_exit_spawn_cells_walkable() -> void:
+	var composed: Dictionary = _compose()
+	var grid: Array = composed["grid"]
+	for obj in composed["objects"]:
+		if obj["type"] == "exit":
+			var c: Vector2i = obj["cell"]
+			var ch: String = (grid[c.y] as String)[c.x]
+			TestHelper.is_true(ch != "#" and ch != "t" and ch != "T" and ch != "b" and ch != "d", "exit %s spawn cell not solid, got '%s'" % [obj["data"].get("target", "?"), ch])
+
 func _compose() -> Dictionary:
 	return SectionMap.compose(DrizzleSections.SECTIONS, DrizzleSections.ADJACENCY)
 

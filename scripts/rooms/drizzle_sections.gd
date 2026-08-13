@@ -11,6 +11,7 @@ const ADJACENCY: Array = [
     {"a": "path_north",    "side": "n", "b": "grumbleridge"},
     {"a": "path_north",    "side": "e", "b": "puzzle_pocket"},
     {"a": "pond_clearing", "side": "s", "b": "creek_bend"},
+    {"a": "creek_bend",    "side": "e", "b": "backwater"},
     {"a": "snowledge",     "side": "s", "b": "ringpath_east"},
 ]
 
@@ -168,6 +169,26 @@ const SECTIONS: Array = [
         ],
         "encounter_zone": "none",
         "extras": {"tone": "serene", "gameplay": "none"},
+    },
+    {
+        "id": "backwater",
+        "layout": [
+            "............",
+            ".t........t.",
+            "..ss....ss..",
+            "..ss....ss..",
+            "....ss......",
+            "............",
+        ],
+        "objects": [],
+        "flavor": [
+            {"kind": "cattail",   "cell": Vector2i(2, 0)},
+            {"kind": "cattail",   "cell": Vector2i(9, 0)},
+            {"kind": "tall_grass","cell": Vector2i(5, 5)},
+            {"kind": "old_boot",  "cell": Vector2i(8, 4)},
+        ],
+        "encounter_zone": "none",
+        "extras": {"tone": "hushed water", "gameplay": "none"},
     },
     {
         "id": "snowledge",
