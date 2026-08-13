@@ -195,3 +195,18 @@ After implementation lands, we validate the design in-engine rather than re-liti
 - Snowdin adaptation: same composer, new chunks, new palette; aim for the same hub-and-loop architecture but winter-themed.
 - The `extras` bag will collect whatever metadata future systems need (music, ambience, lighting, weather) — sections already carry the slots, the systems get hooked up later.
 - Original art pass to retire the Undertale-derived atlas.
+
+## Playtest Checklist (addendum)
+
+Run `DrizzleFields.tscn` in the editor and walk the whole area:
+
+- **West loop:** wisp_grove → pond_clearing (the stone crossing) → creek_bend (quiet, zero gameplay) → backwater connector → meadow → back to the grove. Confirm the backwater reads as a natural continuation, not a box.
+- **East arm:** grove → snowledge (gate glimpse at the west edge) → ringpath_east. Judge the anticipation-to-vista payoff; after playtesting decide whether ringpath_east becomes a full traversal loop or stays a scenic vista branch (LO decision, exploration-flow-based, not symmetry).
+- **Doors:** (21,6) → GrumbleWoods and (37,38) → Snowdin — both transitions land on walkable cells; no fade seams glitching.
+- **Save spot:** exactly one, wisp_grove (18,23); respawn lands correctly.
+- **Seams & rims:** walk every section edge — no invisible walls, no teleport-box feel; dead-tree rims block solidly (alpha 0.9), path corridor trees collide.
+- **East-void corridor:** master cols 17..38, rows 41..50 are unpainted floor and ringpath's west edge touches it at rows 41,43 — check the incidental corridor feels OK; a future section can fill it (no redesign now).
+- **Encounter zones:** pond_clearing (2) and ringpath_east (1) only — density/timing feels right? No encounters in hub/grove/creek/backwater.
+- **Landmark sightlines:** the Lone Pine from the grove, wisp cluster from the meadow, ridge sign/vantage from grumbleridge, gate glimpse, stone crossing, bend stone, old root arch, stone gap, fallen-log arch — all visible from their designed approach lines.
+- **Atmosphere:** "drizzle" music, green CanvasModulate tint, 0.67s fade-in; no runtime tint jumps between sections.
+- **Export note:** the 12 dev-run warnings "Loaded resource as image file" fire uniformly for every style tileset via the atlas loader — in any future exported build, confirm the drizzle floor tiles render.
