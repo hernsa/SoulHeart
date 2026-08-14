@@ -28,7 +28,7 @@ func _ready() -> void:
         add_child(pr)
 
     var tint := CanvasModulate.new()
-    tint.color = Color(0.78, 0.88, 0.78)
+    tint.color = Color(0.97, 0.91, 0.78)
     add_child(tint)
 
     var spawn_cell: Vector2i = _spawn_cell_for(composed)

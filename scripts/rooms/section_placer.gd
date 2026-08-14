@@ -64,15 +64,15 @@ static func _spawn_flavor(parent: Node, fl: Dictionary) -> void:
 
 static func _flavor_texture(kind: String) -> Texture2D:
     match kind:
-        "tall_grass": return Sprites.prop_texture("grass.png")
+        "tall_grass": return Sprites.prop_texture("tallgrass_0.png")
         "old_boot":   return Sprites.prop_texture("rock.png")
         "stick_circle": return Sprites.prop_texture("mushroom.png")
-        "snapped_branch": return Sprites.prop_texture("bush.png")
+        "snapped_branch": return Sprites.prop_texture("tree_dead.png")
         "rock_pile":  return Sprites.prop_texture("rock.png")
-        "cattail":    return Sprites.prop_texture("grass.png")
+        "cattail":    return Sprites.prop_texture("tallgrass_1.png")
         "pine_cone":  return Sprites.prop_texture("rock.png")
-        "gnarled_root": return Sprites.prop_texture("bush.png")
-        "withered_flower": return Sprites.prop_texture("rock.png")
+        "gnarled_root": return Sprites.prop_texture("tree_gnarled_b.png")
+        "withered_flower": return Sprites.prop_texture("golden_flowers_dark.png")
     return Sprites.prop_texture("grass.png")
 
 static func _dialogue_for(npc_id: String) -> String:
