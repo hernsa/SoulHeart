@@ -73,6 +73,7 @@ static func _flavor_texture(kind: String) -> Texture2D:
         "pine_cone":  return Sprites.prop_texture("rock.png")
         "gnarled_root": return Sprites.prop_texture("tree_gnarled_b.png")
         "withered_flower": return Sprites.prop_texture("golden_flowers_dark.png")
+        "gate_glimpse": return Sprites.prop_texture("gate.png")
     return Sprites.prop_texture("grass.png")
 
 static func _dialogue_for(npc_id: String) -> String:

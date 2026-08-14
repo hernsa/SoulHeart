@@ -15,6 +15,25 @@ const ADJACENCY: Array = [
     {"a": "snowledge",     "side": "s", "b": "ringpath_east"},
 ]
 
+# In-universe (Whisperglen) names for each section. Display strings used for
+# sign copy and interactions; the `data.label` landmark strings stay pinned by
+# tests (test_drizzle_sightlines.gd) and are separate from these.
+const DISPLAY_NAMES: Dictionary = {
+    "meadow": "Sunbleach Meadow",
+    "wisp_grove": "Whisper Grove",
+    "path_north": "Bramble Lane",
+    "grumbleridge": "Tallow Ridge",
+    "pond_clearing": "Glasspond",
+    "creek_bend": "Catkin Bend",
+    "backwater": "Hushwater",
+    "snowledge": "Goldfringe",
+    "ringpath_east": "Cradle Root",
+    "puzzle_pocket": "The Lostword",
+}
+
+static func display_name(section_id: String) -> String:
+    return str(DISPLAY_NAMES.get(section_id, section_id))
+
 # Sections. Layout chars: # wall, . floor. Walls and floors are the only
 # characters the composer validates. Other characters copy through.
 # Each section is intentionally small (8-18 cells per side) so the composer
@@ -93,6 +112,7 @@ const SECTIONS: Array = [
         ],
         "flavor": [
             {"kind": "snapped_branch", "cell": Vector2i(1, 7)},
+            {"kind": "withered_flower", "cell": Vector2i(1, 6)},
         ],
         "encounter_zone": "light",
         "extras": {"tone": "hushed"},
@@ -214,6 +234,7 @@ const SECTIONS: Array = [
         ],
         "flavor": [
             {"kind": "pine_cone", "cell": Vector2i(0, 6)},
+            {"kind": "gate_glimpse", "cell": Vector2i(1, 1)},
         ],
         "encounter_zone": "none",
         "extras": {"tone": "anticipatory"},
