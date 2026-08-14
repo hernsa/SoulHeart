@@ -20,6 +20,7 @@ func _ready() -> void:
 
     var master_grid: Array = _tile_grid_from(composed["grid"])
     var room: Dictionary = MapBuilder.build_room(master_grid, GameTiles.DRIZZLE_STYLE)
+    add_child(_make_backdrop(composed["grid"]))
     add_child(room["background"])
     add_child(room["tilemap"])
     for t in room["trees"]:
@@ -55,6 +56,18 @@ func _spawn_cell_for(composed: Dictionary) -> Vector2i:
         if obj["type"] == "save":
             return obj["cell"]
     return Vector2i(4, 4)
+
+func _make_backdrop(master: Array) -> Node2D:
+    var sprite := Sprite2D.new()
+    sprite.texture = load("res://assets/sprites/backdrop/bg_firstroom.png") as Texture2D
+    sprite.z_index = -2
+    var h: int = master.size()
+    var w: int = 0
+    for row in master:
+        w = maxi(w, (row as String).length())
+    sprite.scale = Vector2(w * 16.0 / 680.0, 0.6)
+    sprite.position = Vector2(w * 8, (h * 16.0) * 0.12)
+    return sprite
 
 func _tile_grid_from(master: Array) -> Array:
     var rows: Array = []
