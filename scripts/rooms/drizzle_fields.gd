@@ -32,8 +32,7 @@ func _ready() -> void:
     tint.color = Color(0.97, 0.91, 0.78)
     add_child(tint)
 
-    var spawn_cell: Vector2i = _spawn_cell_for(composed)
-    var start := Vector2(spawn_cell.x * 16 + 8, spawn_cell.y * 16 + 8)
+    var start: Vector2 = _spawn_point_for(composed)
     _spawn_player(start)
 
     SectionPlacer.spawn_all(self, composed["objects"], composed["flavor"], composed["layout_meta"])
@@ -51,7 +50,20 @@ func _ready() -> void:
     Audio.play_music("drizzle")
     Fade.fade_from_black(0.67)
 
+# Fresh entries spawn at the meadow's dedicated "spawn" object (open field,
+# sightline to the grove). Door arrivals honor door.gd's pre-set save_point so
+# returning players land on the door's target_spawn instead of the meadow.
+func _spawn_point_for(composed: Dictionary) -> Vector2:
+    if GameState.flags.has("current_room") and str(GameState.flags["current_room"]) == ROOM_PATH and GameState.flags.has("save_point"):
+        var sp: Array = GameState.flags["save_point"]
+        return Vector2(float(sp[0]), float(sp[1]))
+    var cell: Vector2i = _spawn_cell_for(composed)
+    return Vector2(cell.x * 16 + 8, cell.y * 16 + 8)
+
 func _spawn_cell_for(composed: Dictionary) -> Vector2i:
+    for obj in composed["objects"]:
+        if obj["type"] == "spawn":
+            return obj["cell"]
     for obj in composed["objects"]:
         if obj["type"] == "save":
             return obj["cell"]
