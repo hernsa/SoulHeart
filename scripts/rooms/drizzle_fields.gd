@@ -46,6 +46,7 @@ func _ready() -> void:
 
     _spawn_wisp(_player)
     GameState.set_flag("current_room", ROOM_PATH)
+    GameState.set_flag("whisperglen_pine_armed", true)
     Audio.play_music("drizzle")
     Fade.fade_from_black(0.67)
 

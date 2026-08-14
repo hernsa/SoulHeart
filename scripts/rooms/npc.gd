@@ -1,6 +1,15 @@
 extends Area2D
 
 @export var dialogue_file: String = ""
+@export var increment_flag_on_finish: String = ""
+
+func _ready() -> void:
+	var shape := CollisionShape2D.new()
+	var circle := CircleShape2D.new()
+	circle.radius = 10
+	shape.shape = circle
+	add_child(shape)
+	body_entered.connect(_on_body_entered)
 
 func _spawn_sprite(texture: Texture2D, sprite_scale: Vector2) -> Sprite2D:
 	var spr := Sprite2D.new()
@@ -18,3 +27,6 @@ func _on_body_entered(body: Node2D) -> void:
 		ui.open(lines)
 		await ui.finished
 		ui.queue_free()
+		if increment_flag_on_finish != "":
+			var v: int = int(GameState.flags.get(increment_flag_on_finish, 0)) + 1
+			GameState.set_flag(increment_flag_on_finish, v)

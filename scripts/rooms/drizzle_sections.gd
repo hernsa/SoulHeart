@@ -60,6 +60,7 @@ const SECTIONS: Array = [
         ],
         "objects": [
             {"type": "landmark", "cell": Vector2i(8, 3), "data": {"label": "the Lone Pine"}},
+            {"type": "interact", "cell": Vector2i(7, 3), "data": {"kind": "lone_pine"}},
         ],
         "flavor": [
             {"kind": "tall_grass", "cell": Vector2i(4, 6)},
@@ -132,6 +133,7 @@ const SECTIONS: Array = [
         "objects": [
             {"type": "exit",    "cell": Vector2i(5, 6), "data": {"target": "res://scenes/rooms/GrumbleWoods.tscn", "target_spawn": Vector2(520, 392)}},
             {"type": "landmark","cell": Vector2i(5, 3), "data": {"label": "ridge sign"}},
+            {"type": "interact","cell": Vector2i(6, 4), "data": {"kind": "ridge_sign"}},
         ],
         "flavor": [
             {"kind": "rock_pile", "cell": Vector2i(2, 4)},
@@ -160,6 +162,7 @@ const SECTIONS: Array = [
             {"type": "encounter", "cell": Vector2i(4, 2), "data": {}},
             {"type": "encounter", "cell": Vector2i(11, 2), "data": {}},
             {"type": "landmark",  "cell": Vector2i(8, 6), "data": {"label": "the stone crossing"}},
+            {"type": "npc",       "cell": Vector2i(0, 0), "data": {"id": "firefly_keeper", "sprite": "glowshroom.png"}},
         ],
         "flavor": [
             {"kind": "cattail", "cell": Vector2i(2, 1)},
@@ -180,6 +183,7 @@ const SECTIONS: Array = [
         ],
         "objects": [
             {"type": "landmark", "cell": Vector2i(1, 3), "data": {"label": "the bend stone"}},
+            {"type": "interact", "cell": Vector2i(2, 3), "data": {"kind": "stick_circle"}},
         ],
         "flavor": [
             {"kind": "tall_grass", "cell": Vector2i(0, 0)},
@@ -256,6 +260,7 @@ const SECTIONS: Array = [
         "objects": [
             {"type": "landmark", "cell": Vector2i(1, 3), "data": {"label": "old root arch"}},
             {"type": "encounter","cell": Vector2i(2, 5), "data": {}},
+            {"type": "npc",      "cell": Vector2i(0, 1), "data": {"id": "wattle", "sprite": "wattle_0.png", "increment_flag_on_finish": "wattle_step"}},
         ],
         "flavor": [
             {"kind": "gnarled_root", "cell": Vector2i(0, 2)},
@@ -277,6 +282,7 @@ const SECTIONS: Array = [
         ],
         "objects": [
             {"type": "landmark", "cell": Vector2i(3, 3), "data": {"label": "the stone gap"}},
+            {"type": "interact", "cell": Vector2i(3, 5), "data": {"kind": "lostword"}},
         ],
         "flavor": [
             {"kind": "withered_flower", "cell": Vector2i(1, 1)},

@@ -28,8 +28,15 @@ static func _spawn_object(parent: Node, obj: Dictionary) -> void:
             var d: Dictionary = obj["data"]
             npc.dialogue_file = _dialogue_for(d.get("id", "wisp"))
             npc.position = pos
-            npc._spawn_sprite(Sprites.prop_texture("froggit_npc.png"), Vector2(1.0, 1.0))
+            if d.has("increment_flag_on_finish"):
+                npc.increment_flag_on_finish = str(d["increment_flag_on_finish"])
+            npc._spawn_sprite(Sprites.prop_texture(str(d.get("sprite", "froggit_npc.png"))), Vector2(1.0, 1.0))
             parent.add_child(npc)
+        "interact":
+            var it = load("res://scripts/rooms/interact.gd").new()
+            it.kind = str(obj["data"].get("kind", "stick_circle"))
+            it.position = pos
+            parent.add_child(it)
         "exit":
             var door = load("res://scripts/rooms/door.gd").new()
             var dd: Dictionary = obj["data"]
@@ -79,6 +86,14 @@ static func _flavor_texture(kind: String) -> Texture2D:
 static func _dialogue_for(npc_id: String) -> String:
     match npc_id:
         "wisp": return "res://dialogue/wisp_intro.dlg"
+        "firefly_keeper": return "res://dialogue/firefly_keeper.dlg"
+        "wattle":
+            var step: int = int(GameState.flags.get("wattle_step", 0))
+            if step >= 2:
+                return "res://dialogue/wattle_done.dlg"
+            if step == 1:
+                return "res://dialogue/wattle_second.dlg"
+            return "res://dialogue/wattle_first.dlg"
     return "res://dialogue/drizzle_toad.dlg"
 
 static func _encounter_enemy_for(section_id: String) -> String:
